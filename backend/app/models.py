@@ -28,6 +28,13 @@ class BlogPost(BaseModel):
     created_at: str
 
 
+class BlogPostListItem(BaseModel):
+    slug: str
+    title: str
+    summary: str
+    created_at: str
+
+
 class BlogPostCreate(BaseModel):
     title: str
     summary: str
