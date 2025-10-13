@@ -1,21 +1,28 @@
 import { useEffect, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import type { BlogPost } from './blogData'
 
 export default function BlogPost() {
 	const { slug } = useParams()
+	const navigate = useNavigate()
 	const [post, setPost] = useState<BlogPost | null>(null)
 	const [loading, setLoading] = useState(true)
 	const [error, setError] = useState<string | null>(null)
+	const [deleting, setDeleting] = useState(false)
 
 	useEffect(() => {
+		if (deleting) return
 		if (!slug) return
 		const controller = new AbortController()
 		async function fetchPost() {
 			try {
 				const base = (import.meta.env.VITE_API_URL as string | undefined) || 'https://libinguo-io.onrender.com'
 				const res = await fetch(`${base}/api/blog/${slug}`, { signal: controller.signal })
-				if (!res.ok) throw new Error(`Failed: ${res.status}`)
+				if (!res.ok) {
+					// If deleted concurrently, just navigate back to list
+					navigate('/blog', { replace: true })
+					return
+				}
 				const data: BlogPost = await res.json()
 				setPost(data)
 			} catch (e: any) {
@@ -26,7 +33,7 @@ export default function BlogPost() {
 		}
 		fetchPost()
 		return () => controller.abort()
-	}, [slug])
+	}, [slug, deleting, navigate])
 
 	if (loading) return <div>Loading…</div>
 	if (error) return <div className="text-red-600">{error}</div>
@@ -45,11 +52,10 @@ export default function BlogPost() {
 					className="text-sm text-red-600 hover:underline"
 					onClick={async () => {
 						if (!confirm('Delete this post? This cannot be undone.')) return
+						setDeleting(true)
 						const base = (import.meta.env.VITE_API_URL as string | undefined) || 'https://libinguo-io.onrender.com'
-						const res = await fetch(`${base}/api/blog/${post.slug}`, { method: 'DELETE' })
-						if (res.ok) {
-							window.location.href = '/#/blog'
-						}
+						await fetch(`${base}/api/blog/${post.slug}`, { method: 'DELETE' })
+						navigate('/blog', { replace: true })
 					}}
 				>
 					Delete
