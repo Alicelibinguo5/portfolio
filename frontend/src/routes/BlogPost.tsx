@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import type { BlogPost } from './blogData'
 
@@ -9,6 +9,57 @@ export default function BlogPost() {
 	const [loading, setLoading] = useState(true)
 	const [error, setError] = useState<string | null>(null)
 	const [deleting, setDeleting] = useState(false)
+\tconst [html, setHtml] = useState<string>('')
+
+	const readingTime = useMemo(() => {
+		if (!post?.content) return null
+		const words = post.content.trim().split(/\s+/).length
+		const minutes = Math.max(1, Math.round(words / 200))
+		return `${minutes} min read`
+	}, [post])
+
+	useEffect(() => {
+		async function ensurePrismCss() {
+			const href = 'https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism.min.css'
+			const already = Array.from(document.querySelectorAll('link[rel="stylesheet"]')).some(l => (l as HTMLLinkElement).href.includes('prism.min.css'))
+			if (!already) {
+				const link = document.createElement('link')
+				link.rel = 'stylesheet'
+				link.href = href
+				document.head.appendChild(link)
+			}
+		}
+
+		async function renderMarkdown() {
+			if (!post?.content) {
+				setHtml('')
+				return
+			}
+			await ensurePrismCss()
+			// Dynamically import marked and prism from CDN to avoid bundling
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const markedMod: any = await import('https://cdn.jsdelivr.net/npm/marked@12.0.2/lib/marked.esm.js')
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const PrismMod: any = await import('https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js')
+			const marked = markedMod.marked ?? markedMod
+			const Prism = PrismMod.default ?? PrismMod
+			// Try to highlight code blocks if language is present
+			marked.setOptions({
+				highlight(code: string, lang: string) {
+					try {
+						const grammar = (Prism.languages as Record<string, unknown>)[lang] || Prism.languages.markup
+						return Prism.highlight(code, grammar, lang)
+					} catch {
+						return code
+					}
+				},
+				langPrefix: 'language-'
+			})
+			const htmlOut = marked.parse(post.content)
+			setHtml(typeof htmlOut === 'string' ? htmlOut : '')
+		}
+		renderMarkdown()
+	}, [post])
 
 	useEffect(() => {
 		if (deleting) return
@@ -42,10 +93,18 @@ export default function BlogPost() {
 	return (
 		<article className="space-y-4">
 			<h1 className="text-2xl font-semibold">{post.title}</h1>
-			<p className="text-xs text-zinc-500">{new Date(post.created_at).toLocaleDateString()}</p>
-			<div className="prose dark:prose-invert max-w-none whitespace-pre-wrap">
-				{post.content}
+			<div className="flex items-center gap-3 text-xs text-zinc-500">
+				<p>{new Date(post.created_at).toLocaleDateString()}</p>
+				{readingTime && <span>· {readingTime}</span>}
 			</div>
+			{post.tags && post.tags.length > 0 && (
+				<div className="flex flex-wrap gap-2 mt-1">
+					{post.tags.map(t => (
+						<span key={t} className="px-2 py-0.5 rounded-full bg-zinc-100 dark:bg-zinc-800 text-xs text-zinc-700 dark:text-zinc-300">{t}</span>
+					))}
+				</div>
+			)}
+			<div className="prose dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: html }} />
 			<div className="mt-4 flex items-center gap-4">
 				<Link className="nav-link" to={`/blog/${post.slug}/edit`}>Edit</Link>
 				<button

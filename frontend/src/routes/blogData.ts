@@ -4,6 +4,7 @@ export type BlogPost = {
 	created_at: string
 	summary: string
 	content: string
+	tags?: string[]
 }
 
 export const blogPosts: BlogPost[] = [
