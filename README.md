@@ -1,6 +1,6 @@
-# Portfolio
+# Overview
 
-**[https://libinguo.vercel.app/](https://libinguo.vercel.app/)**
+**[Libin Guo's Portfolio](https://libinguo.vercel.app/)**
 
 Personal portfolio with Home, Projects (GitHub), Blog (Postgres), About, and Contact.
 
