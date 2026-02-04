@@ -10,7 +10,7 @@ Personal portfolio with a modern React frontend and a FastAPI backend.
   - Blog with create/edit/delete, formatting toolbar (bold/italic/code), paste‑to‑image, and optional S3 image upload
   - About with embedded resume (bundled PDF)
   - Contact form (to FastAPI) and visible email/LinkedIn/GitHub
-  - GitHub Pages friendly (hash routing, base path configured)
+  - Deployed on Vercel (hash routing)
 
 - **Backend** (FastAPI)
   - `/api/health` health check
@@ -107,17 +107,23 @@ make clean             # Remove frontend dist and Python caches
    S3_PUBLIC_BASE=https://...     # optional
    ```
 
-6. Under **Networking**, generate a **public domain**. Use this URL as `VITE_API_URL` when building the frontend.
+6. Under **Networking**, generate a **public domain**. Use this URL as `VITE_API_URL` for the frontend.
 
-### Frontend (GitHub Pages) repo secrets
+### Frontend (Vercel)
 
-Set in **Settings → Secrets and variables → Actions**:
+1. Go to [vercel.com](https://vercel.com), sign in with GitHub, and **Add New** → **Project**.
+2. Import your repo. Set **Root Directory** to `frontend` (Edit → set to `frontend` and Save).
+3. Vercel will detect Vite from `frontend/vercel.json`. No need to change Build Command or Output Directory unless you prefer.
+4. In **Settings → Environment Variables**, add (for Production, and optionally Preview):
 
-```
-VITE_API_URL=https://<your-backend>.up.railway.app
-VITE_LINKEDIN_URL=https://www.linkedin.com/in/libinguo/
-VITE_CONTACT_EMAIL=libinguo89@gmail.com
-```
+   | Name            | Value                                      |
+   |-----------------|--------------------------------------------|
+   | `VITE_BASE`     | `/`                                        |
+   | `VITE_API_URL`  | `https://<your-backend>.up.railway.app`    |
+   | `VITE_LINKEDIN_URL` | `https://www.linkedin.com/in/libinguo/` |
+   | `VITE_CONTACT_EMAIL` | your email                            |
+
+5. Deploy. Every push to `main` will deploy; you’ll get a URL like `https://your-project.vercel.app`.
 
 ## Folder structure
 

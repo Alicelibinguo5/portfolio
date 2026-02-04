@@ -2,6 +2,9 @@
 frontend/node_modules/
 frontend/dist/
 
+# Vercel
+.vercel/
+
 # Python venv and caches
 backend/.venv/
 backend/venv/
