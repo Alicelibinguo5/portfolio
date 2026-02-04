@@ -3,8 +3,8 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig(({ mode }) => ({
 	plugins: [react()],
-	// Use VITE_BASE=/ for local backend (make dev). Omit for GitHub Pages (base /portfolio/).
-	base: process.env.VITE_BASE ?? (mode === 'production' ? '/portfolio/' : '/'),
+	// VITE_BASE_PATH set in CI to /<repo-name>/ for GitHub Pages. VITE_BASE=/ for local backend (make dev).
+	base: process.env.VITE_BASE_PATH ?? process.env.VITE_BASE ?? (mode === 'production' ? '/portfolio/' : '/'),
 }))
 
 

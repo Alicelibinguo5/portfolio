@@ -35,6 +35,7 @@ jobs:
       - name: Build frontend
         working-directory: frontend
         env:
+          VITE_BASE_PATH: /${{ github.event.repository.name }}/
           VITE_API_URL: ${{ secrets.VITE_API_URL }}
           VITE_LINKEDIN_URL: https://www.linkedin.com/in/libinguo/
           VITE_CONTACT_EMAIL: ${{ secrets.VITE_CONTACT_EMAIL }}
