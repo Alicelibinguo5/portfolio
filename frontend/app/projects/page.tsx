@@ -2,8 +2,30 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { ExternalLink, Star, GitFork } from 'lucide-react'
+import { ExternalLink, Star, GitFork, Globe } from 'lucide-react'
 import { API_URL } from '@/lib/api'
+
+type FeaturedApp = {
+  title: string
+  intro: string
+  liveUrl: string
+  tags: string[]
+}
+
+const FEATURED_APPS: FeaturedApp[] = [
+  {
+    title: 'Dinner Match Lab',
+    intro: 'Recipe recommendations tailored to what you have and what you like. Discover meals that match your ingredients and dietary preferences.',
+    liveUrl: 'https://www.dinnermatchlab.com/',
+    tags: ['Recipes', 'Recommendations', 'Web App'],
+  },
+  {
+    title: 'Moriarty AI: Fraudster Interview Trainer',
+    intro: 'AI-powered simulation platform for developing fraud examination and investigative interview skills. Practice with realistic fraudster personas and receive structured feedback.',
+    liveUrl: 'https://moriarty-fraudster-ai-interview.vercel.app/',
+    tags: ['AI', 'Interview Training', 'Fraud Examination'],
+  },
+]
 
 type GithubRepo = {
   id: number
@@ -114,8 +136,11 @@ export default function Projects() {
 
   if (loading) {
     return (
-      <section className="space-y-12 md:space-y-16">
-        <h1 className="font-display text-5xl md:text-6xl lg:text-7xl font-semibold text-forest">Projects</h1>
+      <section className="space-y-16 md:space-y-24">
+        <div>
+          <h1 className="font-display text-5xl md:text-6xl lg:text-7xl font-semibold text-forest">Projects</h1>
+          <p className="mt-4 text-lg text-forest/70 max-w-xl">Live apps and open-source work.</p>
+        </div>
         <div className="grid md:grid-cols-2 gap-8">
           {Array.from({ length: 4 }).map((_, i) => (
             <div key={i} className="card animate-pulse">
@@ -139,67 +164,128 @@ export default function Projects() {
   }
 
   return (
-    <section className="space-y-12 md:space-y-20">
-      <h1 className="font-display text-5xl md:text-6xl lg:text-7xl font-semibold text-forest animate-fade-up">Projects</h1>
-      <div className="vine-divider" aria-hidden="true" />
-      <div className="grid md:grid-cols-2 gap-12 md:gap-16">
-        {displayRepos.map((r, i) => {
-          const isFeatured = r.full_name === FEATURED_FULL_NAME
-          const baseTags = (r.topics?.length ? r.topics : (r.language ? [r.language] : []))
-          const tags = isFeatured ? [...new Set([...baseTags, 'multi-agent', 'FastAPI'])] : baseTags
-          const stagger = i % 2 === 1 ? 'md:translate-y-12' : ''
+    <section className="space-y-16 md:space-y-24">
+      <div className="animate-fade-up">
+        <h1 className="font-display text-5xl md:text-6xl lg:text-7xl font-semibold text-forest">Projects</h1>
+        <p className="mt-4 text-lg text-forest/70 max-w-xl">
+          Live apps and open-source work. Click through to try them or view the code.
+        </p>
+      </div>
 
-          return (
-            <article key={r.id} className={`card group ${stagger}`}>
-              <div className="flex items-center gap-3">
-                <h2 className="font-display text-xl font-semibold text-forest">
+      {/* Featured live apps */}
+      <div>
+        <h2 className="font-display text-2xl font-semibold text-forest mb-6">Featured apps</h2>
+        <div className="grid md:grid-cols-2 gap-8 md:gap-10">
+          {FEATURED_APPS.map((app, i) => (
+            <article
+              key={app.liveUrl}
+              className={`card group ${i % 2 === 1 ? 'md:translate-y-8' : ''}`}
+            >
+              <div className="flex items-start justify-between gap-3">
+                <h3 className="font-display text-xl font-semibold text-forest">
                   <a
-                    href={r.html_url}
+                    href={app.liveUrl}
                     target="_blank"
                     rel="noreferrer noopener"
-                    aria-label={`Open ${r.name} on GitHub`}
                     className="hover:text-terracotta transition-colors duration-300 inline-flex items-center gap-2"
                   >
-                    {r.name}
-                    <ExternalLink strokeWidth={1.5} size={16} className="opacity-0 group-hover:opacity-100 transition-opacity" />
+                    {app.title}
+                    <ExternalLink strokeWidth={1.5} size={16} className="opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
                   </a>
-                </h2>
-                {isFeatured && (
-                  <span className="text-[10px] px-2.5 py-1 rounded-full bg-sage/20 text-forest font-medium tracking-wide">Featured</span>
-                )}
+                </h3>
+                <span className="shrink-0 p-1.5 rounded-lg bg-sage/10 text-sage" aria-hidden>
+                  <Globe strokeWidth={1.5} size={18} />
+                </span>
               </div>
-              <p className="text-forest/80 mt-2 leading-relaxed">
-                {isFeatured ? FEATURED_GOAL : r.full_name === SECOND_FULL_NAME ? SECOND_GOAL : r.full_name === THIRD_FULL_NAME ? THIRD_GOAL : r.description}
+              <p className="text-forest/80 mt-3 leading-relaxed">
+                {app.intro}
               </p>
-              <div className="mt-4 flex flex-wrap gap-3 text-sm text-forest/60">
-                {r.language && <span>{r.language}</span>}
-                {typeof r.stargazers_count === 'number' && (
-                  <span className="inline-flex items-center gap-1"><Star strokeWidth={1.5} size={14} /> {r.stargazers_count}</span>
-                )}
-                {typeof r.forks_count === 'number' && (
-                  <span className="inline-flex items-center gap-1"><GitFork strokeWidth={1.5} size={14} /> {r.forks_count}</span>
-                )}
+              <div className="mt-4 flex flex-wrap gap-2">
+                {app.tags.map(t => (
+                  <span key={t} className="px-2.5 py-1 rounded-full bg-soft-clay text-forest/70 text-xs">
+                    {t}
+                  </span>
+                ))}
               </div>
-              <div className="mt-4 flex flex-wrap items-center gap-4">
-                <a href={r.html_url} target="_blank" rel="noreferrer" className="btn-secondary text-sm h-10 px-6">
-                  GitHub
+              <div className="mt-5">
+                <a
+                  href={app.liveUrl}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  className="btn-primary text-sm h-10 px-6 inline-flex items-center gap-2"
+                >
+                  Visit site
+                  <ExternalLink strokeWidth={1.5} size={14} />
                 </a>
-                {isFeatured && (
-                  <Link href="/projects/doj-legal-researcher-agent" className="text-sage hover:text-terracotta font-medium text-sm transition-colors">
-                    Read Case Study →
-                  </Link>
-                )}
               </div>
-              {tags.length > 0 && (
-                <div className="mt-4 flex flex-wrap gap-2">
-                  {tags.slice(0, 6).map(t => (
-                    <span key={t} className="px-2.5 py-1 rounded-full bg-soft-clay text-forest/70 text-xs">{t}</span>
-                  ))}
-                </div>
-              )}
             </article>
-          )
-        })}
+          ))}
+        </div>
+      </div>
+
+      {/* GitHub repos */}
+      <div>
+        <h2 className="font-display text-2xl font-semibold text-forest mb-6">More on GitHub</h2>
+        <div className="vine-divider" aria-hidden="true" />
+        <div className="grid md:grid-cols-2 gap-10 md:gap-14 mt-10">
+          {displayRepos.map((r, i) => {
+            const isFeatured = r.full_name === FEATURED_FULL_NAME
+            const baseTags = (r.topics?.length ? r.topics : (r.language ? [r.language] : []))
+            const tags = isFeatured ? [...new Set([...baseTags, 'multi-agent', 'FastAPI'])] : baseTags
+            const stagger = i % 2 === 1 ? 'md:translate-y-8' : ''
+
+            return (
+              <article key={r.id} className={`card group ${stagger}`}>
+                <div className="flex items-center gap-3">
+                  <h3 className="font-display text-xl font-semibold text-forest">
+                    <a
+                      href={r.html_url}
+                      target="_blank"
+                      rel="noreferrer noopener"
+                      aria-label={`Open ${r.name} on GitHub`}
+                      className="hover:text-terracotta transition-colors duration-300 inline-flex items-center gap-2"
+                    >
+                      {r.name}
+                      <ExternalLink strokeWidth={1.5} size={16} className="opacity-0 group-hover:opacity-100 transition-opacity" />
+                    </a>
+                  </h3>
+                  {isFeatured && (
+                    <span className="text-[10px] px-2.5 py-1 rounded-full bg-sage/20 text-forest font-medium tracking-wide">Featured</span>
+                  )}
+                </div>
+                <p className="text-forest/80 mt-2 leading-relaxed">
+                  {isFeatured ? FEATURED_GOAL : r.full_name === SECOND_FULL_NAME ? SECOND_GOAL : r.full_name === THIRD_FULL_NAME ? THIRD_GOAL : r.description}
+                </p>
+                <div className="mt-4 flex flex-wrap gap-3 text-sm text-forest/60">
+                  {r.language && <span>{r.language}</span>}
+                  {typeof r.stargazers_count === 'number' && (
+                    <span className="inline-flex items-center gap-1"><Star strokeWidth={1.5} size={14} /> {r.stargazers_count}</span>
+                  )}
+                  {typeof r.forks_count === 'number' && (
+                    <span className="inline-flex items-center gap-1"><GitFork strokeWidth={1.5} size={14} /> {r.forks_count}</span>
+                  )}
+                </div>
+                <div className="mt-4 flex flex-wrap items-center gap-4">
+                  <a href={r.html_url} target="_blank" rel="noreferrer" className="btn-secondary text-sm h-10 px-6">
+                    GitHub
+                  </a>
+                  {isFeatured && (
+                    <Link href="/projects/doj-legal-researcher-agent" className="text-sage hover:text-terracotta font-medium text-sm transition-colors">
+                      Read Case Study →
+                    </Link>
+                  )}
+                </div>
+                {tags.length > 0 && (
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    {tags.slice(0, 6).map(t => (
+                      <span key={t} className="px-2.5 py-1 rounded-full bg-soft-clay text-forest/70 text-xs">{t}</span>
+                    ))}
+                  </div>
+                )}
+              </article>
+            )
+          })}
+        </div>
       </div>
     </section>
   )
