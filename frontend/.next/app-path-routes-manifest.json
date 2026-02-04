@@ -1,12 +1,12 @@
 {
   "/_not-found/page": "/_not-found",
   "/about/page": "/about",
+  "/blog/new/page": "/blog/new",
   "/blog/page": "/blog",
-  "/projects/doj-legal-researcher-agent/page": "/projects/doj-legal-researcher-agent",
   "/page": "/",
   "/contact/page": "/contact",
-  "/blog/new/page": "/blog/new",
   "/projects/page": "/projects",
+  "/projects/doj-legal-researcher-agent/page": "/projects/doj-legal-researcher-agent",
   "/blog/[slug]/edit/page": "/blog/[slug]/edit",
   "/blog/[slug]/page": "/blog/[slug]"
 }
