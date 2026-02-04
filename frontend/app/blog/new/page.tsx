@@ -60,10 +60,15 @@ export default function NewBlogPost() {
         Back to Blog
       </Link>
 
-      <h1 className="font-display text-3xl md:text-4xl font-semibold text-forest">New Post</h1>
+      <div>
+        <h1 className="font-display text-3xl md:text-4xl font-semibold text-forest">New Post</h1>
+        <p className="mt-2 text-forest/70 text-sm">
+          Your post will be public and visible to everyone who visits your blog. You can edit or delete it later.
+        </p>
+      </div>
 
       <form onSubmit={onSubmit} className="space-y-6">
-        <div className="flex flex-wrap items-center gap-2 p-4 rounded-2xl bg-soft-clay/50">
+        <div className="flex flex-wrap items-center gap-2 p-4 rounded-2xl bg-soft-clay/50" role="toolbar" aria-label="Formatting">
           <button
             type="button"
             className="p-2 rounded-lg text-forest/70 hover:text-sage hover:bg-sage/10 transition-colors"
@@ -131,6 +136,7 @@ export default function NewBlogPost() {
             className="input-botanical"
             value={title}
             onChange={e => setTitle(e.target.value)}
+            placeholder="Give your post a clear, catchy title"
             required
           />
         </div>
@@ -141,18 +147,23 @@ export default function NewBlogPost() {
             className="input-botanical min-h-[80px] resize-y"
             value={summary}
             onChange={e => setSummary(e.target.value)}
+            placeholder="A short description shown in the blog list (1–2 sentences)"
             rows={3}
             required
           />
         </div>
         <div>
           <label htmlFor="content" className="block text-sm font-medium text-forest mb-2">Content</label>
+          <p className="text-forest/60 text-xs mb-2">
+            Markdown supported: **bold** _italic_ `code` ```code block```. Paste images directly or use the Image button.
+          </p>
           <textarea
             ref={contentRef}
             id="content"
             className="input-botanical min-h-[200px] resize-y font-mono text-sm"
             value={content}
             onChange={e => setContent(e.target.value)}
+            placeholder="Write your post here. Use the toolbar above for bold, italic, code, and images."
             rows={10}
             required
             onPaste={async (e) => {
@@ -191,9 +202,12 @@ export default function NewBlogPost() {
 
         {error && <p className="text-terracotta text-sm">{error}</p>}
 
-        <button type="submit" disabled={submitting} className="btn-primary">
-          {submitting ? 'Publishing…' : 'Publish'}
-        </button>
+        <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+          <button type="submit" disabled={submitting} className="btn-primary h-12 px-10">
+            {submitting ? 'Publishing…' : 'Publish to blog'}
+          </button>
+          <span className="text-sm text-forest/50">Visible to everyone immediately.</span>
+        </div>
       </form>
     </section>
   )

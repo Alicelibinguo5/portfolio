@@ -1,9 +1,9 @@
 'use client'
 
-import { FormEvent, useEffect, useState } from 'react'
+import { FormEvent, useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, Bold, Italic, Code, Image } from 'lucide-react'
 import { API_URL } from '@/lib/api'
 
 type BlogPost = {
@@ -16,6 +16,7 @@ type BlogPost = {
 
 export function EditBlogPostClient({ slug }: { slug: string }) {
   const router = useRouter()
+  const contentRef = useRef<HTMLTextAreaElement | null>(null)
   const [post, setPost] = useState<BlogPost | null>(null)
   const [title, setTitle] = useState('')
   const [summary, setSummary] = useState('')
@@ -23,6 +24,24 @@ export function EditBlogPostClient({ slug }: { slug: string }) {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  function wrapSelection(before: string, after: string = before) {
+    const el = contentRef.current
+    if (!el) {
+      setContent((c) => `${before}${c}${after}`)
+      return
+    }
+    const start = el.selectionStart ?? 0
+    const end = el.selectionEnd ?? 0
+    const selected = content.slice(start, end)
+    const next = content.slice(0, start) + before + selected + after + content.slice(end)
+    setContent(next)
+    setTimeout(() => {
+      el.focus()
+      el.selectionStart = start + before.length
+      el.selectionEnd = start + before.length + selected.length
+    }, 0)
+  }
 
   useEffect(() => {
     if (!slug) return
@@ -114,6 +133,40 @@ export function EditBlogPostClient({ slug }: { slug: string }) {
       <h1 className="font-display text-3xl md:text-4xl font-semibold text-forest">Edit Post</h1>
 
       <form onSubmit={onSubmit} className="space-y-6">
+        <div className="flex flex-wrap items-center gap-2 p-4 rounded-2xl bg-soft-clay/50" role="toolbar" aria-label="Formatting">
+          <button type="button" className="p-2 rounded-lg text-forest/70 hover:text-sage hover:bg-sage/10 transition-colors" onClick={() => wrapSelection('**')} title="Bold">
+            <Bold strokeWidth={1.5} size={18} />
+          </button>
+          <button type="button" className="p-2 rounded-lg text-forest/70 hover:text-sage hover:bg-sage/10 transition-colors" onClick={() => wrapSelection('_')} title="Italic">
+            <Italic strokeWidth={1.5} size={18} />
+          </button>
+          <button type="button" className="p-2 rounded-lg text-forest/70 hover:text-sage hover:bg-sage/10 transition-colors" onClick={() => wrapSelection('`')} title="Code">
+            <Code strokeWidth={1.5} size={18} />
+          </button>
+          <button type="button" className="p-2 rounded-lg text-forest/70 hover:text-sage hover:bg-sage/10 transition-colors" onClick={() => wrapSelection('\n```\n', '\n```\n')} title="Code block">
+            Code block
+          </button>
+          <button
+            type="button"
+            className="p-2 rounded-lg text-forest/70 hover:text-sage hover:bg-sage/10 transition-colors inline-flex items-center gap-1"
+            onClick={() => {
+              const url = prompt('Image URL')?.trim()
+              if (!url) return
+              const alt = prompt('Alt text (optional)')?.trim() ?? ''
+              const tag = `<img src="${url}" alt="${alt}" loading="lazy" style="max-width:100%;height:auto;" />`
+              const el = contentRef.current
+              if (el) {
+                const start = el.selectionStart ?? content.length
+                const end = el.selectionEnd ?? content.length
+                setContent(content.slice(0, start) + tag + content.slice(end))
+                setTimeout(() => { el.focus(); el.selectionStart = el.selectionEnd = start + tag.length }, 0)
+              } else setContent((c) => c + tag)
+            }}
+            title="Insert image"
+          >
+            <Image strokeWidth={1.5} size={18} /> Image
+          </button>
+        </div>
         <div>
           <label htmlFor="title" className="block text-sm font-medium text-forest mb-2">Title</label>
           <input
@@ -137,13 +190,40 @@ export function EditBlogPostClient({ slug }: { slug: string }) {
         </div>
         <div>
           <label htmlFor="content" className="block text-sm font-medium text-forest mb-2">Content</label>
+          <p className="text-forest/60 text-xs mb-2">Markdown: **bold** _italic_ `code` ```block```. Paste images or use the Image button.</p>
           <textarea
+            ref={contentRef}
             id="content"
             className="input-botanical min-h-[200px] resize-y font-mono text-sm"
             value={content}
             onChange={e => setContent(e.target.value)}
             rows={10}
             required
+            onPaste={async (e) => {
+              const items = e.clipboardData?.items
+              if (!items) return
+              for (const item of items) {
+                if (item.type.startsWith('image/')) {
+                  e.preventDefault()
+                  const file = item.getAsFile()
+                  if (!file) return
+                  const reader = new FileReader()
+                  reader.onload = () => {
+                    const dataUrl = String(reader.result)
+                    const tag = `<img src="${dataUrl}" alt="pasted image" loading="lazy" style="max-width:100%;height:auto;" />`
+                    const el = contentRef.current
+                    if (el) {
+                      const start = el.selectionStart ?? content.length
+                      const end = el.selectionEnd ?? content.length
+                      setContent(content.slice(0, start) + tag + content.slice(end))
+                      setTimeout(() => { el.focus(); el.selectionStart = el.selectionEnd = start + tag.length }, 0)
+                    } else setContent((c) => c + tag)
+                  }
+                  reader.readAsDataURL(file)
+                  break
+                }
+              }
+            }}
           />
         </div>
         {error && <p className="text-terracotta text-sm">{error}</p>}
