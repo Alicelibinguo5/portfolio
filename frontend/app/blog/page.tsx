@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
-import { Search, FilePlus, ArrowRight, ChevronDown, Download, Upload } from 'lucide-react'
+import { Search, FilePlus, ArrowRight } from 'lucide-react'
 import { API_URL } from '@/lib/api'
 
 type BlogListItem = {
@@ -20,7 +20,6 @@ export default function Blog() {
   const [pageSize] = useState(10)
   const [total, setTotal] = useState(0)
   const [query, setQuery] = useState('')
-  const [manageOpen, setManageOpen] = useState(false)
 
   useEffect(() => {
     const controller = new AbortController()
@@ -82,67 +81,17 @@ export default function Blog() {
         </div>
       </div>
 
-      <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-        <div className="relative flex-1 max-w-md">
-          <Search strokeWidth={1.5} size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-forest/50" />
-          <input
-            type="search"
-            placeholder="Search by title or summary..."
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            className="input-botanical pl-10 w-full"
-            aria-label="Search posts"
-          />
-        </div>
-        <button
-          type="button"
-          onClick={() => setManageOpen((o) => !o)}
-          className="btn-secondary inline-flex items-center gap-2 h-12 shrink-0"
-        >
-          <ChevronDown strokeWidth={1.5} size={18} className={manageOpen ? 'rotate-180' : ''} />
-          Manage data
-        </button>
+      <div className="relative max-w-md">
+        <Search strokeWidth={1.5} size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-forest/50" />
+        <input
+          type="search"
+          placeholder="Search by title or summary..."
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          className="input-botanical pl-10 w-full"
+          aria-label="Search posts"
+        />
       </div>
-
-      {manageOpen && (
-        <div className="flex flex-wrap items-center gap-4 p-4 rounded-2xl bg-soft-clay/50 border border-stone/50">
-          <a
-            href={`${API_URL}/api/blog/backup`}
-            target="_blank"
-            rel="noreferrer"
-            className="nav-link inline-flex items-center gap-2"
-          >
-            <Download strokeWidth={1.5} size={18} />
-            Export JSON
-          </a>
-          <label className="nav-link cursor-pointer inline-flex items-center gap-2">
-            <Upload strokeWidth={1.5} size={18} />
-            Import JSON
-            <input
-              type="file"
-              accept="application/json"
-              className="hidden"
-              onChange={async (e) => {
-                const file = e.target.files?.[0]
-                if (!file) return
-                try {
-                  const text = await file.text()
-                  const data = JSON.parse(text)
-                  await fetch(`${API_URL}/api/blog/restore`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
-                  })
-                  setPage(1)
-                  setManageOpen(false)
-                } catch {
-                  // ignore
-                }
-              }}
-            />
-          </label>
-        </div>
-      )}
 
       {loading ? (
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">

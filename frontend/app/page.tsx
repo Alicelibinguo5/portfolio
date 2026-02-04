@@ -14,9 +14,14 @@ export default function Home() {
           <h1 className="font-display text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-semibold text-forest tracking-tight leading-[1.1]">
             Hi, I&apos;m <span className="italic">Libin</span>.
           </h1>
-          <p className="text-lg md:text-xl text-forest/80 max-w-2xl leading-relaxed">
-            I&apos;m a software engineer focused on data pipelines and platform engineering—turning complex data challenges into robust, production-ready systems. Currently at Apple; previously at JPMorgan and a healthcare startup.
-          </p>
+          <div className="text-lg md:text-xl text-forest/80 max-w-2xl leading-relaxed space-y-4">
+            <p>
+              I&apos;m a data platform engineer building scalable, production-grade data infrastructure that powers systems and decisions at scale. I currently work at Apple, and previously engineered data platforms in finance and healthcare at JPMorgan and an early-stage startup.
+            </p>
+            <p>
+              With 10 years across analytics and engineering, I bring strong data intuition and systems thinking to complex, real-world data challenges.
+            </p>
+          </div>
         </div>
         <div className="flex justify-center md:justify-end animate-fade-up [animation-delay:100ms]">
           {/* Arch imagery: rounded-t-full creates organic arch shape */}
