@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { ArrowLeft, Bold, Italic, Code, Image } from 'lucide-react'
 import { API_URL } from '@/lib/api'
+import { ImageInsertModal } from '../ImageInsertModal'
 
 export default function NewBlogPost() {
   const router = useRouter()
@@ -14,6 +15,23 @@ export default function NewBlogPost() {
   const contentRef = useRef<HTMLTextAreaElement | null>(null)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [imageModalOpen, setImageModalOpen] = useState(false)
+
+  function insertImageTag(tag: string) {
+    const el = contentRef.current
+    if (el) {
+      const start = el.selectionStart ?? content.length
+      const end = el.selectionEnd ?? content.length
+      const next = content.slice(0, start) + tag + content.slice(end)
+      setContent(next)
+      setTimeout(() => {
+        el.focus()
+        el.selectionStart = el.selectionEnd = start + tag.length
+      }, 0)
+    } else {
+      setContent((c) => c + tag)
+    }
+  }
 
   function wrapSelection(before: string, after: string = before) {
     const el = contentRef.current
@@ -104,28 +122,10 @@ export default function NewBlogPost() {
           <button
             type="button"
             className="p-2 rounded-lg text-forest/70 hover:text-sage hover:bg-sage/10 transition-colors inline-flex items-center gap-1"
-            onClick={() => {
-              const url = prompt('Image URL')?.trim()
-              if (!url) return
-              const alt = prompt('Alt text (optional)')?.trim() ?? ''
-              const tag = `<img src="${url}" alt="${alt}" loading="lazy" style="max-width:100%;height:auto;" />`
-              const el = contentRef.current
-              if (el) {
-                const start = el.selectionStart ?? content.length
-                const end = el.selectionEnd ?? content.length
-                const next = content.slice(0, start) + tag + content.slice(end)
-                setContent(next)
-                setTimeout(() => {
-                  el.focus()
-                  el.selectionStart = el.selectionEnd = start + tag.length
-                }, 0)
-              } else {
-                setContent((c) => c + tag)
-              }
-            }}
-            title="Insert image"
+            onClick={() => setImageModalOpen(true)}
+            title="Add image (link or upload)"
           >
-            <Image strokeWidth={1.5} size={18} /> Image
+            <Image strokeWidth={1.5} size={18} /> Add image
           </button>
         </div>
 
@@ -155,7 +155,7 @@ export default function NewBlogPost() {
         <div>
           <label htmlFor="content" className="block text-sm font-medium text-forest mb-2">Content</label>
           <p className="text-forest/60 text-xs mb-2">
-            Markdown supported: **bold** _italic_ `code` ```code block```. Paste images directly or use the Image button.
+            Markdown: **bold** _italic_ `code` ```block```. Add images with the toolbar button (link or upload) or paste here.
           </p>
           <textarea
             ref={contentRef}
@@ -209,6 +209,13 @@ export default function NewBlogPost() {
           <span className="text-sm text-forest/50">Visible to everyone immediately.</span>
         </div>
       </form>
+
+      {imageModalOpen && (
+        <ImageInsertModal
+          onInsert={insertImageTag}
+          onClose={() => setImageModalOpen(false)}
+        />
+      )}
     </section>
   )
 }

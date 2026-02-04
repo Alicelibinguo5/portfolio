@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Image, Link2, Upload, X } from 'lucide-react'
 
 type ImageInsertModalProps = {
@@ -31,6 +31,14 @@ export function ImageInsertModal({ onInsert, onClose }: ImageInsertModalProps) {
     setUrlError(null)
     insertTag(u, alt.trim())
   }
+
+  useEffect(() => {
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') onClose()
+    }
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [onClose])
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]

@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { ArrowLeft, Bold, Italic, Code, Image } from 'lucide-react'
 import { API_URL } from '@/lib/api'
+import { ImageInsertModal } from '../../ImageInsertModal'
 
 type BlogPost = {
   slug: string
@@ -24,6 +25,20 @@ export function EditBlogPostClient({ slug }: { slug: string }) {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [imageModalOpen, setImageModalOpen] = useState(false)
+
+  function insertImageTag(tag: string) {
+    const el = contentRef.current
+    if (el) {
+      const start = el.selectionStart ?? content.length
+      const end = el.selectionEnd ?? content.length
+      setContent(content.slice(0, start) + tag + content.slice(end))
+      setTimeout(() => {
+        el.focus()
+        el.selectionStart = el.selectionEnd = start + tag.length
+      }, 0)
+    } else setContent((c) => c + tag)
+  }
 
   function wrapSelection(before: string, after: string = before) {
     const el = contentRef.current
@@ -149,22 +164,10 @@ export function EditBlogPostClient({ slug }: { slug: string }) {
           <button
             type="button"
             className="p-2 rounded-lg text-forest/70 hover:text-sage hover:bg-sage/10 transition-colors inline-flex items-center gap-1"
-            onClick={() => {
-              const url = prompt('Image URL')?.trim()
-              if (!url) return
-              const alt = prompt('Alt text (optional)')?.trim() ?? ''
-              const tag = `<img src="${url}" alt="${alt}" loading="lazy" style="max-width:100%;height:auto;" />`
-              const el = contentRef.current
-              if (el) {
-                const start = el.selectionStart ?? content.length
-                const end = el.selectionEnd ?? content.length
-                setContent(content.slice(0, start) + tag + content.slice(end))
-                setTimeout(() => { el.focus(); el.selectionStart = el.selectionEnd = start + tag.length }, 0)
-              } else setContent((c) => c + tag)
-            }}
-            title="Insert image"
+            onClick={() => setImageModalOpen(true)}
+            title="Add image (link or upload)"
           >
-            <Image strokeWidth={1.5} size={18} /> Image
+            <Image strokeWidth={1.5} size={18} /> Add image
           </button>
         </div>
         <div>
@@ -190,7 +193,7 @@ export function EditBlogPostClient({ slug }: { slug: string }) {
         </div>
         <div>
           <label htmlFor="content" className="block text-sm font-medium text-forest mb-2">Content</label>
-          <p className="text-forest/60 text-xs mb-2">Markdown: **bold** _italic_ `code` ```block```. Paste images or use the Image button.</p>
+          <p className="text-forest/60 text-xs mb-2">Markdown: **bold** _italic_ `code` ```block```. Add images with the toolbar button (link or upload) or paste here.</p>
           <textarea
             ref={contentRef}
             id="content"
@@ -227,6 +230,12 @@ export function EditBlogPostClient({ slug }: { slug: string }) {
           />
         </div>
         {error && <p className="text-terracotta text-sm">{error}</p>}
+        {imageModalOpen && (
+          <ImageInsertModal
+            onInsert={insertImageTag}
+            onClose={() => setImageModalOpen(false)}
+          />
+        )}
         <div className="flex gap-4">
           <button type="submit" disabled={saving} className="btn-primary">
             {saving ? 'Saving…' : 'Save Changes'}
