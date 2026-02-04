@@ -8,7 +8,7 @@ PG_NAME   := portfolio-pg
 PG_PORT   := 5434
 API_PORT  := 8000
 API_URL   := http://localhost:$(API_PORT)
-VITE_PORT := 5173
+NEXT_PORT := 3000
 
 DATABASE_URL := postgresql://postgres:postgres@localhost:$(PG_PORT)/portfolio
 
@@ -50,13 +50,13 @@ backend:
 	  uv run uvicorn app.main:app --reload --port $(API_PORT)
 
 frontend:
-	cd frontend && VITE_API_URL=$(API_URL) npm run dev
+	cd frontend && NEXT_PUBLIC_API_URL=$(API_URL) npm run dev
 
 build:
-	cd frontend && npm run build
+	cd frontend && NEXT_PUBLIC_BASE_PATH=/portfolio/ npm run build
 
 build-dev:
-	cd frontend && VITE_BASE=/ npm run build
+	cd frontend && NEXT_PUBLIC_BASE_PATH= NEXT_PUBLIC_API_URL=$(API_URL) npm run build
 
 test: test-backend test-frontend
 
@@ -67,15 +67,15 @@ test-frontend:
 	cd frontend && npm run build
 
 preview:
-	cd frontend && npm run preview -- --port $(VITE_PORT)
+	cd frontend && npx serve out --port $(NEXT_PORT)
 
 dev: build-dev
 	cd backend && \
 	  export DATABASE_URL="$(DATABASE_URL)" SEED_BLOG=true && \
 	  uv run uvicorn app.main:app --reload --port $(API_PORT)
-	@echo "Visit $(API_URL)/#/ to use the app"
+	@echo "Visit $(API_URL)/ to use the app"
 
 clean:
-	rm -rf frontend/dist
+	rm -rf frontend/out frontend/.next frontend/dist
 	find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
 	find . -type d -name .pytest_cache -exec rm -rf {} + 2>/dev/null || true

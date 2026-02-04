@@ -58,8 +58,15 @@ def create_app() -> FastAPI:
     def health() -> dict:
         return {"status": "ok"}
 
-    frontend_dist = (Path(__file__).resolve().parents[2] / "frontend" / "dist").resolve()
+    # Next.js static export outputs to "out"; Vite uses "dist"
+    _frontend_root = Path(__file__).resolve().parents[2] / "frontend"
+    frontend_dist = (_frontend_root / "out").resolve() if (_frontend_root / "out").exists() else (_frontend_root / "dist").resolve()
     if frontend_dist.exists():
+        # Next.js: mount _next for JS/CSS
+        next_static = frontend_dist / "_next"
+        if next_static.exists():
+            app.mount("/_next", StaticFiles(directory=str(next_static)), name="next")
+        # Vite: mount assets
         assets_dir = frontend_dist / "assets"
         if assets_dir.exists():
             app.mount("/assets", StaticFiles(directory=str(assets_dir)), name="assets")
@@ -73,11 +80,18 @@ def create_app() -> FastAPI:
 
         @app.get("/{full_path:path}")
         def serve_static_or_spa(full_path: str) -> FileResponse:
-            # Serve static files from dist root (e.g. me.png from public/)
-            static_file = (frontend_dist / full_path).resolve()
-            if static_file.is_file() and static_file.parent == frontend_dist:
-                return FileResponse(str(static_file))
-            # SPA fallback
+            safe_path = (frontend_dist / full_path).resolve()
+            # Serve existing files (me.png, resume.pdf, _next/...)
+            if safe_path.is_file() and str(safe_path).startswith(str(frontend_dist)):
+                return FileResponse(str(safe_path))
+            # Next.js: try {path}.html or {path}/index.html
+            html_file = frontend_dist / f"{full_path}.html"
+            if html_file.is_file():
+                return FileResponse(str(html_file))
+            index_in_path = frontend_dist / full_path / "index.html"
+            if index_in_path.is_file():
+                return FileResponse(str(index_in_path))
+            # SPA fallback (client-side routing)
             index_file = frontend_dist / "index.html"
             if not index_file.exists():
                 raise HTTPException(status_code=404, detail="index.html not found")
