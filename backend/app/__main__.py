@@ -1,23 +1,19 @@
-import os
-
 import uvicorn
+
+from app.config import get_settings
 
 
 def main() -> None:
-	port_str = os.getenv("PORT", "8000")
-	try:
-		port = int(port_str)
-	except ValueError:
-		port = 8000
-	uvicorn.run(
-		"app.main:app",
-		host="0.0.0.0",
-		port=port,
-		reload=os.getenv("RELOAD", "false").lower() == "true",
-	)
+    settings = get_settings()
+    uvicorn.run(
+        "app.main:app",
+        host="0.0.0.0",
+        port=settings.port,
+        reload=settings.reload,
+    )
 
 
 if __name__ == "__main__":
-	main()
+    main()
 
 

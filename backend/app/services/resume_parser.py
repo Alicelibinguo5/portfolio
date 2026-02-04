@@ -2,17 +2,16 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import List, Optional
 
 from pdfminer.high_level import extract_text
 
 
 @dataclass
 class ParsedResume:
-	summary: Optional[str]
-	skills: List[str]
-	education: Optional[str]
-	experience_snippets: List[str]
+	summary: str | None
+	skills: list[str]
+	education: str | None
+	experience_snippets: list[str]
 
 
 def extract_resume_text(pdf_path: Path) -> str:
@@ -24,10 +23,10 @@ def parse_resume_text(text: str) -> ParsedResume:
 	lines = [ln for ln in lines if ln]
 
 	# Naive heuristic-based parsing
-	summary_lines: List[str] = []
-	skills: List[str] = []
-	education_lines: List[str] = []
-	experience_snippets: List[str] = []
+	summary_lines: list[str] = []
+	skills: list[str] = []
+	education_lines: list[str] = []
+	experience_snippets: list[str] = []
 
 	section = None
 	for ln in lines:
@@ -63,7 +62,7 @@ def parse_resume_text(text: str) -> ParsedResume:
 	education = " \n".join(education_lines).strip() or None
 	# De-duplicate skills, preserve order
 	seen = set()
-	unique_skills: List[str] = []
+	unique_skills: list[str] = []
 	for s in skills:
 		key = s.lower()
 		if key not in seen:

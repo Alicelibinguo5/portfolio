@@ -1,11 +1,10 @@
 import os
 import sys
+from collections.abc import Iterator
 from pathlib import Path
-from typing import Iterator
 
 import pytest
 from fastapi.testclient import TestClient
-
 
 # Ensure we can import from backend/app
 THIS_DIR = Path(__file__).resolve().parent
@@ -13,6 +12,7 @@ BACKEND_DIR = THIS_DIR.parent
 if str(BACKEND_DIR) not in sys.path:
     sys.path.insert(0, str(BACKEND_DIR))
 
+from app.config import get_settings  # noqa: E402
 from app.main import create_app  # noqa: E402
 from app.routers import blog as blog_router  # noqa: E402
 
@@ -22,6 +22,7 @@ def client(tmp_path: Path) -> Iterator[TestClient]:
     db_path = tmp_path / "test.db"
     os.environ["DATABASE_URL"] = f"sqlite:///{db_path}"
     os.environ["SEED_BLOG"] = "false"
+    get_settings.cache_clear()
     # Reset module-level engine/table between tests
     blog_router.Db.engine = None
     blog_router.Db.table = None
@@ -86,7 +87,6 @@ def test_etag_last_modified_and_304(client: TestClient) -> None:
     first = client.get("/api/blog/?page=1&page_size=20")
     assert first.status_code == 200
     etag = first.headers.get("ETag")
-    last_mod = first.headers.get("Last-Modified")
     assert etag is not None
 
     second = client.get(

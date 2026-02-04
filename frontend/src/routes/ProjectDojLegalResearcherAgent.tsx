@@ -1,28 +1,55 @@
+import { Link } from 'react-router-dom'
+import { ArrowLeft, ExternalLink } from 'lucide-react'
+
 export default function ProjectDojLegalResearcherAgent() {
-	return (
-		<section className="space-y-6">
-			<h1 className="text-2xl font-semibold">
-				<a className="nav-link" href="https://github.com/Alicelibinguo5/doj-legal-researcher-agent" target="_blank" rel="noreferrer">doj-legal-researcher-agent</a>
-			</h1>
-			<p className="text-zinc-600 dark:text-zinc-300 max-w-2xl">
-				Build a multi-agent system to analyze DOJ press releases and categorize fraud and money-laundering cases.
-			</p>
-			<div className="grid md:grid-cols-2 gap-6">
-				<div className="card space-y-2">
-					<h2 className="font-semibold">Overview</h2>
-					<p className="text-sm text-zinc-600 dark:text-zinc-400">
-						Multi-agent architecture with Research, Evaluation, Legal, and Meta agents coordinated via LangGraph. Backend in FastAPI; monitoring via Langfuse; React dashboard for status and metrics.
-					</p>
-				</div>
-				<div className="card space-y-2">
-					<h2 className="font-semibold">Links</h2>
-					<ul className="list-disc pl-5 text-sm text-zinc-600 dark:text-zinc-400">
-						<li><a className="nav-link" href="https://github.com/Alicelibinguo5/doj-legal-researcher-agent" target="_blank" rel="noreferrer">GitHub Repository</a></li>
-					</ul>
-				</div>
-			</div>
-		</section>
-	)
+  return (
+    <section className="space-y-12 md:space-y-16">
+      <Link to="/projects" className="nav-link inline-flex items-center gap-2 text-sm font-medium">
+        <ArrowLeft strokeWidth={1.5} size={16} />
+        Back to Projects
+      </Link>
+
+      <div>
+        <h1 className="font-display text-3xl md:text-4xl lg:text-5xl font-semibold text-forest">
+          <a
+            href="https://github.com/Alicelibinguo5/doj-legal-researcher-agent"
+            target="_blank"
+            rel="noreferrer"
+            className="hover:text-terracotta transition-colors inline-flex items-center gap-2"
+          >
+            doj-legal-researcher-agent
+            <ExternalLink strokeWidth={1.5} size={20} />
+          </a>
+        </h1>
+        <p className="text-forest/80 mt-4 max-w-2xl text-lg">
+          Build a multi-agent system to analyze DOJ press releases and categorize fraud and money-laundering cases.
+        </p>
+      </div>
+
+      <div className="grid md:grid-cols-2 gap-8 md:gap-12">
+        <article className="card">
+          <h2 className="font-display text-xl font-semibold text-forest mb-4">Overview</h2>
+          <p className="text-forest/80 leading-relaxed">
+            Multi-agent architecture with Research, Evaluation, Legal, and Meta agents coordinated via LangGraph. Backend in FastAPI; monitoring via Langfuse; React dashboard for status and metrics.
+          </p>
+        </article>
+        <article className="card md:translate-y-12">
+          <h2 className="font-display text-xl font-semibold text-forest mb-4">Links</h2>
+          <ul className="space-y-2">
+            <li>
+              <a
+                href="https://github.com/Alicelibinguo5/doj-legal-researcher-agent"
+                target="_blank"
+                rel="noreferrer"
+                className="nav-link inline-flex items-center gap-2"
+              >
+                GitHub Repository
+                <ExternalLink strokeWidth={1.5} size={16} />
+              </a>
+            </li>
+          </ul>
+        </article>
+      </div>
+    </section>
+  )
 }
-
-

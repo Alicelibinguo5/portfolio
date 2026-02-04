@@ -1,15 +1,11 @@
-from typing import List, Optional
-
 from fastapi import APIRouter, HTTPException
 
-from ..models import Project
-
+from app.models import Project
 
 router = APIRouter()
 
-
 # Demo in-memory projects. Replace with DB or file in production.
-PROJECTS: List[Project] = [
+PROJECTS: list[Project] = [
 	Project(
 		id=1,
 		title="Portfolio Website",
@@ -31,8 +27,8 @@ PROJECTS: List[Project] = [
 ]
 
 
-@router.get("/", response_model=List[Project])
-def list_projects(tag: Optional[str] = None) -> List[Project]:
+@router.get("/", response_model=list[Project])
+def list_projects(tag: str | None = None) -> list[Project]:
 	if tag:
 		return [project for project in PROJECTS if tag in project.tags]
 	return PROJECTS

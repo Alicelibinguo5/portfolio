@@ -14,19 +14,14 @@ jobs:
         working-directory: backend
     steps:
       - uses: actions/checkout@v4
-      - name: Set up Python
-        uses: actions/setup-python@v4
+      - name: Set up UV
+        uses: astral-sh/setup-uv@v4
         with:
-          python-version: '3.9'
+          version: "latest"
+          enable-cache: true
+      - name: Set up Python
+        run: uv python install 3.13
       - name: Install dependencies
-        run: |
-          python -m venv .venv
-          source .venv/bin/activate
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install pytest
+        run: uv sync --all-extras
       - name: Run tests
-        run: |
-          set -x
-          source .venv/bin/activate
-          python -m pytest -q
+        run: uv run pytest -q

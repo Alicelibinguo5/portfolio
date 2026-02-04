@@ -1,16 +1,15 @@
-from typing import List, Optional
 
 from pydantic import BaseModel, EmailStr, HttpUrl
 
 
 class Project(BaseModel):
-	id: int
-	title: str
-	description: str
-	tags: List[str] = []
-	github_url: Optional[HttpUrl] = None
-	live_url: Optional[HttpUrl] = None
-	image_url: Optional[HttpUrl] = None
+    id: int
+    title: str
+    description: str
+    tags: list[str] = []
+    github_url: HttpUrl | None = None
+    live_url: HttpUrl | None = None
+    image_url: HttpUrl | None = None
 
 
 class ContactMessage(BaseModel):
@@ -42,8 +41,8 @@ class BlogPostCreate(BaseModel):
 
 
 class BlogPostUpdate(BaseModel):
-    title: Optional[str] = None
-    summary: Optional[str] = None
-    content: Optional[str] = None
+    title: str | None = None
+    summary: str | None = None
+    content: str | None = None
 
 

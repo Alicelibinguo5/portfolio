@@ -1,47 +1,45 @@
 from __future__ import annotations
 
-from datetime import datetime
-from typing import List, Optional
+from datetime import UTC
+from typing import TYPE_CHECKING
 
-from fastapi import APIRouter, HTTPException, Query, Response, Request
+from fastapi import APIRouter, HTTPException, Query, Request, Response
 from pydantic import BaseModel
-from sqlalchemy import (  # type: ignore
-    MetaData,
-    Table,
-    Column,
-    String,
-    Text,
-    Boolean,
-    DateTime,
+from sqlalchemy import (
     JSON,
-    text,
-    select,
-    func,
+    Boolean,
+    Column,
+    DateTime,
+    MetaData,
+    String,
+    Table,
+    Text,
     create_engine,
-)  # type: ignore
+    func,
+    select,
+    text,
+)
 
-from ..models import BlogPost, BlogPostCreate, BlogPostUpdate, BlogPostListItem
+from app.config import get_settings
+from app.models import BlogPost, BlogPostCreate, BlogPostListItem, BlogPostUpdate
 
+if TYPE_CHECKING:
+    from sqlalchemy import Engine
 
 router = APIRouter()
 
 
 class Db:
-    engine = None
-    table: Optional[Table] = None
+    engine: Engine | None = None
+    table: Table | None = None
 
 
-def _get_engine():
+def _get_engine() -> Engine:
     if Db.engine is None:
-        import os
-        dsn = os.getenv("DATABASE_URL") or os.getenv("POSTGRES_URL")
+        settings = get_settings()
+        dsn = settings.dsn
         if not dsn:
             raise RuntimeError("DATABASE_URL not configured")
-        # Use psycopg (binary) driver
-        if dsn.startswith("postgres://"):
-            dsn = dsn.replace("postgres://", "postgresql+psycopg://", 1)
-        elif dsn.startswith("postgresql://"):
-            dsn = dsn.replace("postgresql://", "postgresql+psycopg://", 1)
         Db.engine = create_engine(dsn, pool_pre_ping=True, future=True)
     return Db.engine
 
@@ -59,45 +57,48 @@ def _get_table() -> Table:
             Column("tags", JSON, nullable=True),
             Column("published", Boolean, server_default=text("true")),
             Column("created_at", DateTime(timezone=True), server_default=text("CURRENT_TIMESTAMP")),
-            Column("updated_at", DateTime(timezone=True), server_default=text("CURRENT_TIMESTAMP"), onupdate=text("CURRENT_TIMESTAMP")),
+            Column(
+                "updated_at",
+                DateTime(timezone=True),
+                server_default=text("CURRENT_TIMESTAMP"),
+                onupdate=text("CURRENT_TIMESTAMP"),
+            ),
         )
     return Db.table
 
 
-@router.on_event("startup")
-def init_table() -> None:
-    import os
-    try:
-        engine = _get_engine()
-    except RuntimeError:
-        # Skip when DATABASE_URL is not configured; other routers can still work
-        return
+def init_blog_db() -> None:
+    """Initialize blog DB tables and optional seeding. Called from app lifespan."""
+    engine = _get_engine()
     table = _get_table()
+    settings = get_settings()
     with engine.begin() as conn:
         table.metadata.create_all(conn)
-        # Ensure index on created_at for fast ordering/pagination
         try:
-            conn.exec_driver_sql("CREATE INDEX IF NOT EXISTS idx_blog_posts_created_at ON blog_posts(created_at)")
+            conn.exec_driver_sql(
+                "CREATE INDEX IF NOT EXISTS idx_blog_posts_created_at ON blog_posts(created_at)"
+            )
         except Exception:
-            # Best-effort; ignore if not supported
             pass
-        if (os.getenv("SEED_BLOG", "false").lower() in {"1", "true", "yes"}):
+        if settings.seed_blog:
             count = conn.execute(select(func.count()).select_from(table)).scalar_one()
             if count == 0:
-                conn.execute(table.insert().values([
-                    {
-                        "slug": "hello-world",
-                        "title": "Hello, world",
-                        "summary": "Welcome to my blog — first post seeded for demo.",
-                        "content": "This is a sample post created during initial seeding.",
-                    },
-                    {
-                        "slug": "real-time-ads-metrics-pipeline",
-                        "title": "A Minimal Real‑Time Ads Metrics Pipeline",
-                        "summary": "Kafka → Flink → Iceberg → Superset: pragmatic baseline.",
-                        "content": "Notes on design trade‑offs, checkpoints, and dashboarding.",
-                    },
-                ]))
+                conn.execute(
+                    table.insert().values([
+                        {
+                            "slug": "hello-world",
+                            "title": "Hello, world",
+                            "summary": "Welcome to my blog — first post seeded for demo.",
+                            "content": "This is a sample post created during initial seeding.",
+                        },
+                        {
+                            "slug": "real-time-ads-metrics-pipeline",
+                            "title": "A Minimal Real‑Time Ads Metrics Pipeline",
+                            "summary": "Kafka → Flink → Iceberg → Superset: pragmatic baseline.",
+                            "content": "Notes on design trade‑offs, checkpoints, and dashboarding.",
+                        },
+                    ])
+                )
 
 
 def _slugify(title: str) -> str:
@@ -107,13 +108,13 @@ def _slugify(title: str) -> str:
     return s
 
 
-@router.get("/", response_model=List[BlogPostListItem])
+@router.get("/", response_model=list[BlogPostListItem])
 def list_posts(
     request: Request,
     response: Response,
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=50),
-) -> List[BlogPostListItem]:
+) -> list[BlogPostListItem]:
     engine = _get_engine()
     table = _get_table()
     offset = (page - 1) * page_size
@@ -142,9 +143,8 @@ def list_posts(
         if max_created_at is not None:
             try:
                 # Ensure aware datetime for consistent formatting
-                if getattr(max_created_at, 'tzinfo', None) is None:
-                    from datetime import timezone
-                    max_created_at = max_created_at.replace(tzinfo=timezone.utc)
+                if getattr(max_created_at, "tzinfo", None) is None:
+                    max_created_at = max_created_at.replace(tzinfo=UTC)
                 # Format Last-Modified as RFC 1123
                 last_mod_http = max_created_at.strftime("%a, %d %b %Y %H:%M:%S GMT")
             except Exception:
@@ -200,7 +200,7 @@ class RestoreItem(BaseModel):
     title: str
     summary: str
     content: str
-    created_at: Optional[str] = None
+    created_at: str | None = None
 
 
 @router.post("/restore", response_model=dict)

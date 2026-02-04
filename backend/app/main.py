@@ -1,71 +1,89 @@
+"""Portfolio FastAPI application."""
+
+from collections.abc import AsyncGenerator
+from contextlib import asynccontextmanager
 from pathlib import Path
-from typing import List
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 
-from .models import ContactMessage, Project
-from .routers.projects import router as projects_router
-from .routers.contact import router as contact_router
-from .routers.github import router as github_router
-from .routers.blog import router as blog_router
-from .routers.resume import router as resume_router
-from .routers.uploads import router as uploads_router
+from app.config import get_settings
+from app.routers import blog, contact, github, projects, resume, uploads
+
+
+def _init_blog_db() -> None:
+    """Initialize blog DB tables and optional seeding. Called at startup."""
+    try:
+        blog.init_blog_db()
+    except RuntimeError:
+        pass  # DATABASE_URL not configured; other routers still work
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI) -> AsyncGenerator[None]:
+    """Application lifespan: startup and shutdown."""
+    _init_blog_db()
+    yield
 
 
 def create_app() -> FastAPI:
-	app = FastAPI(title="Portfolio API", version="1.0.0")
+    """Create and configure the FastAPI application."""
+    settings = get_settings()
+    origins = [o.strip() for o in settings.cors_origins.split(",") if o.strip()]
 
-	# Configure CORS for development; adjust origins for production as needed
-	app.add_middleware(
-		CORSMiddleware,
-		allow_origins=["*"],
-		allow_credentials=True,
-		allow_methods=["*"],
-		allow_headers=["*"],
-	)
+    app = FastAPI(
+        title="Portfolio API",
+        version="1.0.0",
+        lifespan=lifespan,
+    )
 
-	# API Routers
-	app.include_router(projects_router, prefix="/api/projects", tags=["projects"])
-	app.include_router(contact_router, prefix="/api/contact", tags=["contact"])
-	app.include_router(github_router, prefix="/api/github", tags=["github"])
-	app.include_router(blog_router, prefix="/api/blog", tags=["blog"])
-	app.include_router(resume_router, prefix="/api/resume", tags=["resume"])
-	app.include_router(uploads_router, prefix="/api/uploads", tags=["uploads"])
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=origins if origins else ["*"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
-	# Health check
-	@app.get("/api/health")
-	def health() -> dict:
-		return {"status": "ok"}
+    app.include_router(projects.router, prefix="/api/projects", tags=["projects"])
+    app.include_router(contact.router, prefix="/api/contact", tags=["contact"])
+    app.include_router(github.router, prefix="/api/github", tags=["github"])
+    app.include_router(blog.router, prefix="/api/blog", tags=["blog"])
+    app.include_router(resume.router, prefix="/api/resume", tags=["resume"])
+    app.include_router(uploads.router, prefix="/api/uploads", tags=["uploads"])
 
-	# Static file serving for production (frontend build)
-	# Serve built assets under /assets and fallback all routes to index.html
-	frontend_dist = (Path(__file__).resolve().parents[2] / "frontend" / "dist").resolve()
-	if frontend_dist.exists():
-		assets_dir = frontend_dist / "assets"
-		if assets_dir.exists():
-			app.mount("/assets", StaticFiles(directory=str(assets_dir)), name="assets")
+    @app.get("/api/health")
+    def health() -> dict:
+        return {"status": "ok"}
 
-		@app.get("/")
-		def index_root():
-			index_file = frontend_dist / "index.html"
-			if not index_file.exists():
-				raise HTTPException(status_code=404, detail="index.html not found")
-			return FileResponse(str(index_file))
+    frontend_dist = (Path(__file__).resolve().parents[2] / "frontend" / "dist").resolve()
+    if frontend_dist.exists():
+        assets_dir = frontend_dist / "assets"
+        if assets_dir.exists():
+            app.mount("/assets", StaticFiles(directory=str(assets_dir)), name="assets")
 
-		# SPA fallback for client-side routes like /contact, /projects, etc.
-		@app.get("/{full_path:path}")
-		def spa_fallback(full_path: str):  # type: ignore[unused-argument]
-			index_file = frontend_dist / "index.html"
-			if not index_file.exists():
-				raise HTTPException(status_code=404, detail="index.html not found")
-			return FileResponse(str(index_file))
+        @app.get("/")
+        def index_root() -> FileResponse:
+            index_file = frontend_dist / "index.html"
+            if not index_file.exists():
+                raise HTTPException(status_code=404, detail="index.html not found")
+            return FileResponse(str(index_file))
 
-	return app
+        @app.get("/{full_path:path}")
+        def serve_static_or_spa(full_path: str) -> FileResponse:
+            # Serve static files from dist root (e.g. me.png from public/)
+            static_file = (frontend_dist / full_path).resolve()
+            if static_file.is_file() and static_file.parent == frontend_dist:
+                return FileResponse(str(static_file))
+            # SPA fallback
+            index_file = frontend_dist / "index.html"
+            if not index_file.exists():
+                raise HTTPException(status_code=404, detail="index.html not found")
+            return FileResponse(str(index_file))
+
+    return app
 
 
 app = create_app()
-
-

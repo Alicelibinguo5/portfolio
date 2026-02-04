@@ -1,33 +1,26 @@
-import os
 from pathlib import Path
 
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import FileResponse
 
-from ..services.resume_parser import extract_resume_text, parse_resume_text
+from app.config import get_settings
+from app.services.resume_parser import extract_resume_text, parse_resume_text
 
 router = APIRouter()
 
 
 def _get_resume_path() -> Path:
-    """Resolve resume path with env override and multiple fallbacks.
-
-    Priority:
-    1) RESUME_FILE env (absolute or relative to project root)
-    2) Project root + default filename
-    3) Backend root + default filename
-    """
+    """Resolve resume path with config override and multiple fallbacks."""
     default_name = "resume.pdf"
-    # Paths
     routers_dir = Path(__file__).resolve().parent
     app_dir = routers_dir.parent
     backend_root = app_dir.parent
     project_root = backend_root.parent
 
-    env_value = os.getenv("RESUME_FILE")
+    settings = get_settings()
     candidates: list[Path] = []
-    if env_value:
-        p = Path(env_value)
+    if settings.resume_file:
+        p = Path(settings.resume_file)
         candidates.append(p if p.is_absolute() else (project_root / p))
     candidates.append(project_root / default_name)
     candidates.append(backend_root / default_name)
@@ -35,7 +28,6 @@ def _get_resume_path() -> Path:
     for c in candidates:
         if c.exists():
             return c
-    # Fallback to a non-existing path under project root to keep type stable
     return candidates[0] if candidates else (project_root / default_name)
 
 
