@@ -9,6 +9,7 @@ type FeaturedApp = {
   title: string
   intro: string
   liveUrl: string
+  previewUrl?: string
   tags: string[]
 }
 
@@ -17,12 +18,14 @@ const FEATURED_APPS: FeaturedApp[] = [
     title: 'Dinner Match Lab',
     intro: 'Recipe recommendations tailored to what you have and what you like. Discover meals that match your ingredients and dietary preferences.',
     liveUrl: 'https://www.dinnermatchlab.com/',
+    previewUrl: 'https://image.thum.io/get/width/800/crop/450/https://www.dinnermatchlab.com/',
     tags: ['Recipes', 'Recommendations', 'Web App'],
   },
   {
     title: 'Moriarty AI: Fraudster Interview Trainer',
     intro: 'AI-powered simulation platform for developing fraud examination and investigative interview skills. Practice with realistic fraudster personas and receive structured feedback.',
     liveUrl: 'https://moriarty-fraudster-ai-interview.vercel.app/',
+    previewUrl: 'https://image.thum.io/get/width/800/crop/450/https://moriarty-fraudster-ai-interview.vercel.app/',
     tags: ['AI', 'Interview Training', 'Fraud Examination'],
   },
 ]
@@ -179,8 +182,22 @@ export default function Projects() {
           {FEATURED_APPS.map((app, i) => (
             <article
               key={app.liveUrl}
-              className={`card group ${i % 2 === 1 ? 'md:translate-y-8' : ''}`}
+              className={`card group overflow-hidden ${i % 2 === 1 ? 'md:translate-y-8' : ''}`}
             >
+              {app.previewUrl && (
+                <a
+                  href={app.liveUrl}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  className="block -mx-6 -mt-6 sm:-mx-8 sm:-mt-8 mb-5 sm:mb-6 rounded-t-3xl overflow-hidden border-b border-stone/30"
+                >
+                  <img
+                    src={app.previewUrl}
+                    alt={`${app.title} preview`}
+                    className="w-full h-44 sm:h-52 object-cover object-top hover:scale-[1.02] transition-transform duration-500"
+                  />
+                </a>
+              )}
               <div className="flex items-start justify-between gap-3">
                 <h3 className="font-display text-xl font-semibold text-forest">
                   <a

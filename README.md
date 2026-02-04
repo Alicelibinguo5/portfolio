@@ -4,6 +4,10 @@
 
 Personal portfolio with Home, Projects (GitHub), Blog (Postgres), About, and Contact.
 
+## Preview
+
+[![Website preview](https://image.thum.io/get/width/1200/https://libinguo.vercel.app/)](https://libinguo.vercel.app/)
+
 ## Tech stack
 
 | Layer    | Stack                          |
