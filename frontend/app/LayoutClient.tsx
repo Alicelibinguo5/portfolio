@@ -9,7 +9,7 @@ const navLinks = [
   { href: '/', label: 'Home' },
   { href: '/projects', label: 'Projects' },
   { href: '/blog', label: 'Blog' },
-  { href: '/about', label: 'About' },
+  { href: '/about', label: 'About & Resume' },
   { href: '/contact', label: 'Contact' },
 ]
 
@@ -28,6 +28,12 @@ export function LayoutClient({ children }: { children: React.ReactNode }) {
           </Link>
 
           <nav className="hidden md:flex items-center gap-8">
+            <Link
+              href="/about"
+              className="nav-link text-sm font-medium text-forest/80 hover:text-sage border border-stone/50 hover:border-sage/50 px-3 py-1.5 rounded-full transition-colors"
+            >
+              Download resume
+            </Link>
             {navLinks.map(({ href, label }) => {
               const isActive = href === '/' ? pathname === '/' : pathname.startsWith(href)
               return (
@@ -82,8 +88,14 @@ export function LayoutClient({ children }: { children: React.ReactNode }) {
       </main>
 
       <footer className="border-t border-stone/60 py-8 md:py-12">
-        <div className="container-app text-sm text-forest/60 font-medium">
-          © {new Date().getFullYear()} Libin Guo
+        <div className="container-app flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-forest/60 font-medium">
+          <span>© {new Date().getFullYear()} Libin Guo</span>
+          <nav className="flex items-center gap-6" aria-label="Footer links">
+            <Link href="/about" className="hover:text-sage transition-colors">Resume</Link>
+            <Link href="/contact" className="hover:text-sage transition-colors">Contact</Link>
+            <a href="https://www.linkedin.com/in/libinguo/" target="_blank" rel="noreferrer" className="hover:text-sage transition-colors">LinkedIn</a>
+            <a href="https://github.com/Alicelibinguo5" target="_blank" rel="noreferrer" className="hover:text-sage transition-colors">GitHub</a>
+          </nav>
         </div>
       </footer>
     </div>

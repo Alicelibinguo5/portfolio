@@ -274,6 +274,16 @@ export default function Projects() {
                       Read Case Study →
                     </Link>
                   )}
+                  {r.full_name === SECOND_FULL_NAME && (
+                    <Link href="/projects/ads-compaign-metric" className="text-sage hover:text-terracotta font-medium text-sm transition-colors">
+                      Read Case Study →
+                    </Link>
+                  )}
+                  {(r.full_name === THIRD_FULL_NAME || r.name === THIRD_REPO_NAME) && (
+                    <Link href="/projects/landing-page-ab-test" className="text-sage hover:text-terracotta font-medium text-sm transition-colors">
+                      Read Case Study →
+                    </Link>
+                  )}
                 </div>
                 {tags.length > 0 && (
                   <div className="mt-4 flex flex-wrap gap-2">

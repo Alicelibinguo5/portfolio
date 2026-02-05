@@ -1,4 +1,27 @@
+import type { Metadata } from 'next'
 import { BlogPostClient } from './BlogPostClient'
+
+type BlogPostMeta = { title: string; summary: string }
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>
+}): Promise<Metadata> {
+  const { slug } = await params
+  try {
+    const base = process.env.NEXT_PUBLIC_API_URL || ''
+    const res = await fetch(`${base}/api/blog/${slug}`)
+    if (!res.ok) return { title: 'Blog Post' }
+    const post: BlogPostMeta = await res.json()
+    return {
+      title: post.title,
+      description: post.summary,
+    }
+  } catch {
+    return { title: 'Blog Post' }
+  }
+}
 
 export async function generateStaticParams() {
   try {

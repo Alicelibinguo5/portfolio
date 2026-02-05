@@ -4,10 +4,19 @@ import { useState } from 'react'
 import { Linkedin, Github, Send } from 'lucide-react'
 import { API_URL } from '@/lib/api'
 
+const INTENT_OPTIONS = [
+  { value: '', label: "I'm reaching out about…" },
+  { value: 'job', label: 'Job opportunity' },
+  { value: 'consulting', label: 'Consulting / contract work' },
+  { value: 'speaking', label: 'Speaking / events' },
+  { value: 'other', label: 'Other' },
+]
+
 export default function Contact() {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [subject, setSubject] = useState('')
+  const [intent, setIntent] = useState('')
   const [message, setMessage] = useState('')
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle')
   const [error, setError] = useState<string | null>(null)
@@ -20,11 +29,11 @@ export default function Contact() {
       const res = await fetch(`${API_URL}/api/contact/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, subject, message }),
+        body: JSON.stringify({ name, email, subject, message, intent: intent || undefined }),
       })
       if (!res.ok) throw new Error(`Failed: ${res.status}`)
       setStatus('success')
-      setName(''); setEmail(''); setSubject(''); setMessage('')
+      setName(''); setEmail(''); setSubject(''); setIntent(''); setMessage('')
     } catch (e: unknown) {
       setStatus('error')
       setError(e instanceof Error ? e.message : 'Error')
@@ -89,6 +98,21 @@ export default function Contact() {
             onChange={(e) => setEmail(e.target.value)}
             required
           />
+        </div>
+        <div>
+          <label htmlFor="intent" className="block text-sm font-medium text-forest mb-2">Reaching out about</label>
+          <select
+            id="intent"
+            className="input-botanical-underline w-full bg-transparent"
+            value={intent}
+            onChange={(e) => setIntent(e.target.value)}
+          >
+            {INTENT_OPTIONS.map((opt) => (
+              <option key={opt.value || 'placeholder'} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
         </div>
         <div>
           <label htmlFor="subject" className="block text-sm font-medium text-forest mb-2">Subject</label>

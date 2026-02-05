@@ -1,10 +1,18 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Linkedin, Github, Mail, ArrowRight } from 'lucide-react'
+import { Linkedin, Github, Mail, Download, MessageCircle } from 'lucide-react'
 
 const linkedinUrl = process.env.NEXT_PUBLIC_LINKEDIN_URL || 'https://www.linkedin.com/in/libinguo/'
 const githubUrl = 'https://github.com/Alicelibinguo5'
 const email = 'libinguo89@gmail.com'
+
+export const metadata: Metadata = {
+  title: 'Home',
+  description:
+    'Libin Guo — full-stack data engineer. Data platforms, pipelines, and AI/agent-driven systems. Apple, JPMorgan, healthcare. Open to roles and consulting.',
+}
+
 export default function Home() {
   return (
     <section className="space-y-20 md:space-y-32">
@@ -34,10 +42,42 @@ export default function Home() {
 
       <div className="vine-divider" aria-hidden="true" />
 
+      <div className="animate-fade-up [animation-delay:100ms]">
+        <h2 className="font-display text-2xl font-semibold text-forest mb-6">What I do</h2>
+        <ul className="grid sm:grid-cols-2 gap-4 text-forest/80 text-lg max-w-3xl">
+          <li className="flex gap-3">
+            <span className="text-sage shrink-0">—</span>
+            <span>Data platform design and implementation</span>
+          </li>
+          <li className="flex gap-3">
+            <span className="text-sage shrink-0">—</span>
+            <span>Real-time and batch pipeline development</span>
+          </li>
+          <li className="flex gap-3">
+            <span className="text-sage shrink-0">—</span>
+            <span>AI/agent system prototyping and integration</span>
+          </li>
+          <li className="flex gap-3">
+            <span className="text-sage shrink-0">—</span>
+            <span>Consulting and contract work</span>
+          </li>
+        </ul>
+      </div>
+
+      <div className="vine-divider" aria-hidden="true" />
+
       <div className="grid md:grid-cols-2 gap-12 md:gap-16">
         <article className="card group animate-fade-up [animation-delay:150ms]">
-          <h2 className="font-display text-xl font-semibold text-forest mb-4">Connect</h2>
-          <div className="flex items-center gap-4">
+          <h2 className="font-display text-xl font-semibold text-forest mb-4">For recruiters</h2>
+          <p className="text-forest/80 mb-4">Download my resume or connect on LinkedIn.</p>
+          <Link
+            href="/about"
+            className="btn-primary inline-flex items-center gap-2 text-sm h-10 px-6"
+          >
+            <Download strokeWidth={1.5} size={18} />
+            Download resume
+          </Link>
+          <div className="mt-4 flex items-center gap-4">
             {linkedinUrl && (
               <a
                 href={linkedinUrl}
@@ -70,19 +110,21 @@ export default function Home() {
             </a>
           </div>
           <p className="mt-4 text-sm text-forest/70">
-            Email: <a href={`mailto:${email}`} className="text-sage hover:text-terracotta transition-colors">{email}</a>
+            <a href={linkedinUrl} target="_blank" rel="noreferrer" className="text-sage hover:text-terracotta transition-colors">LinkedIn</a>
+            {' · '}
+            <a href={`mailto:${email}`} className="text-sage hover:text-terracotta transition-colors">{email}</a>
           </p>
         </article>
 
         <article className="card group md:translate-y-12 animate-fade-up [animation-delay:250ms]">
-          <h2 className="font-display text-xl font-semibold text-forest mb-4">Get in touch</h2>
-          <p className="text-forest/80 mb-4">Use the Contact page to send a message.</p>
+          <h2 className="font-display text-xl font-semibold text-forest mb-4">Discuss a project</h2>
+          <p className="text-forest/80 mb-4">Have a data platform, pipeline, or AI/agent project? Get in touch.</p>
           <Link
             href="/contact"
-            className="inline-flex items-center gap-2 text-sage hover:text-terracotta font-medium tracking-wide transition-colors duration-300 group-hover:gap-3"
+            className="btn-primary inline-flex items-center gap-2 text-sm h-10 px-6"
           >
-            Contact
-            <ArrowRight strokeWidth={1.5} size={18} className="transition-transform duration-300 group-hover:translate-x-1" />
+            <MessageCircle strokeWidth={1.5} size={18} />
+            Get in touch
           </Link>
         </article>
       </div>

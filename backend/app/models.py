@@ -17,6 +17,7 @@ class ContactMessage(BaseModel):
 	email: EmailStr
 	subject: str
 	message: str
+	intent: str | None = None  # e.g. job opportunity, consulting, speaking, other
 
 
 class BlogPost(BaseModel):
