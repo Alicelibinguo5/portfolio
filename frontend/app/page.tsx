@@ -16,10 +16,7 @@ export default function Home() {
           </h1>
           <div className="text-lg md:text-xl text-forest/80 max-w-2xl leading-relaxed space-y-4">
             <p>
-              I&apos;m a data platform engineer building scalable, production-grade data infrastructure that powers systems and decisions at scale. I currently work at Apple, and previously engineered data platforms in finance and healthcare at JPMorgan and an early-stage startup.
-            </p>
-            <p>
-              With 10 years across analytics and engineering, I bring strong data intuition and systems thinking to complex, real-world data challenges.
+              I&apos;m a full-stack data engineer focused on building production-grade data platforms, pipelines, and AI/agent-driven systems. At Apple and previously at JPMorgan and a healthcare startup, I&apos;ve designed scalable infrastructure that supports analytics, operational systems, and intelligent decision-making.
             </p>
           </div>
         </div>
