@@ -102,3 +102,13 @@
   background: linear-gradient(90deg, transparent, #E6E2DA, rgba(140, 154, 132, 0.3), #E6E2DA, transparent);
   opacity: 0.6;
 }
+
+/* Shimmer animation for food quote loader */
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}

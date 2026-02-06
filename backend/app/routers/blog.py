@@ -2,12 +2,13 @@ from __future__ import annotations
 
 import re
 from datetime import UTC
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Annotated
 from urllib.parse import urlparse
 
 import httpx
 from bs4 import BeautifulSoup
-from fastapi import APIRouter, HTTPException, Query, Request, Response
+from fastapi import APIRouter, HTTPException, Query, Request
+from fastapi.responses import JSONResponse
 from markdownify import markdownify as md
 from pydantic import BaseModel, HttpUrl
 from sqlalchemy import (
@@ -27,6 +28,7 @@ from sqlalchemy import (
 
 from app.config import get_settings
 from app.models import BlogPost, BlogPostCreate, BlogPostListItem, BlogPostUpdate
+from app.services import cache as cache_svc
 
 if TYPE_CHECKING:
     from sqlalchemy import Engine
@@ -113,13 +115,37 @@ def _slugify(title: str) -> str:
     return s
 
 
-@router.get("/", response_model=list[BlogPostListItem])
+def _user_cache_hint(request: Request | None) -> str | None:
+    """Hint for cache key when request looks like a signed-in user (Cookie or Authorization). Longer TTL used."""
+    if not request:
+        return None
+    if request.headers.get("Authorization") or request.headers.get("Cookie"):
+        return request.headers.get("Authorization") or request.headers.get("Cookie") or None
+    return None
+
+
+@router.get("/")
 def list_posts(
     request: Request,
-    response: Response,
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=50),
-) -> list[BlogPostListItem]:
+) -> Response:
+    # Redis cache: skip if conditional request (we'd need to return 304 from cache)
+    if not request.headers.get("if-none-match") and not request.headers.get("if-modified-since"):
+        user_hint = _user_cache_hint(request)
+        key = cache_svc.cache_key("blog:list", str(page), str(page_size), user_hint=user_hint)
+        ttl = 300 if user_hint else 60
+        cached = cache_svc.get_cached(key)
+        if cached is not None:
+            return JSONResponse(
+                content=cached["items"],
+                headers={
+                    "X-Total-Count": str(cached["total"]),
+                    "Content-Range": cached["content_range"],
+                    "Cache-Control": "public, max-age=60, stale-while-revalidate=120",
+                }
+            )
+
     engine = _get_engine()
     table = _get_table()
     offset = (page - 1) * page_size
@@ -144,43 +170,54 @@ def list_posts(
             for row in rows
         ]
     # Conditional caching: ETag/Last-Modified
-    if response is not None:
-        if max_created_at is not None:
-            try:
-                # Ensure aware datetime for consistent formatting
-                if getattr(max_created_at, "tzinfo", None) is None:
-                    max_created_at = max_created_at.replace(tzinfo=UTC)
-                # Format Last-Modified as RFC 1123
-                last_mod_http = max_created_at.strftime("%a, %d %b %Y %H:%M:%S GMT")
-            except Exception:
-                last_mod_http = ""
-            # timestamp may not be available on some backends; fallback to iso hash
-            try:
-                ts_int = int(max_created_at.timestamp())  # type: ignore[attr-defined]
-            except Exception:
-                ts_int = 0
-            etag = f'W/"{total}-{ts_int}"'
-            # Check If-None-Match / If-Modified-Since
-            inm = request.headers.get("if-none-match") if request is not None else None
-            ims = request.headers.get("if-modified-since") if request is not None else None
-            if inm == etag or (last_mod_http and ims == last_mod_http):
-                # Not modified
-                response.headers["ETag"] = etag
-                if last_mod_http:
-                    response.headers["Last-Modified"] = last_mod_http
-                response.status_code = 304
-                return []
-            response.headers["ETag"] = etag
-            if last_mod_http:
-                response.headers["Last-Modified"] = last_mod_http
+    headers = {}
+    if max_created_at is not None:
+        try:
+            # Ensure aware datetime for consistent formatting
+            if getattr(max_created_at, "tzinfo", None) is None:
+                max_created_at = max_created_at.replace(tzinfo=UTC)
+            # Format Last-Modified as RFC 1123
+            last_mod_http = max_created_at.strftime("%a, %d %b %Y %H:%M:%S GMT")
+        except Exception:
+            last_mod_http = ""
+        # timestamp may not be available on some backends; fallback to iso hash
+        try:
+            ts_int = int(max_created_at.timestamp())  # type: ignore[attr-defined]
+        except Exception:
+            ts_int = 0
+        etag = f'W/"{total}-{ts_int}"'
+        # Check If-None-Match / If-Modified-Since
+        inm = request.headers.get("if-none-match")
+        ims = request.headers.get("if-modified-since")
+        if inm == etag or (last_mod_http and ims == last_mod_http):
+            # Not modified
+            return JSONResponse(
+                content=[],
+                status_code=304,
+                headers={
+                    "ETag": etag,
+                    "Last-Modified": last_mod_http,
+                }
+            )
+        headers["ETag"] = etag
+        if last_mod_http:
+            headers["Last-Modified"] = last_mod_http
 
     # Pagination and caching headers
     end_index = offset + len(items) - 1 if items else offset
-    if response is not None:
-        response.headers["X-Total-Count"] = str(total)
-        response.headers["Content-Range"] = f"posts {offset}-{end_index}/{total}"
-        response.headers["Cache-Control"] = "public, max-age=60, stale-while-revalidate=120"
-    return items
+    headers["X-Total-Count"] = str(total)
+    headers["Content-Range"] = f"posts {offset}-{end_index}/{total}"
+    headers["Cache-Control"] = "public, max-age=60, stale-while-revalidate=120"
+
+    # Store in Redis for next time (signed-in user gets longer TTL)
+    if not request.headers.get("if-none-match") and not request.headers.get("if-modified-since"):
+        user_hint = _user_cache_hint(request)
+        key = cache_svc.cache_key("blog:list", str(page), str(page_size), user_hint=user_hint)
+        ttl = 300 if user_hint else 60
+        items_dict = [i.model_dump() for i in items]
+        cache_svc.set_cached(key, {"items": items_dict, "total": total, "content_range": headers["Content-Range"]}, ttl)
+
+    return JSONResponse(content=[i.model_dump() for i in items], headers=headers)
 
 
 @router.get("/backup", response_model=list[BlogPost])
@@ -309,7 +346,7 @@ def _fetch_and_parse_article(url: str) -> tuple[str, str, str]:
 
 
 @router.post("/import", response_model=BlogPost)
-def import_post(payload: BlogImportRequest) -> BlogPost:
+def import_post(payload: BlogImportRequest, request: Request) -> BlogPost:
     """Import a single post from a Medium or Substack article URL."""
     url_str = str(payload.url)
     try:
@@ -319,22 +356,31 @@ def import_post(payload: BlogImportRequest) -> BlogPost:
     except ValueError as e:
         raise HTTPException(status_code=422, detail=str(e))
 
-    return create_post(BlogPostCreate(title=title, summary=summary, content=content_md))
+    return create_post(BlogPostCreate(title=title, summary=summary, content=content_md), request=request)
 
 
-@router.get("/{slug}", response_model=BlogPost)
-def get_post(slug: str) -> BlogPost:
+@router.get("/{slug}")
+def get_post(slug: str, request: Request) -> BlogPost:
+    user_hint = _user_cache_hint(request) if request else None
+    key = cache_svc.cache_key("blog:post", slug, user_hint=user_hint)
+    ttl = 300 if user_hint else 60
+    cached = cache_svc.get_cached(key)
+    if cached is not None:
+        return BlogPost(**cached)
+
     engine = _get_engine()
     table = _get_table()
     with engine.connect() as conn:
         row = conn.execute(table.select().where(table.c.slug == slug)).mappings().first()
         if not row:
             raise HTTPException(status_code=404, detail="Post not found")
-        return BlogPost(**{**row, "created_at": row["created_at"].isoformat() if row["created_at"] else ""})
+        post = BlogPost(**{**row, "created_at": row["created_at"].isoformat() if row["created_at"] else ""})
+    cache_svc.set_cached(key, post.model_dump(), ttl)
+    return post
 
 
 @router.post("/", response_model=BlogPost)
-def create_post(payload: BlogPostCreate) -> BlogPost:
+def create_post(payload: BlogPostCreate, request: Request) -> BlogPost:
     engine = _get_engine()
     table = _get_table()
     slug = _slugify(payload.title)
@@ -348,11 +394,9 @@ def create_post(payload: BlogPostCreate) -> BlogPost:
             summary=payload.summary,
             content=payload.content,
         ))
-    return get_post(slug)
-
-
-@router.put("/{slug}", response_model=BlogPost)
-def update_post(slug: str, payload: BlogPostUpdate) -> BlogPost:
+    cache_svc.invalidate_pattern("blog:")
+    return get_post(slug, request)
+def update_post(slug: str, payload: BlogPostUpdate, request: Request | None = None) -> BlogPost:
     engine = _get_engine()
     table = _get_table()
     with engine.begin() as conn:
@@ -368,7 +412,8 @@ def update_post(slug: str, payload: BlogPostUpdate) -> BlogPost:
             update_values["content"] = payload.content
         if update_values:
             conn.execute(table.update().where(table.c.slug == slug).values(**update_values))
-    return get_post(slug)
+    cache_svc.invalidate_pattern("blog:")
+    return get_post(slug, request)
 
 
 @router.delete("/{slug}", response_model=dict)
@@ -380,6 +425,7 @@ def delete_post(slug: str) -> dict:
         if not exists:
             raise HTTPException(status_code=404, detail="Post not found")
         conn.execute(table.delete().where(table.c.slug == slug))
+    cache_svc.invalidate_pattern("blog:")
     return {"ok": True}
 
 

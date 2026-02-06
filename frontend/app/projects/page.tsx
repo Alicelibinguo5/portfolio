@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { ExternalLink, Star, GitFork, Globe } from 'lucide-react'
 import { API_URL } from '@/lib/api'
+import { FoodQuoteLoader } from '@/components/FoodQuoteLoader'
 
 type FeaturedApp = {
   title: string
@@ -141,6 +142,13 @@ export default function Projects() {
           <h1 className="font-display text-5xl md:text-6xl lg:text-7xl font-semibold text-forest">Projects</h1>
           <p className="mt-4 text-lg text-forest/70 max-w-xl">Live apps and open-source work.</p>
         </div>
+
+        {/* Food quote loader while GitHub repos load */}
+        <div className="max-w-3xl">
+          <FoodQuoteLoader />
+        </div>
+
+        {/* Skeleton cards below the quote */}
         <div className="grid md:grid-cols-2 gap-8">
           {Array.from({ length: 4 }).map((_, i) => (
             <div key={i} className="card animate-pulse">

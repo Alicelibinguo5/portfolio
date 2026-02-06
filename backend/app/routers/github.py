@@ -1,9 +1,11 @@
+import asyncio
 from typing import Any
 
 import httpx
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query, Request
 
 from app.config import get_settings
+from app.services import cache as cache_svc
 
 router = APIRouter()
 
@@ -21,12 +23,28 @@ def _headers() -> dict[str, str]:
     return headers
 
 
+def _user_cache_hint(request: Request | None) -> str | None:
+	if not request:
+		return None
+	if request.headers.get("Authorization") or request.headers.get("Cookie"):
+		return request.headers.get("Authorization") or request.headers.get("Cookie") or None
+	return None
+
+
 @router.get("/repos")
 async def list_repos(
+	request: Request,
 	username: str = Query(..., description="GitHub username"),
 	per_page: int = Query(12, ge=1, le=100),
 	page: int = Query(1, ge=1),
 ) -> list[dict[str, Any]]:
+	user_hint = _user_cache_hint(request)
+	key = cache_svc.cache_key("github:repos", username, str(per_page), str(page), user_hint=user_hint)
+	ttl = 600 if user_hint else 300
+	cached = await asyncio.to_thread(cache_svc.get_cached, key)
+	if cached is not None:
+		return cached
+
 	url = f"{GITHUB_API}/users/{username}/repos"
 	params = {"sort": "updated", "per_page": per_page, "page": page, "type": "owner"}
 	async with httpx.AsyncClient(timeout=15.0) as client:
@@ -52,6 +70,7 @@ async def list_repos(
 					"topics": r.get("topics", []),
 				}
 			)
+		await asyncio.to_thread(cache_svc.set_cached, key, result, ttl)
 		return result
 
 

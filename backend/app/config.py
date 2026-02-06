@@ -57,6 +57,9 @@ class Settings(BaseSettings):
     # GitHub
     github_token: str | None = None
 
+    # Redis (optional; when set, GET responses are cached for signed-in / better UX)
+    redis_url: str | None = None  # env: REDIS_URL
+
     @property
     def effective_aws_region(self) -> str | None:
         """AWS region (aws_region or aws_default_region)."""
