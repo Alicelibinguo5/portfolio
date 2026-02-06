@@ -35,7 +35,7 @@ export default function About() {
         <h2 className="font-display text-2xl font-semibold text-forest mb-4">Technologies</h2>
         <p className="text-forest/80 mb-4 text-lg">I work with a range of tools for data platforms, pipelines, and applications:</p>
         <ul className="flex flex-wrap gap-2 text-forest/80">
-          {['Python', 'FastAPI', 'SQL', 'Kafka', 'Apache Flink', 'Apache Iceberg', 'LangGraph', 'LangChain', 'React', 'Next.js', 'pandas', 'matplotlib', 'Superset', 'Docker'].map((tech) => (
+          {['Python', 'FastAPI', 'SQL', 'Apache Iceberg', 'LangGraph', 'LangChain', 'React', 'Next.js', 'pandas', 'Docker', 'Spark', 'DBT', 'Kubernetes', 'AWS', 'Airflow'].map((tech) => (
             <li key={tech}>
               <span className="px-3 py-1.5 rounded-full bg-soft-clay text-forest/80 text-sm">{tech}</span>
             </li>
