@@ -625,3 +625,151 @@ def test_import_from_substack_rss_preferred(client: TestClient) -> None:
         assert rss_route.call_count >= 1
 
 
+# ==================== DELETE POST TESTS ====================
+
+def test_delete_post_success(client: TestClient) -> None:
+    """Test successfully deleting an existing post."""
+    # Create a post
+    payload = {"title": "Delete Me", "summary": "Will be deleted", "content": "Content"}
+    create_response = client.post("/api/blog/", json=payload)
+    assert create_response.status_code == 200
+    slug = create_response.json()["slug"]
+
+    # Verify post exists
+    get_response = client.get(f"/api/blog/{slug}")
+    assert get_response.status_code == 200
+
+    # Delete the post
+    delete_response = client.delete(f"/api/blog/{slug}")
+    assert delete_response.status_code == 200
+    assert delete_response.json() == {"ok": True}
+
+    # Verify post is gone
+    missing = client.get(f"/api/blog/{slug}")
+    assert missing.status_code == 404
+    assert "Post not found" in missing.json()["detail"]
+
+
+def test_delete_nonexistent_post(client: TestClient) -> None:
+    """Test deleting a post that doesn't exist returns 404."""
+    response = client.delete("/api/blog/nonexistent-post")
+    assert response.status_code == 404
+    assert "Post not found" in response.json()["detail"]
+
+
+def test_delete_post_removes_from_list(client: TestClient) -> None:
+    """Test that deleting a post removes it from the list endpoint."""
+    # Create two posts
+    client.post("/api/blog/", json={"title": "Post A", "summary": "A", "content": "A content"})
+    client.post("/api/blog/", json={"title": "Post B", "summary": "B", "content": "B content"})
+
+    # Get initial count
+    list_response = client.get("/api/blog/?page_size=50")
+    initial_count = int(list_response.headers.get("X-Total-Count", "0"))
+    assert initial_count >= 2
+
+    # Delete one post
+    delete_response = client.delete("/api/blog/post-b")
+    assert delete_response.status_code == 200
+
+    # Verify count decreased
+    list_response_after = client.get("/api/blog/?page_size=50")
+    final_count = int(list_response_after.headers.get("X-Total-Count", "0"))
+    assert final_count == initial_count - 1
+
+    # Verify deleted post is not in the list
+    posts = list_response_after.json()
+    assert not any(p.get("slug") == "post-b" for p in posts)
+
+
+def test_delete_post_with_special_characters_slug(client: TestClient) -> None:
+    """Test deleting a post with special characters in the title."""
+    payload = {"title": "Test: Special! @#$ Characters", "summary": "test", "content": "content"}
+    create_response = client.post("/api/blog/", json=payload)
+    assert create_response.status_code == 200
+    slug = create_response.json()["slug"]
+
+    # Verify we can delete it
+    delete_response = client.delete(f"/api/blog/{slug}")
+    assert delete_response.status_code == 200
+
+    # Verify it's gone
+    missing = client.get(f"/api/blog/{slug}")
+    assert missing.status_code == 404
+
+
+def test_delete_post_twice_returns_404(client: TestClient) -> None:
+    """Test that deleting the same post twice returns 404 the second time."""
+    # Create a post
+    payload = {"title": "Delete Twice", "summary": "test", "content": "content"}
+    create_response = client.post("/api/blog/", json=payload)
+    slug = create_response.json()["slug"]
+
+    # First delete should succeed
+    delete1 = client.delete(f"/api/blog/{slug}")
+    assert delete1.status_code == 200
+
+    # Second delete should return 404
+    delete2 = client.delete(f"/api/blog/{slug}")
+    assert delete2.status_code == 404
+
+
+def test_delete_post_idempotency(client: TestClient) -> None:
+    """Test that delete is idempotent - deleting non-existent post always returns 404."""
+    # Try deleting a post that never existed
+    response1 = client.delete("/api/blog/never-existed")
+    assert response1.status_code == 404
+
+    # Try again - should still return 404 consistently
+    response2 = client.delete("/api/blog/never-existed")
+    assert response2.status_code == 404
+    assert response1.json() == response2.json()
+
+
+def test_delete_then_recreate_same_slug(client: TestClient) -> None:
+    """Test that we can delete and then recreate a post with the same slug."""
+    # Create a post
+    payload = {"title": "Recreate Test", "summary": "test", "content": "content"}
+    create_response = client.post("/api/blog/", json=payload)
+    slug = create_response.json()["slug"]
+    assert slug == "recreate-test"
+
+    # Delete it
+    delete_response = client.delete(f"/api/blog/{slug}")
+    assert delete_response.status_code == 200
+
+    # Verify it's gone
+    assert client.get(f"/api/blog/{slug}").status_code == 404
+
+    # Recreate with same title - should get the same slug
+    recreate_response = client.post("/api/blog/", json=payload)
+    assert recreate_response.status_code == 200
+    new_slug = recreate_response.json()["slug"]
+    assert new_slug == slug
+
+    # Verify the new post exists
+    get_response = client.get(f"/api/blog/{new_slug}")
+    assert get_response.status_code == 200
+    assert get_response.json()["title"] == "Recreate Test"
+
+
+def test_delete_all_posts_empty_list(client: TestClient) -> None:
+    """Test deleting all posts results in empty list."""
+    # Create multiple posts
+    for i in range(3):
+        client.post("/api/blog/", json={"title": f"Post {i}", "summary": f"sum{i}", "content": f"content{i}"})
+
+    # Delete all posts
+    list_response = client.get("/api/blog/?page_size=50")
+    posts = list_response.json()
+    for post in posts:
+        slug = post["slug"]
+        delete_response = client.delete(f"/api/blog/{slug}")
+        assert delete_response.status_code == 200
+
+    # Verify list is empty
+    final_list = client.get("/api/blog/?page_size=50")
+    assert final_list.json() == []
+    assert final_list.headers.get("X-Total-Count") == "0"
+
+

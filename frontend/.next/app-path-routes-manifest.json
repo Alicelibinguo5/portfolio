@@ -2,15 +2,15 @@
   "/_not-found/page": "/_not-found",
   "/sitemap.xml/route": "/sitemap.xml",
   "/robots.txt/route": "/robots.txt",
-  "/page": "/",
   "/about/page": "/about",
+  "/page": "/",
+  "/blog/new/page": "/blog/new",
   "/blog/page": "/blog",
   "/blog/[slug]/page": "/blog/[slug]",
   "/blog/[slug]/edit/page": "/blog/[slug]/edit",
-  "/blog/new/page": "/blog/new",
   "/contact/page": "/contact",
+  "/projects/doj-legal-researcher-agent/page": "/projects/doj-legal-researcher-agent",
   "/projects/landing-page-ab-test/page": "/projects/landing-page-ab-test",
-  "/projects/page": "/projects",
   "/projects/ads-compaign-metric/page": "/projects/ads-compaign-metric",
-  "/projects/doj-legal-researcher-agent/page": "/projects/doj-legal-researcher-agent"
+  "/projects/page": "/projects"
 }
