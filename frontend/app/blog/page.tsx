@@ -1,8 +1,8 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { Search, FilePlus, ArrowRight, Download } from 'lucide-react'
+import { FilePlus, ArrowRight, Download } from 'lucide-react'
 import { API_URL } from '@/lib/api'
 
 type BlogListItem = {
@@ -21,7 +21,6 @@ export default function Blog() {
   const [page, setPage] = useState(1)
   const [pageSize] = useState(10)
   const [total, setTotal] = useState(0)
-  const [query, setQuery] = useState('')
   const [importUrl, setImportUrl] = useState('')
   const [importStatus, setImportStatus] = useState<ImportStatus>('idle')
   const [importError, setImportError] = useState<string | null>(null)
@@ -63,14 +62,6 @@ export default function Blog() {
     return () => controller.abort()
   }, [page, pageSize])
 
-  const filteredPosts = useMemo(() => {
-    const q = query.trim().toLowerCase()
-    if (!q) return posts
-    return posts.filter(p =>
-      p.title.toLowerCase().includes(q) || p.summary.toLowerCase().includes(q)
-    )
-  }, [posts, query])
-
   async function handleImport() {
     const url = importUrl.trim()
     if (!url) return
@@ -100,7 +91,6 @@ export default function Blog() {
   }
 
   const isEmpty = !loading && posts.length === 0
-  const noSearchResults = !loading && posts.length > 0 && filteredPosts.length === 0
 
   if (error) {
     return (
@@ -170,18 +160,6 @@ export default function Blog() {
         </div>
       </div>
 
-      <div className="relative max-w-md">
-        <Search strokeWidth={1.5} size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-forest/50" />
-        <input
-          type="search"
-          placeholder="Search by title or summary..."
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          className="input-botanical pl-10 w-full"
-          aria-label="Search posts"
-        />
-      </div>
-
       {loading ? (
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {Array.from({ length: 6 }).map((_, i) => (
@@ -203,13 +181,11 @@ export default function Blog() {
                 Write your first post
               </Link>
             </div>
-          ) : noSearchResults ? (
-            <p className="text-forest/70">No posts match &quot;{query}&quot;. Try a different search.</p>
           ) : (
             <>
               <div className="vine-divider" aria-hidden="true" />
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-12 md:gap-16">
-              {filteredPosts.map((p, i) => (
+              {posts.map((p, i) => (
                 <article
                   key={p.slug}
                   className={`card group ${i % 3 === 1 ? 'md:translate-y-12' : ''}`}
@@ -236,7 +212,7 @@ export default function Blog() {
             </>
           )}
 
-          {!isEmpty && !noSearchResults && (
+          {!isEmpty && (
           <div className="flex items-center justify-between mt-16 text-sm text-forest/70">
             <p>Page {page} · {total} total</p>
             <div className="flex gap-4">

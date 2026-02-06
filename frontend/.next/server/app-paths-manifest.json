@@ -1,12 +1,16 @@
 {
   "/_not-found/page": "app/_not-found/page.js",
-  "/about/page": "app/about/page.js",
-  "/blog/new/page": "app/blog/new/page.js",
-  "/blog/page": "app/blog/page.js",
-  "/projects/page": "app/projects/page.js",
-  "/projects/doj-legal-researcher-agent/page": "app/projects/doj-legal-researcher-agent/page.js",
+  "/sitemap.xml/route": "app/sitemap.xml/route.js",
+  "/robots.txt/route": "app/robots.txt/route.js",
   "/page": "app/page.js",
+  "/about/page": "app/about/page.js",
+  "/blog/page": "app/blog/page.js",
   "/blog/[slug]/page": "app/blog/[slug]/page.js",
   "/blog/[slug]/edit/page": "app/blog/[slug]/edit/page.js",
-  "/contact/page": "app/contact/page.js"
+  "/blog/new/page": "app/blog/new/page.js",
+  "/contact/page": "app/contact/page.js",
+  "/projects/landing-page-ab-test/page": "app/projects/landing-page-ab-test/page.js",
+  "/projects/page": "app/projects/page.js",
+  "/projects/ads-compaign-metric/page": "app/projects/ads-compaign-metric/page.js",
+  "/projects/doj-legal-researcher-agent/page": "app/projects/doj-legal-researcher-agent/page.js"
 }

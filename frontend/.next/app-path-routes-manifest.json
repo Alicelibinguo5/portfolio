@@ -1,12 +1,16 @@
 {
   "/_not-found/page": "/_not-found",
-  "/about/page": "/about",
-  "/blog/new/page": "/blog/new",
-  "/blog/page": "/blog",
-  "/projects/page": "/projects",
-  "/projects/doj-legal-researcher-agent/page": "/projects/doj-legal-researcher-agent",
+  "/sitemap.xml/route": "/sitemap.xml",
+  "/robots.txt/route": "/robots.txt",
   "/page": "/",
+  "/about/page": "/about",
+  "/blog/page": "/blog",
   "/blog/[slug]/page": "/blog/[slug]",
   "/blog/[slug]/edit/page": "/blog/[slug]/edit",
-  "/contact/page": "/contact"
+  "/blog/new/page": "/blog/new",
+  "/contact/page": "/contact",
+  "/projects/landing-page-ab-test/page": "/projects/landing-page-ab-test",
+  "/projects/page": "/projects",
+  "/projects/ads-compaign-metric/page": "/projects/ads-compaign-metric",
+  "/projects/doj-legal-researcher-agent/page": "/projects/doj-legal-researcher-agent"
 }
