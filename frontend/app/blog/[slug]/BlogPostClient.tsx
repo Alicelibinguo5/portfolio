@@ -18,8 +18,13 @@ type BlogPost = {
   tags?: string[]
 }
 
-export function BlogPostClient({ slug }: { slug: string }) {
+type BlogPostClientProps = {
+  slugParams: Promise<{ slug: string }>
+}
+
+export function BlogPostClient({ slugParams }: BlogPostClientProps) {
   const router = useRouter()
+  const [slug, setSlug] = useState<string>('')
   const [post, setPost] = useState<BlogPost | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -31,6 +36,18 @@ export function BlogPostClient({ slug }: { slug: string }) {
     const words = post.content.trim().split(/\s+/).length
     const minutes = Math.max(1, Math.round(words / 200))
     return `${minutes} min read`
+  }, [post])
+
+  // Resolve slug from params
+  useEffect(() => {
+    slugParams.then((p) => setSlug(p.slug))
+  }, [slugParams])
+
+  // Update document title when post loads
+  useEffect(() => {
+    if (post?.title) {
+      document.title = `${post.title} | Libin Guo`
+    }
   }, [post])
 
   useEffect(() => {
