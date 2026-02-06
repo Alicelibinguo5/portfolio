@@ -3,8 +3,9 @@ from __future__ import annotations
 import re
 from datetime import UTC
 from typing import TYPE_CHECKING, Annotated
-from urllib.parse import urlparse
+from urllib.parse import urlparse, urljoin
 
+import feedparser
 import httpx
 from bs4 import BeautifulSoup
 from fastapi import APIRouter, HTTPException, Query, Request
@@ -265,8 +266,102 @@ class BlogImportRequest(BaseModel):
     url: HttpUrl
 
 
+def _fetch_from_substack_rss(url: str) -> tuple[str, str, str] | None:
+    """Try to fetch article from Substack RSS feed. Returns None if not found."""
+    parsed = urlparse(url)
+    # Extract the newsletter name from URL
+    # e.g., https://aliceguo.substack.com/p/iceberg-ahead -> aliceguo
+    # or https://substack.com/@aliceguo/p/iceberg-ahead -> aliceguo
+    host = (parsed.netloc or "").lower()
+
+    newsletter_name = None
+    if host.endswith(".substack.com"):
+        newsletter_name = host.replace(".substack.com", "")
+    elif "/@" in url:
+        match = re.search(r'/@([^/]+)', url)
+        if match:
+            newsletter_name = match.group(1)
+
+    if not newsletter_name:
+        return None
+    # Try both formats: newsletter.substack.com/feed and substack.com/@newsletter/feed
+    rss_urls = [
+        f"https://{newsletter_name}.substack.com/feed",
+        f"https://substack.com/@{newsletter_name}/feed",
+    ]
+
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36",
+    }
+
+    with httpx.Client(follow_redirects=True, timeout=10.0) as client:
+        for rss_url in rss_urls:
+            try:
+                resp = client.get(rss_url, headers=headers)
+                if resp.status_code != 200:
+                    continue
+                feed = feedparser.parse(resp.text)
+
+                # Find the matching entry by comparing link
+                for entry in feed.entries:
+                    entry_link = entry.get('link', '')
+                    if url in entry_link or entry_link in url:
+                        title = entry.get('title', '')
+                        # Get content from content or description
+                        content = ''
+                        if 'content' in entry and entry['content']:
+                            content = entry['content'][0].get('value', '')
+                        elif 'description' in entry:
+                            content = entry['description']
+                        elif 'summary' in entry:
+                            content = entry['summary']
+
+                        if not content:
+                            continue
+
+                        # Convert HTML content to markdown
+                        content_soup = BeautifulSoup(content, "html.parser")
+                        # Remove script/style tags
+                        for tag in content_soup.select("script, style"):
+                            tag.decompose()
+
+                        content_html = str(content_soup)
+                        content_md = md(
+                            content_html,
+                            heading_style="ATX",
+                            strip=["script", "style"],
+                            escape_asterisks=False,
+                            escape_underscores=False,
+                        )
+                        content_md = re.sub(r"\n{3,}", "\n\n", content_md).strip()
+
+                        if not content_md:
+                            continue
+
+                        # Generate summary from content
+                        plain = re.sub(r"\s+", " ", content_soup.get_text(separator=" ", strip=True))
+                        summary = (plain[:297] + "...") if len(plain) > 300 else plain
+                        if not summary:
+                            summary = title[:200]
+
+                        return (title, summary, content_md)
+            except Exception:
+                continue
+
+    return None
+
+
 def _fetch_and_parse_article(url: str) -> tuple[str, str, str]:
     """Fetch URL, parse HTML, return (title, summary, content_markdown). Raises ValueError on failure."""
+
+    # For Substack, try RSS feed first (better content quality, avoids JS rendering issues)
+    parsed = urlparse(url)
+    if "substack.com" in (parsed.netloc or "").lower():
+        rss_result = _fetch_from_substack_rss(url)
+        if rss_result:
+            return rss_result
+        # Fall through to HTML parsing if RSS fails
+
     headers = {
         "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
         "Accept": "text/html,application/xhtml+xml",
@@ -295,7 +390,6 @@ def _fetch_and_parse_article(url: str) -> tuple[str, str, str]:
 
     # Main content: platform-specific selectors then fallbacks
     article_body = None
-    parsed = urlparse(url)
     host = (parsed.netloc or "").lower()
 
     if "medium.com" in host:
@@ -306,10 +400,13 @@ def _fetch_and_parse_article(url: str) -> tuple[str, str, str]:
             or soup.select_one("[role='article']")
         )
     elif "substack.com" in host:
-        # Substack: post body in .available-content or article
+        # Substack: try more specific selectors for modern layout
         article_body = (
             soup.select_one(".available-content")
             or soup.select_one(".post-content")
+            or soup.select_one("div[data-testid=\"post-content\"]")
+            or soup.select_one(".body")
+            or soup.select_one(".post-body")
             or soup.find("article")
         )
 

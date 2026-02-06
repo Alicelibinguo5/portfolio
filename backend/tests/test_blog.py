@@ -581,3 +581,47 @@ def test_import_handles_special_characters(client: TestClient) -> None:
         assert "Restaurant" in data["title"]
 
 
+# Substack RSS feed sample (modern Substack uses JS rendering, RSS has actual content)
+SUBSTACK_RSS_XML = """<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Practical AI for Data</title>
+    <link>https://aliceguo.substack.com</link>
+    <item>
+      <title>Test Post from RSS</title>
+      <link>https://aliceguo.substack.com/p/test-post-from-rss</link>
+      <description><![CDATA[<p>This is actual content from the RSS feed.</p>]]></description>
+      <content:encoded><![CDATA[<p>This is actual content from the RSS feed.</p><h2>Key Points</h2><p>RSS feeds contain the full article content.</p>]]></content:encoded>
+    </item>
+  </channel>
+</rss>
+"""
+
+
+def test_import_from_substack_rss_preferred(client: TestClient) -> None:
+    """Test that Substack import prefers RSS feed over HTML parsing."""
+    article_url = "https://aliceguo.substack.com/p/test-post-from-rss"
+    rss_url = "https://aliceguo.substack.com/feed"
+
+    with respx.mock:
+        # Mock the RSS feed with actual content
+        rss_route = respx.get(rss_url).mock(return_value=httpx.Response(200, text=SUBSTACK_RSS_XML))
+
+        # Also mock the article URL (won't be called if RSS works, but respx requires it)
+        article_route = respx.get(article_url).mock(
+            return_value=httpx.Response(200, text="<html><body>Profile content</body></html>")
+        )
+
+        response = client.post("/api/blog/import", json={"url": article_url})
+        assert response.status_code == 200
+        data = response.json()
+        assert data["title"] == "Test Post from RSS"
+        # Should have content from RSS
+        assert "actual content from the RSS feed" in data["content"]
+        assert "Key Points" in data["content"]
+        # Should NOT have the profile content
+        assert "Profile content" not in data["content"]
+        # RSS route should have been called
+        assert rss_route.call_count >= 1
+
+
