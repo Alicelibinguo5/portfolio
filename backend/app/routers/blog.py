@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import re
 from datetime import UTC
 from typing import TYPE_CHECKING, Annotated
@@ -266,35 +267,60 @@ class BlogImportRequest(BaseModel):
     url: HttpUrl
 
 
-def _fetch_from_substack_rss(url: str) -> tuple[str, str, str] | None:
-    """Try to fetch article from Substack RSS feed. Returns None if not found."""
+def _substack_post_key_from_url(url: str) -> tuple[str | None, str | None]:
+    """Extract (newsletter_name, post_key) from Substack URL. post_key is slug or id for matching."""
     parsed = urlparse(url)
-    # Extract the newsletter name from URL
-    # e.g., https://aliceguo.substack.com/p/iceberg-ahead -> aliceguo
-    # or https://substack.com/@aliceguo/p/iceberg-ahead -> aliceguo
     host = (parsed.netloc or "").lower()
+    path = (parsed.path or "").strip("/")
 
     newsletter_name = None
     if host.endswith(".substack.com"):
-        newsletter_name = host.replace(".substack.com", "")
-    elif "/@" in url:
-        match = re.search(r'/@([^/]+)', url)
+        newsletter_name = host.split(".substack.com")[0].split(".")[-1]
+    if not newsletter_name and "/@" in url:
+        match = re.search(r"/@([^/]+)", url)
         if match:
             newsletter_name = match.group(1)
 
+    # Path like "p-176246933" or "p/slug" or "p/some-slug"
+    post_key = None
+    if path.startswith("p-"):
+        post_key = path[2:].strip() or path  # "176246933"
+    elif path.startswith("p/"):
+        post_key = path[2:].strip() or None
+    if not post_key and path:
+        post_key = path
+
+    return (newsletter_name, post_key)
+
+
+def _substack_post_keys_for_matching(url: str) -> list[str]:
+    """Return list of strings to match in RSS entry link/id (e.g. 176246933, p-176246933)."""
+    _, post_key = _substack_post_key_from_url(url)
+    if not post_key:
+        return []
+    keys = [post_key]
+    if post_key.isdigit() and "p-" in (urlparse(url).path or ""):
+        keys.append("p-" + post_key)
+    return keys
+
+
+def _fetch_from_substack_rss(url: str) -> tuple[str, str, str] | None:
+    """Try to fetch article from Substack RSS feed. Returns None if not found."""
+    newsletter_name, post_key = _substack_post_key_from_url(url)
     if not newsletter_name:
         return None
-    # Try both formats: newsletter.substack.com/feed and substack.com/@newsletter/feed
+
     rss_urls = [
         f"https://{newsletter_name}.substack.com/feed",
         f"https://substack.com/@{newsletter_name}/feed",
     ]
 
     headers = {
-        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36",
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "Accept": "application/rss+xml, application/xml, text/xml",
     }
 
-    with httpx.Client(follow_redirects=True, timeout=10.0) as client:
+    with httpx.Client(follow_redirects=True, timeout=15.0) as client:
         for rss_url in rss_urls:
             try:
                 resp = client.get(rss_url, headers=headers)
@@ -302,65 +328,112 @@ def _fetch_from_substack_rss(url: str) -> tuple[str, str, str] | None:
                     continue
                 feed = feedparser.parse(resp.text)
 
-                # Find the matching entry by comparing link
+                post_keys = _substack_post_keys_for_matching(url)
                 for entry in feed.entries:
-                    entry_link = entry.get('link', '')
-                    if url in entry_link or entry_link in url:
-                        title = entry.get('title', '')
-                        # Get content from content or description
-                        content = ''
-                        if 'content' in entry and entry['content']:
-                            content = entry['content'][0].get('value', '')
-                        elif 'description' in entry:
-                            content = entry['description']
-                        elif 'summary' in entry:
-                            content = entry['summary']
+                    entry_link = (entry.get("link") or "").strip()
+                    entry_id = (entry.get("id") or entry.get("guid") or "").strip()
+                    combined = f"{entry_link} {entry_id}"
 
-                        if not content:
-                            continue
+                    def link_matches() -> bool:
+                        if url in entry_link or entry_link in url:
+                            return True
+                        for key in post_keys:
+                            if key in entry_link or key in entry_id or key in combined:
+                                return True
+                        return False
 
-                        # Convert HTML content to markdown
-                        content_soup = BeautifulSoup(content, "html.parser")
-                        # Remove script/style tags
-                        for tag in content_soup.select("script, style"):
-                            tag.decompose()
+                    if not link_matches():
+                        continue
 
-                        content_html = str(content_soup)
-                        content_md = md(
-                            content_html,
-                            heading_style="ATX",
-                            strip=["script", "style"],
-                            escape_asterisks=False,
-                            escape_underscores=False,
-                        )
-                        content_md = re.sub(r"\n{3,}", "\n\n", content_md).strip()
+                    title = entry.get("title", "")
+                    content = ""
+                    if "content" in entry and entry["content"]:
+                        content = entry["content"][0].get("value", "")
+                    elif "description" in entry:
+                        content = entry["description"]
+                    elif "summary" in entry:
+                        content = entry["summary"]
 
-                        if not content_md:
-                            continue
+                    if not content:
+                        continue
 
-                        # Generate summary from content
-                        plain = re.sub(r"\s+", " ", content_soup.get_text(separator=" ", strip=True))
-                        summary = (plain[:297] + "...") if len(plain) > 300 else plain
-                        if not summary:
-                            summary = title[:200]
+                    content_soup = BeautifulSoup(content, "html.parser")
+                    for tag in content_soup.select("script, style"):
+                        tag.decompose()
+                    content_html = str(content_soup)
+                    content_md = md(
+                        content_html,
+                        heading_style="ATX",
+                        strip=["script", "style"],
+                        escape_asterisks=False,
+                        escape_underscores=False,
+                    )
+                    content_md = re.sub(r"\n{3,}", "\n\n", content_md).strip()
+                    if not content_md:
+                        continue
 
-                        return (title, summary, content_md)
+                    plain = re.sub(r"\s+", " ", content_soup.get_text(separator=" ", strip=True))
+                    summary = (plain[:297] + "...") if len(plain) > 300 else plain
+                    if not summary:
+                        summary = title[:200] if title else ""
+
+                    return (title, summary, content_md)
             except Exception:
                 continue
 
     return None
 
 
+def _extract_substack_from_next_data(html: str, url: str) -> tuple[str, str, str] | None:
+    """Try to extract post title and body from Substack __NEXT_DATA__ script. Returns None on failure."""
+    soup = BeautifulSoup(html, "html.parser")
+    script = soup.find("script", id="__NEXT_DATA__", type="application/json")
+    if not script or not script.string:
+        return None
+    try:
+        data = json.loads(script.string)
+    except (json.JSONDecodeError, TypeError):
+        return None
+    try:
+        props = data.get("props", {}).get("pageProps", {})
+        post = props.get("post") or props.get("publicPost") or props.get("postWithComments", {}).get("post")
+        if not post:
+            return None
+        title = (post.get("title") or "").strip()
+        body = post.get("body") or post.get("bodyHtml") or post.get("content")
+        if not title or not body:
+            return None
+        content_soup = BeautifulSoup(body, "html.parser")
+        for tag in content_soup.select("script, style"):
+            tag.decompose()
+        content_md = md(
+            str(content_soup),
+            heading_style="ATX",
+            strip=["script", "style"],
+            escape_asterisks=False,
+            escape_underscores=False,
+        )
+        content_md = re.sub(r"\n{3,}", "\n\n", content_md).strip()
+        if not content_md:
+            return None
+        plain = re.sub(r"\s+", " ", content_soup.get_text(separator=" ", strip=True))
+        summary = (plain[:297] + "...") if len(plain) > 300 else plain
+        if not summary:
+            summary = title[:200]
+        return (title, summary, content_md)
+    except (KeyError, TypeError, AttributeError):
+        return None
+
+
 def _fetch_and_parse_article(url: str) -> tuple[str, str, str]:
     """Fetch URL, parse HTML, return (title, summary, content_markdown). Raises ValueError on failure."""
-
-    # For Substack, try RSS feed first (better content quality, avoids JS rendering issues)
     parsed = urlparse(url)
-    if "substack.com" in (parsed.netloc or "").lower():
+    is_substack = "substack.com" in (parsed.netloc or "").lower()
+
+    if is_substack:
         rss_result = _fetch_from_substack_rss(url)
         if rss_result:
             return rss_result
-        # Fall through to HTML parsing if RSS fails
 
     headers = {
         "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
@@ -371,6 +444,11 @@ def _fetch_and_parse_article(url: str) -> tuple[str, str, str]:
         resp = client.get(url, headers=headers)
         resp.raise_for_status()
         html = resp.text
+
+    if is_substack:
+        next_data_result = _extract_substack_from_next_data(html, url)
+        if next_data_result:
+            return next_data_result
 
     soup = BeautifulSoup(html, "html.parser")
 
