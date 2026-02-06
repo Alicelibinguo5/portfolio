@@ -1,12 +1,11 @@
 import { BlogPostClient } from './BlogPostClient'
 
+// Generate static params for known posts at build time
+// New posts will be rendered on-demand (ISR)
 export async function generateStaticParams() {
-  // Fetch all published blog posts from the API at build time.
-  // This ensures dynamically imported posts (e.g., from Substack) are included in static export.
   const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
   try {
-    const res = await fetch(`${API_URL}/api/blog/?page_size=1000`, {
-      // Abort after 10 seconds to avoid hanging builds
+    const res = await fetch(`${API_URL}/api/blog/?page_size=50`, {
       signal: AbortSignal.timeout(10_000),
     })
     if (res.ok) {
@@ -28,8 +27,11 @@ export async function generateStaticParams() {
   return staticSlugs.map((slug) => ({ slug }))
 }
 
-// Disable static generation for metadata since we rely on client-side data fetching
-export const dynamic = 'force-static'
+// Enable ISR: pages are statically generated but can be revalidated
+// New/unknown slugs will be rendered on-demand (not 404)
+export const dynamic = 'force-dynamic'
+// Alternatively, use ISR with revalidation:
+// export const revalidate = 3600 // Revalidate every hour
 
 export default function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
   return <BlogPostClient slugParams={params} />
