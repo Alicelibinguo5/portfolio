@@ -4,6 +4,8 @@ from collections.abc import Iterator
 from pathlib import Path
 from urllib.parse import urlparse
 
+import httpx
+
 import pytest
 import respx
 from fastapi.testclient import TestClient
@@ -255,12 +257,12 @@ HTML_NO_TITLE = """<!DOCTYPE html>
 HTML_EMPTY_CONTENT = """<!DOCTYPE html>
 <html>
 <head>
+    <meta property="og:title" content="Empty Article" />
     <title>Empty Article</title>
 </head>
 <body>
     <article>
-        <h1>Empty Article</h1>
-        <!-- No actual content -->
+        <!-- No actual content besides comments -->
     </article>
 </body>
 </html>
@@ -295,8 +297,9 @@ def test_import_from_medium_variations(
     expected_content_prefix: str,
 ) -> None:
     """Test importing from Medium with various HTML structures."""
+    import httpx
     with respx.mock:
-        respx.get(url).mock(return_value=respx.Response(200, text=html))
+        respx.get(url).mock(return_value=httpx.Response(200, text=html))
         response = client.post("/api/blog/import", json={"url": url})
         assert response.status_code == 200
         data = response.json()
@@ -325,7 +328,7 @@ def test_import_from_substack_variations(
 ) -> None:
     """Test importing from Substack with various HTML structures."""
     with respx.mock:
-        respx.get(url).mock(return_value=respx.Response(200, text=html))
+        respx.get(url).mock(return_value=httpx.Response(200, text=html))
         response = client.post("/api/blog/import", json={"url": url})
         assert response.status_code == 200
         data = response.json()
@@ -337,7 +340,7 @@ def test_import_generic_article(client: TestClient) -> None:
     """Test importing a generic article without platform-specific structure."""
     url = "https://example.com/blog/generic-article"
     with respx.mock:
-        respx.get(url).mock(return_value=respx.Response(200, text=GENERIC_HTML))
+        respx.get(url).mock(return_value=httpx.Response(200, text=GENERIC_HTML))
         response = client.post("/api/blog/import", json={"url": url})
         assert response.status_code == 200
         data = response.json()
@@ -349,7 +352,7 @@ def test_import_error_http_failure(client: TestClient) -> None:
     """Test import fails when URL returns HTTP error."""
     url = "https://medium.com/@user/non-existent-article"
     with respx.mock:
-        respx.get(url).mock(return_value=respx.Response(404))
+        respx.get(url).mock(return_value=httpx.Response(404))
         response = client.post("/api/blog/import", json={"url": url})
         assert response.status_code == 422
         assert "Could not fetch URL" in response.json()["detail"]
@@ -359,7 +362,7 @@ def test_import_error_missing_title(client: TestClient) -> None:
     """Test import fails when article has no title."""
     url = "https://example.com/no-title"
     with respx.mock:
-        respx.get(url).mock(return_value=respx.Response(200, text=HTML_NO_TITLE))
+        respx.get(url).mock(return_value=httpx.Response(200, text=HTML_NO_TITLE))
         response = client.post("/api/blog/import", json={"url": url})
         assert response.status_code == 422
         assert "Could not extract title" in response.json()["detail"]
@@ -369,7 +372,7 @@ def test_import_error_empty_content(client: TestClient) -> None:
     """Test import fails when article content is empty after conversion."""
     url = "https://example.com/empty-content"
     with respx.mock:
-        respx.get(url).mock(return_value=respx.Response(200, text=HTML_EMPTY_CONTENT))
+        respx.get(url).mock(return_value=httpx.Response(200, text=HTML_EMPTY_CONTENT))
         response = client.post("/api/blog/import", json={"url": url})
         assert response.status_code == 422
         assert "empty" in response.json()["detail"].lower()
@@ -391,7 +394,7 @@ def test_import_duplicate_slug(client: TestClient) -> None:
 </html>
 """
     with respx.mock:
-        respx.get(url).mock(return_value=respx.Response(200, text=html))
+        respx.get(url).mock(return_value=httpx.Response(200, text=html))
         response = client.post("/api/blog/import", json={"url": url})
         assert response.status_code == 400
         assert "Slug already exists" in response.json()["detail"]
@@ -413,7 +416,7 @@ def test_import_summary_generation(client: TestClient) -> None:
 </html>
 """
     with respx.mock:
-        respx.get(url).mock(return_value=respx.Response(200, text=long_html))
+        respx.get(url).mock(return_value=httpx.Response(200, text=long_html))
         response = client.post("/api/blog/import", json={"url": url})
         assert response.status_code == 200
         data = response.json()
@@ -443,7 +446,7 @@ def test_import_removes_unwanted_elements(client: TestClient) -> None:
 </html>
 """
     with respx.mock:
-        respx.get(url).mock(return_value=respx.Response(200, text=html_with_clutter))
+        respx.get(url).mock(return_value=httpx.Response(200, text=html_with_clutter))
         response = client.post("/api/blog/import", json={"url": url})
         assert response.status_code == 200
         data = response.json()
@@ -471,9 +474,9 @@ def test_import_follows_redirects(client: TestClient) -> None:
     with respx.mock:
         # Set up redirect chain
         respx.get(redirect_url).mock(
-            return_value=respx.Response(301, headers={"Location": final_url})
+            return_value=httpx.Response(301, headers={"Location": final_url})
         )
-        respx.get(final_url).mock(return_value=respx.Response(200, text=final_html))
+        respx.get(final_url).mock(return_value=httpx.Response(200, text=final_html))
         response = client.post("/api/blog/import", json={"url": redirect_url})
         assert response.status_code == 200
         data = response.json()
@@ -492,7 +495,7 @@ def test_import_creates_readable_slug(client: TestClient) -> None:
 </html>
 """
     with respx.mock:
-        respx.get(url).mock(return_value=respx.Response(200, text=html))
+        respx.get(url).mock(return_value=httpx.Response(200, text=html))
         response = client.post("/api/blog/import", json={"url": url})
         assert response.status_code == 200
         data = response.json()
@@ -519,7 +522,7 @@ def test_import_preserves_markdown_headings(client: TestClient) -> None:
 </html>
 """
     with respx.mock:
-        respx.get(url).mock(return_value=respx.Response(200, text=html))
+        respx.get(url).mock(return_value=httpx.Response(200, text=html))
         response = client.post("/api/blog/import", json={"url": url})
         assert response.status_code == 200
         data = response.json()
@@ -540,7 +543,7 @@ def test_import_duplicate_slug_after_import(client: TestClient) -> None:
 </html>
 """
     with respx.mock:
-        respx.get(url).mock(return_value=respx.Response(200, text=html))
+        respx.get(url).mock(return_value=httpx.Response(200, text=html))
         import_response = client.post("/api/blog/import", json={"url": url})
         assert import_response.status_code == 200
         import_data = import_response.json()
@@ -569,7 +572,7 @@ def test_import_handles_special_characters(client: TestClient) -> None:
 </html>
 """
     with respx.mock:
-        respx.get(url).mock(return_value=respx.Response(200, text=html))
+        respx.get(url).mock(return_value=httpx.Response(200, text=html))
         response = client.post("/api/blog/import", json={"url": url})
         assert response.status_code == 200
         data = response.json()

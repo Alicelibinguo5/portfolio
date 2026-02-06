@@ -40,7 +40,9 @@ def format_ingredient_display(line: str) -> str:
     amount, unit, rest = m.group(1), m.group(2), (m.group(3) or "").strip()
     if not rest:
         return line
-    new_content = amount + unit + " " + rest
+    # Space between amount and unit only for Latin units (e.g. "1 tbsp"); keep "1汤匙" for Chinese
+    sep_before_unit = " " if (amount and not amount.endswith(" ") and unit.isascii()) else ""
+    new_content = amount + sep_before_unit + unit + " " + rest
     leading = line[: len(line) - len(line.lstrip())]
     trailing = line[len(line.rstrip()) :]
     return leading + new_content + trailing
