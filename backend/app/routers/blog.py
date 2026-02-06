@@ -1,10 +1,15 @@
 from __future__ import annotations
 
+import re
 from datetime import UTC
 from typing import TYPE_CHECKING
+from urllib.parse import urlparse
 
+import httpx
+from bs4 import BeautifulSoup
 from fastapi import APIRouter, HTTPException, Query, Request, Response
-from pydantic import BaseModel
+from markdownify import markdownify as md
+from pydantic import BaseModel, HttpUrl
 from sqlalchemy import (
     JSON,
     Boolean,
@@ -217,6 +222,104 @@ def restore_posts(payload: list[RestoreItem]) -> dict:
                 content=p.content,
             ))
     return {"ok": True, "count": len(payload)}
+
+
+class BlogImportRequest(BaseModel):
+    url: HttpUrl
+
+
+def _fetch_and_parse_article(url: str) -> tuple[str, str, str]:
+    """Fetch URL, parse HTML, return (title, summary, content_markdown). Raises ValueError on failure."""
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "Accept": "text/html,application/xhtml+xml",
+        "Accept-Language": "en-US,en;q=0.9",
+    }
+    with httpx.Client(follow_redirects=True, timeout=20.0) as client:
+        resp = client.get(url, headers=headers)
+        resp.raise_for_status()
+        html = resp.text
+
+    soup = BeautifulSoup(html, "html.parser")
+
+    # Title: og:title, then <title>, then first h1
+    title = ""
+    og_title = soup.find("meta", property="og:title")
+    if og_title and og_title.get("content"):
+        title = og_title["content"].strip()
+    if not title and soup.title and soup.title.string:
+        title = soup.title.string.strip()
+    if not title:
+        h1 = soup.find("h1")
+        if h1 and h1.get_text(strip=True):
+            title = h1.get_text(strip=True)
+    if not title:
+        raise ValueError("Could not extract title from page")
+
+    # Main content: platform-specific selectors then fallbacks
+    article_body = None
+    parsed = urlparse(url)
+    host = (parsed.netloc or "").lower()
+
+    if "medium.com" in host:
+        # Medium: article body is often in article section with specific structure
+        article_body = (
+            soup.find("article")
+            or soup.find("section", attrs={"data-field": "body"})
+            or soup.select_one("[role='article']")
+        )
+    elif "substack.com" in host:
+        # Substack: post body in .available-content or article
+        article_body = (
+            soup.select_one(".available-content")
+            or soup.select_one(".post-content")
+            or soup.find("article")
+        )
+
+    if not article_body:
+        article_body = soup.find("main") or soup.find(attrs={"role": "article"}) or soup.find("article")
+    if not article_body:
+        article_body = soup.find("body")
+
+    if not article_body:
+        raise ValueError("Could not find article content on page")
+
+    # Strip script/style and convert to markdown
+    for tag in article_body.select("script, style, nav, header, footer, .comments"):
+        tag.decompose()
+    content_html = str(article_body)
+    content_md = md(
+        content_html,
+        heading_style="ATX",
+        strip=["script", "style"],
+        escape_asterisks=False,
+        escape_underscores=False,
+    )
+    content_md = re.sub(r"\n{3,}", "\n\n", content_md).strip()
+    if not content_md:
+        raise ValueError("Article content was empty after conversion")
+
+    # Summary: first 300 chars of plain text
+    plain = re.sub(r"\s+", " ", BeautifulSoup(content_html, "html.parser").get_text(separator=" ", strip=True))
+    summary = (plain[:297] + "...") if len(plain) > 300 else plain
+    if not summary:
+        summary = title[:200]
+
+    return (title, summary, content_md)
+
+
+@router.post("/import", response_model=BlogPost)
+def import_post(payload: BlogImportRequest) -> BlogPost:
+    """Import a single post from a Medium or Substack article URL."""
+    url_str = str(payload.url)
+    try:
+        title, summary, content_md = _fetch_and_parse_article(url_str)
+    except httpx.HTTPError as e:
+        raise HTTPException(status_code=422, detail=f"Could not fetch URL: {e!s}")
+    except ValueError as e:
+        raise HTTPException(status_code=422, detail=str(e))
+
+    return create_post(BlogPostCreate(title=title, summary=summary, content=content_md))
 
 
 @router.get("/{slug}", response_model=BlogPost)

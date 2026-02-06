@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
-import { Search, FilePlus, ArrowRight } from 'lucide-react'
+import { Search, FilePlus, ArrowRight, Download } from 'lucide-react'
 import { API_URL } from '@/lib/api'
 
 type BlogListItem = {
@@ -12,6 +12,8 @@ type BlogListItem = {
   created_at: string
 }
 
+type ImportStatus = 'idle' | 'importing' | 'success' | 'error'
+
 export default function Blog() {
   const [posts, setPosts] = useState<BlogListItem[]>([])
   const [loading, setLoading] = useState(true)
@@ -20,6 +22,25 @@ export default function Blog() {
   const [pageSize] = useState(10)
   const [total, setTotal] = useState(0)
   const [query, setQuery] = useState('')
+  const [importUrl, setImportUrl] = useState('')
+  const [importStatus, setImportStatus] = useState<ImportStatus>('idle')
+  const [importError, setImportError] = useState<string | null>(null)
+  const [importedSlug, setImportedSlug] = useState<string | null>(null)
+
+  async function refetchPosts() {
+    try {
+      const res = await fetch(`${API_URL}/api/blog/?page=1&page_size=${pageSize}`)
+      if (res.ok) {
+        const data: BlogListItem[] = await res.json()
+        setPosts(data)
+        const totalHeader = res.headers.get('X-Total-Count')
+        if (totalHeader) setTotal(parseInt(totalHeader, 10))
+        setPage(1)
+      }
+    } catch {
+      // ignore
+    }
+  }
 
   useEffect(() => {
     const controller = new AbortController()
@@ -50,6 +71,34 @@ export default function Blog() {
     )
   }, [posts, query])
 
+  async function handleImport() {
+    const url = importUrl.trim()
+    if (!url) return
+    setImportStatus('importing')
+    setImportError(null)
+    setImportedSlug(null)
+    try {
+      const res = await fetch(`${API_URL}/api/blog/import`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url }),
+      })
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok) {
+        setImportError(data.detail || `Import failed: ${res.status}`)
+        setImportStatus('error')
+        return
+      }
+      setImportedSlug(data.slug ?? null)
+      setImportUrl('')
+      setImportStatus('success')
+      await refetchPosts()
+    } catch (e) {
+      setImportError(e instanceof Error ? e.message : 'Import failed')
+      setImportStatus('error')
+    }
+  }
+
   const isEmpty = !loading && posts.length === 0
   const noSearchResults = !loading && posts.length > 0 && filteredPosts.length === 0
 
@@ -69,15 +118,55 @@ export default function Blog() {
         <p className="mt-4 text-lg text-forest/70 max-w-xl">
           Share your thoughts with the world. Write in Markdown, add images, and publish in one click.
         </p>
-        <div className="mt-8 flex flex-col sm:flex-row sm:items-center gap-4">
-          <Link
-            href="/blog/new"
-            className="btn-primary inline-flex items-center gap-2 h-14 px-10 text-base"
-          >
-            <FilePlus strokeWidth={1.5} size={22} />
-            Write a new post
-          </Link>
-          <span className="text-sm text-forest/50 sm:ml-2">Posts are public and visible to everyone.</span>
+        <div className="mt-8 flex flex-col gap-4">
+          <div className="flex flex-wrap items-center gap-3">
+            <Link
+              href="/blog/new"
+              className="btn-primary inline-flex items-center gap-2 h-14 px-10 text-base"
+            >
+              <FilePlus strokeWidth={1.5} size={22} />
+              Write a new post
+            </Link>
+            <span className="text-forest/50">or</span>
+            <span className="text-sm text-forest/50 sm:mr-2">Import from Medium or Substack:</span>
+            <input
+              type="url"
+              placeholder="Paste article URL..."
+              value={importUrl}
+              onChange={(e) => { setImportUrl(e.target.value); setImportStatus('idle'); setImportError(null); }}
+              onKeyDown={(e) => e.key === 'Enter' && handleImport()}
+              className="input-botanical h-14 min-w-[220px] max-w-md flex-1"
+              aria-label="Article URL to import"
+              disabled={importStatus === 'importing'}
+            />
+            <button
+              type="button"
+              onClick={handleImport}
+              disabled={importStatus === 'importing' || !importUrl.trim()}
+              className="btn-secondary shrink-0 inline-flex items-center gap-2 h-14 px-6 disabled:opacity-50"
+            >
+              {importStatus === 'importing' ? (
+                'Importing…'
+              ) : (
+                <>
+                  <Download strokeWidth={1.5} size={20} />
+                  Import
+                </>
+              )}
+            </button>
+          </div>
+          <p className="text-sm text-forest/50">Posts are public and visible to everyone.</p>
+          {importStatus === 'success' && importedSlug && (
+            <p className="text-sage text-sm">
+              Imported successfully.{' '}
+              <Link href={`/blog/${importedSlug}`} className="font-medium underline hover:text-terracotta">View post</Link>
+              {' or '}
+              <Link href={`/blog/${importedSlug}/edit`} className="font-medium underline hover:text-terracotta">Edit</Link>
+            </p>
+          )}
+          {importStatus === 'error' && importError && (
+            <p className="text-terracotta text-sm">{importError}</p>
+          )}
         </div>
       </div>
 
