@@ -6,7 +6,7 @@ const basePath = process.env.NEXT_PUBLIC_BASE_PATH || ''
 export const metadata: Metadata = {
   title: 'About & Resume',
   description:
-    'Libin Guo — full-stack data engineer. Resume, background, and how I build data platforms, pipelines, and AI/agent systems. Apple, JPMorgan, healthcare.',
+    'Libin Guo — data engineer at Apple. Resume, background, and projects.',
 }
 
 export default function About() {
@@ -18,13 +18,13 @@ export default function About() {
         <h1 className="font-display text-5xl md:text-6xl lg:text-7xl font-semibold text-forest animate-fade-up">About</h1>
         <div className="text-forest/80 mt-6 space-y-4 text-lg max-w-2xl leading-relaxed">
           <p>
-            I&apos;m a full-stack data engineer focused on building production-grade data platforms, pipelines, and AI/agent-driven systems. I work at Apple and have previously designed scalable data infrastructure at JPMorgan and a healthcare startup.
+            I&apos;m a data engineer. I work at Apple, and before that I was at JPMorgan and a healthcare startup. I build data platforms and pipelines, and lately I&apos;ve been working with AI agents.
           </p>
           <p>
-            I help teams and organizations turn messy data into reliable, queryable systems—whether that&apos;s real-time streaming pipelines, analytics foundations, or AI/agent tooling that supports better decisions.
+            I enjoy solving hard problems—making messy data reliable and usable, building systems that actually work in production, and figuring out how to apply new tools thoughtfully.
           </p>
           <p>
-            I prefer pragmatic, iterative delivery: start with a working baseline, measure, then evolve. I&apos;m open to full-time roles and to consulting or contract work on data platform and AI/agent projects.
+            Currently I&apos;m interested in full-time roles and also consulting work on data platforms and AI/agent projects.
           </p>
         </div>
       </div>

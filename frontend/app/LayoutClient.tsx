@@ -28,12 +28,6 @@ export function LayoutClient({ children }: { children: React.ReactNode }) {
           </Link>
 
           <nav className="hidden md:flex items-center gap-8">
-            <Link
-              href="/about"
-              className="nav-link text-sm font-medium text-forest/80 hover:text-sage border border-stone/50 hover:border-sage/50 px-3 py-1.5 rounded-full transition-colors"
-            >
-              Download resume
-            </Link>
             {navLinks.map(({ href, label }) => {
               const isActive = href === '/' ? pathname === '/' : pathname.startsWith(href)
               return (
