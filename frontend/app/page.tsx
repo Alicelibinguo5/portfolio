@@ -59,7 +59,6 @@ export default function Home() {
           </li>
           <li className="flex gap-3">
             <span className="text-sage shrink-0">—</span>
-            <span>Consulting and contract work</span>
           </li>
         </ul>
       </div>
