@@ -43,7 +43,7 @@ export default function Home() {
       <div className="vine-divider" aria-hidden="true" />
 
       <div className="animate-fade-up [animation-delay:100ms]">
-        <h2 className="font-display text-2xl font-semibold text-forest mb-6">What I do</h2>
+        <h2 className="font-display text-2xl font-semibold text-forest mb-6">My service</h2>
         <ul className="grid sm:grid-cols-2 gap-4 text-forest/80 text-lg max-w-3xl">
           <li className="flex gap-3">
             <span className="text-sage shrink-0">—</span>
@@ -62,15 +62,11 @@ export default function Home() {
           <li className="flex gap-3">
             <span className="text-sage shrink-0">—</span>
             <span>
-              Add AI chatbots to SaaS websites to improve support, onboarding, and conversions.
+              Help small teams ship trustworthy AI agents with guardrails.
             </span>
           </li>
           <li className="flex gap-3">
             <span className="text-sage shrink-0">—</span>
-            <span>
-              Designed for small businesses that want agentic AI features without hiring a full-time
-              AI/Data team.
-            </span>
           </li>
         </ul>
       </div>
