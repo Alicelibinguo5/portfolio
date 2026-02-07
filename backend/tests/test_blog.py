@@ -208,6 +208,24 @@ SUBSTACK_HTML = """<!DOCTYPE html>
 </html>
 """
 
+# Medium HTML with code block and image
+MEDIUM_HTML_CODE_IMAGE = """<!DOCTYPE html>
+<html>
+<head>
+    <meta property="og:title" content="Medium Code and Images" />
+</head>
+<body>
+    <article>
+        <h1>Medium Code and Images</h1>
+        <p>Intro text before code.</p>
+        <pre><code class="language-python">print("hello-world")</code></pre>
+        <p>Image below:</p>
+        <img src="https://example.com/medium-image.png" alt="medium image" />
+    </article>
+</body>
+</html>
+"""
+
 # Substack HTML with alternative structure
 SUBSTACK_HTML_ALT = """<!DOCTYPE html>
 <html>
@@ -220,6 +238,25 @@ SUBSTACK_HTML_ALT = """<!DOCTYPE html>
         <p>Distributed systems are fundamental to modern computing.</p>
         <h2>CAP Theorem</h2>
         <p>Consistency, Availability, Partition tolerance.</p>
+    </div>
+</body>
+</html>
+"""
+
+# Substack HTML with code block and image
+SUBSTACK_HTML_CODE_IMAGE = """<!DOCTYPE html>
+<html>
+<head>
+    <meta property="og:title" content="Substack Code and Images" />
+    <title>Substack Code and Images - Newsletter</title>
+</head>
+<body>
+    <div class="available-content">
+        <h1>Substack Code and Images</h1>
+        <p>Intro text before code.</p>
+        <pre><code class="language-javascript">console.log("substack")</code></pre>
+        <p>Image below:</p>
+        <img src="https://example.com/substack-image.jpg" alt="substack image" />
     </div>
 </body>
 </html>
@@ -267,6 +304,16 @@ HTML_EMPTY_CONTENT = """<!DOCTYPE html>
 </body>
 </html>
 """
+
+
+def _assert_markdown_has_code_and_image(content: str, code_snippet: str, image_url: str) -> None:
+    assert code_snippet in content
+    has_fenced = "```" in content
+    has_indented = any(
+        line.startswith("    ") and code_snippet in line for line in content.splitlines()
+    )
+    assert has_fenced or has_indented
+    assert image_url in content
 
 
 @pytest.mark.parametrize("url,html,expected_title,expected_content_prefix", [
@@ -334,6 +381,36 @@ def test_import_from_substack_variations(
         data = response.json()
         assert data["title"] == expected_title
         assert data["content"].startswith(f"# {expected_title}")
+
+
+def test_import_from_medium_preserves_code_and_images(client: TestClient) -> None:
+    url = "https://medium.com/@user/code-and-images"
+    with respx.mock:
+        respx.get(url).mock(return_value=httpx.Response(200, text=MEDIUM_HTML_CODE_IMAGE))
+        response = client.post("/api/blog/import", json={"url": url})
+        assert response.status_code == 200
+        data = response.json()
+        _assert_markdown_has_code_and_image(
+            data["content"],
+            'print("hello-world")',
+            "https://example.com/medium-image.png",
+        )
+
+
+def test_import_from_substack_preserves_code_and_images(client: TestClient) -> None:
+    url = "https://example.substack.com/p/code-and-images"
+    with respx.mock:
+        respx.get("https://example.substack.com/feed").mock(return_value=httpx.Response(404))
+        respx.get("https://substack.com/@example/feed").mock(return_value=httpx.Response(404))
+        respx.get(url).mock(return_value=httpx.Response(200, text=SUBSTACK_HTML_CODE_IMAGE))
+        response = client.post("/api/blog/import", json={"url": url})
+        assert response.status_code == 200
+        data = response.json()
+        _assert_markdown_has_code_and_image(
+            data["content"],
+            'console.log("substack")',
+            "https://example.com/substack-image.jpg",
+        )
 
 
 def test_import_generic_article(client: TestClient) -> None:
@@ -771,5 +848,3 @@ def test_delete_all_posts_empty_list(client: TestClient) -> None:
     final_list = client.get("/api/blog/?page_size=50")
     assert final_list.json() == []
     assert final_list.headers.get("X-Total-Count") == "0"
-
-
