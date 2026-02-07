@@ -24,7 +24,7 @@ export default function Home() {
           </h1>
           <div className="text-lg md:text-xl text-forest/80 max-w-2xl leading-relaxed space-y-4">
             <p>
-              I&apos;m a full-stack data engineer focused on building production-grade data platforms, pipelines, and AI/agent-driven systems. At Apple and previously at JPMorgan and a healthcare startup, I&apos;ve designed scalable infrastructure that supports analytics, operational systems, and intelligent decision-making.
+              I&apos;m a senior full-stack data engineer focused on building ETL &amp; ELT pipelines, a unified lakehouse, and in-house data agents (datalake, Snowflake-to-lakehouse migration agent). At Apple and previously at JPMorgan and a healthcare startup, I&apos;ve designed scalable infrastructure that supports analytics, operational systems, and intelligent decision-making.
             </p>
           </div>
         </div>
@@ -47,18 +47,30 @@ export default function Home() {
         <ul className="grid sm:grid-cols-2 gap-4 text-forest/80 text-lg max-w-3xl">
           <li className="flex gap-3">
             <span className="text-sage shrink-0">—</span>
-            <span>Data platform design and implementation</span>
+            <span>
+              Build in-house AI agents that automate workflows from weeks to minutes (see Moriarty
+              AI app).
+            </span>
           </li>
           <li className="flex gap-3">
             <span className="text-sage shrink-0">—</span>
-            <span>Real-time and batch pipeline development</span>
+            <span>
+              Launch data service products: unified lakehouse, ETL/ELT pipelines, and decision
+              dashboards.
+            </span>
           </li>
           <li className="flex gap-3">
             <span className="text-sage shrink-0">—</span>
-            <span>AI/agent system prototyping and integration</span>
+            <span>
+              Add AI chatbots to SaaS websites to improve support, onboarding, and conversions.
+            </span>
           </li>
           <li className="flex gap-3">
             <span className="text-sage shrink-0">—</span>
+            <span>
+              Designed for small businesses that want agentic AI features without hiring a full-time
+              AI/Data team.
+            </span>
           </li>
         </ul>
       </div>
