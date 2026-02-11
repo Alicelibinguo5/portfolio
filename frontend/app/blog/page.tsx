@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { FilePlus, ArrowRight, Download } from 'lucide-react'
+import { FilePlus, ArrowRight } from 'lucide-react'
 import { API_URL } from '@/lib/api'
 
 type BlogListItem = {
@@ -12,8 +12,6 @@ type BlogListItem = {
   created_at: string
 }
 
-type ImportStatus = 'idle' | 'importing' | 'success' | 'error'
-
 export default function Blog() {
   const [posts, setPosts] = useState<BlogListItem[]>([])
   const [loading, setLoading] = useState(true)
@@ -21,25 +19,6 @@ export default function Blog() {
   const [page, setPage] = useState(1)
   const [pageSize] = useState(10)
   const [total, setTotal] = useState(0)
-  const [importUrl, setImportUrl] = useState('')
-  const [importStatus, setImportStatus] = useState<ImportStatus>('idle')
-  const [importError, setImportError] = useState<string | null>(null)
-  const [importedSlug, setImportedSlug] = useState<string | null>(null)
-
-  async function refetchPosts() {
-    try {
-      const res = await fetch(`${API_URL}/api/blog/?page=1&page_size=${pageSize}`)
-      if (res.ok) {
-        const data: BlogListItem[] = await res.json()
-        setPosts(data)
-        const totalHeader = res.headers.get('X-Total-Count')
-        if (totalHeader) setTotal(parseInt(totalHeader, 10))
-        setPage(1)
-      }
-    } catch {
-      // ignore
-    }
-  }
 
   useEffect(() => {
     const controller = new AbortController()
@@ -62,34 +41,6 @@ export default function Blog() {
     return () => controller.abort()
   }, [page, pageSize])
 
-  async function handleImport() {
-    const url = importUrl.trim()
-    if (!url) return
-    setImportStatus('importing')
-    setImportError(null)
-    setImportedSlug(null)
-    try {
-      const res = await fetch(`${API_URL}/api/blog/import`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url }),
-      })
-      const data = await res.json().catch(() => ({}))
-      if (!res.ok) {
-        setImportError(data.detail || `Import failed: ${res.status}`)
-        setImportStatus('error')
-        return
-      }
-      setImportedSlug(data.slug ?? null)
-      setImportUrl('')
-      setImportStatus('success')
-      await refetchPosts()
-    } catch (e) {
-      setImportError(e instanceof Error ? e.message : 'Import failed')
-      setImportStatus('error')
-    }
-  }
-
   const isEmpty = !loading && posts.length === 0
 
   if (error) {
@@ -104,7 +55,28 @@ export default function Blog() {
   return (
     <section className="space-y-12 md:space-y-20">
       <div className="animate-fade-up">
-        <h1 className="font-display text-5xl md:text-6xl lg:text-7xl font-semibold text-forest">Blog</h1>
+        <div className="flex flex-wrap items-center gap-4">
+          <h1 className="font-display text-5xl md:text-6xl lg:text-7xl font-semibold text-forest">Blog</h1>
+          <a
+            href="https://substack.com/@aliceguo/posts"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="Substack posts"
+            title="Substack"
+            className="inline-flex items-center gap-2 rounded-full bg-soft-clay/80 text-forest/80 hover:text-sage hover:bg-sage/10 transition-all duration-300 px-4 py-2"
+          >
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              aria-hidden="true"
+            >
+              <path d="M3 4.5h18v2.8H3V4.5zM3 9.7h18v2.8H3V9.7zM3 14.9h18v4.6l-9 0-9-4.6z" />
+            </svg>
+            <span className="text-sm font-medium">Substack</span>
+          </a>
+        </div>
         <p className="mt-4 text-lg text-forest/70 max-w-xl">
           Share your thoughts with the world. Write in Markdown, add images, and publish in one click.
         </p>
@@ -117,46 +89,8 @@ export default function Blog() {
               <FilePlus strokeWidth={1.5} size={22} />
               Write a new post
             </Link>
-            <span className="text-forest/50">or</span>
-            <span className="text-sm text-forest/50 sm:mr-2">Import from Medium or Substack:</span>
-            <input
-              type="url"
-              placeholder="Paste article URL..."
-              value={importUrl}
-              onChange={(e) => { setImportUrl(e.target.value); setImportStatus('idle'); setImportError(null); }}
-              onKeyDown={(e) => e.key === 'Enter' && handleImport()}
-              className="input-botanical h-14 min-w-[220px] max-w-md flex-1"
-              aria-label="Article URL to import"
-              disabled={importStatus === 'importing'}
-            />
-            <button
-              type="button"
-              onClick={handleImport}
-              disabled={importStatus === 'importing' || !importUrl.trim()}
-              className="btn-secondary shrink-0 inline-flex items-center gap-2 h-14 px-6 disabled:opacity-50"
-            >
-              {importStatus === 'importing' ? (
-                'Importing…'
-              ) : (
-                <>
-                  <Download strokeWidth={1.5} size={20} />
-                  Import
-                </>
-              )}
-            </button>
           </div>
           <p className="text-sm text-forest/50">Posts are public and visible to everyone.</p>
-          {importStatus === 'success' && importedSlug && (
-            <p className="text-sage text-sm">
-              Imported successfully.{' '}
-              <Link href={`/blog/${importedSlug}`} className="font-medium underline hover:text-terracotta">View post</Link>
-              {' or '}
-              <Link href={`/blog/${importedSlug}/edit`} className="font-medium underline hover:text-terracotta">Edit</Link>
-            </p>
-          )}
-          {importStatus === 'error' && importError && (
-            <p className="text-terracotta text-sm">{importError}</p>
-          )}
         </div>
       </div>
 
