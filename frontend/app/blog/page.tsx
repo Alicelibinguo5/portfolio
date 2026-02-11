@@ -57,25 +57,46 @@ export default function Blog() {
       <div className="animate-fade-up">
         <div className="flex flex-wrap items-center gap-4">
           <h1 className="font-display text-5xl md:text-6xl lg:text-7xl font-semibold text-forest">Blog</h1>
-          <a
-            href="https://substack.com/@aliceguo/posts"
-            target="_blank"
-            rel="noreferrer"
-            aria-label="Substack posts"
-            title="Substack"
-            className="inline-flex items-center gap-2 rounded-full bg-soft-clay/80 text-forest/80 hover:text-sage hover:bg-sage/10 transition-all duration-300 px-4 py-2"
-          >
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-              aria-hidden="true"
+          <div className="flex flex-wrap items-center gap-2">
+            <a
+              href="https://substack.com/@aliceguo/posts"
+              target="_blank"
+              rel="noreferrer"
+              aria-label="Substack posts"
+              title="Substack"
+              className="inline-flex items-center gap-2 rounded-full bg-soft-clay/80 text-forest/80 hover:text-sage hover:bg-sage/10 transition-all duration-300 px-4 py-2"
             >
-              <path d="M3 4.5h18v2.8H3V4.5zM3 9.7h18v2.8H3V9.7zM3 14.9h18v4.6l-9 0-9-4.6z" />
-            </svg>
-            <span className="text-sm font-medium">Substack</span>
-          </a>
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                aria-hidden="true"
+              >
+                <path d="M3 4.5h18v2.8H3V4.5zM3 9.7h18v2.8H3V9.7zM3 14.9h18v4.6l-9 0-9-4.6z" />
+              </svg>
+              <span className="text-sm font-medium">Substack</span>
+            </a>
+            <a
+              href="https://medium.com/@glbviolin/from-data-analyst-to-data-engineer-627c33cb4bfd"
+              target="_blank"
+              rel="noreferrer"
+              aria-label="Medium post"
+              title="Medium"
+              className="inline-flex items-center gap-2 rounded-full bg-soft-clay/80 text-forest/80 hover:text-sage hover:bg-sage/10 transition-all duration-300 px-4 py-2"
+            >
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                aria-hidden="true"
+              >
+                <path d="M4.5 7.2a1 1 0 0 1 1-1h13a1 1 0 0 1 1 1v9.6a1 1 0 0 1-1 1h-13a1 1 0 0 1-1-1V7.2zm3.2 8.1c1.7 0 3.1-1.7 3.1-3.8 0-2.1-1.4-3.8-3.1-3.8-1.7 0-3.1 1.7-3.1 3.8 0 2.1 1.4 3.8 3.1 3.8zm6.4 0c1.5 0 2.7-1.7 2.7-3.8 0-2.1-1.2-3.8-2.7-3.8s-2.7 1.7-2.7 3.8c0 2.1 1.2 3.8 2.7 3.8zm4.4-.4c.6 0 1.1-1.5 1.1-3.4 0-1.9-.5-3.4-1.1-3.4-.6 0-1.1 1.5-1.1 3.4 0 1.9.5 3.4 1.1 3.4z" />
+              </svg>
+              <span className="text-sm font-medium">Medium</span>
+            </a>
+          </div>
         </div>
         <p className="mt-4 text-lg text-forest/70 max-w-xl">
           Share your thoughts with the world. Write in Markdown, add images, and publish in one click.
