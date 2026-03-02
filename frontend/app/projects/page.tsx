@@ -22,7 +22,7 @@ const FEATURED_APPS: FeaturedApp[] = [
   {
     title: 'Moriarty AI: Fraudster Interview Trainer',
     intro: 'AI-powered simulation platform for developing fraud examination and investigative interview skills. Practice with realistic fraudster personas and receive structured feedback.',
-    liveUrl: 'https://moriarty-fraudster-ai-interview.vercel.app/',
+    liveUrl: 'https://moriartyai.co/',
     tags: ['AI', 'Interview Training', 'Fraud Examination'],
   },
 ]
@@ -136,10 +136,13 @@ export default function Projects() {
 
   if (loading) {
     return (
-      <section className="space-y-16 md:space-y-24">
-        <div>
+      <section className="space-y-12 md:space-y-16">
+        <div className="space-y-4">
+          <p className="eyebrow">Selected Work</p>
           <h1 className="font-display text-5xl md:text-6xl lg:text-7xl font-semibold text-forest">Projects</h1>
-          <p className="mt-4 text-lg text-forest/70 max-w-xl">Live apps and open-source work.</p>
+          <p className="text-lg text-forest/70 max-w-2xl">
+            Live apps and open-source work focused on measurable business outcomes.
+          </p>
         </div>
 
         <div className="grid md:grid-cols-2 gap-8">
@@ -157,7 +160,8 @@ export default function Projects() {
 
   if (error) {
     return (
-      <section className="space-y-8">
+      <section className="space-y-8 md:space-y-10">
+        <p className="eyebrow">Selected Work</p>
         <h1 className="font-display text-5xl md:text-6xl lg:text-7xl font-semibold text-forest">Projects</h1>
         <p className="text-terracotta">{error}</p>
       </section>
@@ -165,17 +169,40 @@ export default function Projects() {
   }
 
   return (
-    <section className="space-y-16 md:space-y-24">
-      <div className="animate-fade-up">
+    <section className="space-y-14 md:space-y-16">
+      <div className="animate-fade-up space-y-4">
+        <p className="eyebrow">Selected Work</p>
         <h1 className="font-display text-5xl md:text-6xl lg:text-7xl font-semibold text-forest">Projects</h1>
-        <p className="mt-4 text-lg text-forest/70 max-w-xl">
-          Live apps and open-source work. Click through to try them or view the code.
+        <p className="text-lg text-forest/70 max-w-2xl">
+          Productized experiments and production-ready systems. Try the live apps or review code
+          and case studies.
         </p>
       </div>
 
-      {/* Featured live apps */}
+      <div className="impact-strip animate-fade-up [animation-delay:100ms]">
+        <div>
+          <p className="impact-label">Work Type</p>
+          <p className="impact-value">Live Products + OSS</p>
+        </div>
+        <div>
+          <p className="impact-label">Primary Stack</p>
+          <p className="impact-value">Data + AI + Full Stack</p>
+        </div>
+        <div>
+          <p className="impact-label">Need Similar Build?</p>
+          <p className="impact-value">
+            <Link href="/contact" className="text-sage hover:text-terracotta transition-colors">
+              Let&apos;s talk
+            </Link>
+          </p>
+        </div>
+      </div>
+
       <div>
-        <h2 className="font-display text-2xl font-semibold text-forest mb-6">Featured apps</h2>
+        <div className="mb-6 space-y-2">
+          <p className="eyebrow">Live Products</p>
+          <h2 className="font-display text-3xl font-semibold text-forest">Featured apps</h2>
+        </div>
         <div className="grid md:grid-cols-2 gap-8 md:gap-10">
           {FEATURED_APPS.map((app, i) => (
             <article
@@ -224,9 +251,11 @@ export default function Projects() {
         </div>
       </div>
 
-      {/* GitHub repos */}
       <div>
-        <h2 className="font-display text-2xl font-semibold text-forest mb-6">More on GitHub</h2>
+        <div className="mb-6 space-y-2">
+          <p className="eyebrow">Open Source</p>
+          <h2 className="font-display text-3xl font-semibold text-forest">More on GitHub</h2>
+        </div>
         <div className="vine-divider" aria-hidden="true" />
         <div className="grid md:grid-cols-2 gap-10 md:gap-14 mt-10">
           {displayRepos.map((r, i) => {

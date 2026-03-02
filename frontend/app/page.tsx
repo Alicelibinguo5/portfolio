@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Linkedin, Github, Mail, Download, MessageCircle } from 'lucide-react'
+import { Linkedin, Github, Mail, Download, MessageCircle, ArrowRight, ExternalLink } from 'lucide-react'
 
 const linkedinUrl = process.env.NEXT_PUBLIC_LINKEDIN_URL || 'https://www.linkedin.com/in/libinguo/'
 const githubUrl = 'https://github.com/Alicelibinguo5'
@@ -15,125 +15,188 @@ export const metadata: Metadata = {
 
 export default function Home() {
   return (
-    <section className="space-y-20 md:space-y-32">
-      {/* Hero: typography protagonist, arch imagery */}
-      <div className="grid md:grid-cols-[1fr,auto] md:gap-16 lg:gap-20 items-center gap-10">
-        <div className="space-y-6 animate-fade-up">
-          <h1 className="font-display text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-semibold text-forest tracking-tight leading-[1.1]">
-            Hi, I&apos;m <span className="italic">Libin</span>.
-          </h1>
-          <div className="text-lg md:text-xl text-forest/80 max-w-2xl leading-relaxed space-y-4">
-            <p>
-              I&apos;m a senior full-stack data engineer focused on building ETL &amp; ELT pipelines, a unified lakehouse, and in-house data agents (datalake, Snowflake-to-lakehouse migration agent). At Apple and previously at JPMorgan and a healthcare startup, I&apos;ve designed scalable infrastructure that supports analytics, operational systems, and intelligent decision-making.
+    <section className="space-y-16 md:space-y-20">
+      <div className="grid lg:grid-cols-[1.15fr,0.85fr] gap-12 lg:gap-16 items-center">
+        <div className="space-y-8 animate-fade-up">
+          <p className="eyebrow">Data + AI Systems For High-Leverage Teams</p>
+          <div className="space-y-5">
+            <h1 className="font-display text-5xl sm:text-6xl md:text-7xl font-semibold text-forest tracking-tight leading-[1.05]">
+              Build data and AI products that create measurable business outcomes.
+            </h1>
+            <p className="text-lg md:text-xl text-forest/80 max-w-2xl leading-relaxed">
+              I design and ship production data platforms, lakehouse migrations, and in-house AI
+              agents so small teams can move from manual ops to reliable, decision-ready systems.
             </p>
           </div>
+          <div className="flex flex-wrap gap-3">
+            <Link href="/contact" className="btn-primary inline-flex items-center gap-2">
+              Start a project
+              <ArrowRight strokeWidth={1.5} size={18} />
+            </Link>
+            <Link href="/projects" className="btn-secondary inline-flex items-center gap-2">
+              View case studies
+              <ExternalLink strokeWidth={1.5} size={18} />
+            </Link>
+          </div>
+          <p className="text-sm text-forest/65">
+            Previously at Apple, JPMorgan, and healthcare startups.
+          </p>
         </div>
-        <div className="flex justify-center md:justify-end animate-fade-up [animation-delay:100ms]">
-          {/* Arch imagery: rounded-t-full creates organic arch shape */}
-          <Image
-            src="/me.png"
-            alt="Libin Guo"
-            width={280}
-            height={280}
-            className="w-52 h-52 sm:w-60 sm:h-60 md:w-72 md:h-72 rounded-t-[min(120px,50%)] rounded-b-[40px] object-cover object-top shadow-botanical-xl transition-all duration-700 ease-out hover:scale-[1.03] hover:shadow-botanical-lg"
-          />
+
+        <div className="relative animate-fade-up [animation-delay:100ms]">
+          <div className="hero-orb" aria-hidden="true" />
+          <article className="card relative">
+            <div className="flex items-start gap-5">
+              <Image
+                src="/me.png"
+                alt="Libin Guo"
+                width={160}
+                height={160}
+                className="w-24 h-24 sm:w-28 sm:h-28 rounded-3xl object-cover object-top shadow-botanical"
+              />
+              <div className="space-y-2">
+                <h2 className="font-display text-2xl font-semibold text-forest">Libin Guo</h2>
+                <p className="text-forest/75 text-sm sm:text-base">
+                  Senior full-stack data engineer focused on ETL/ELT pipelines, unified lakehouse
+                  architecture, and AI agent systems.
+                </p>
+              </div>
+            </div>
+            <div className="mt-6 pt-5 border-t border-stone/70 grid grid-cols-3 gap-4 text-center">
+              <div>
+                <p className="font-display text-2xl text-forest">10+</p>
+                <p className="text-xs uppercase tracking-[0.16em] text-forest/60">Years</p>
+              </div>
+              <div>
+                <p className="font-display text-2xl text-forest">3</p>
+                <p className="text-xs uppercase tracking-[0.16em] text-forest/60">Industries</p>
+              </div>
+              <div>
+                <p className="font-display text-2xl text-forest">End-to-end</p>
+                <p className="text-xs uppercase tracking-[0.16em] text-forest/60">Delivery</p>
+              </div>
+            </div>
+          </article>
         </div>
       </div>
 
-      <div className="vine-divider" aria-hidden="true" />
-
-      <div className="animate-fade-up [animation-delay:100ms]">
-        <h2 className="font-display text-2xl font-semibold text-forest mb-6">My service</h2>
-        <ul className="grid sm:grid-cols-2 gap-4 text-forest/80 text-lg max-w-3xl">
-          <li className="flex gap-3">
-            <span className="text-sage shrink-0">—</span>
-            <span>
-              Build in-house AI agents that automate workflows from weeks to minutes (see Moriarty
-              AI app).
-            </span>
-          </li>
-          <li className="flex gap-3">
-            <span className="text-sage shrink-0">—</span>
-            <span>
-              Launch data service products: unified lakehouse, ETL/ELT pipelines, and decision
-              dashboards.
-            </span>
-          </li>
-          <li className="flex gap-3">
-            <span className="text-sage shrink-0">—</span>
-            <span>
-              Help small teams ship trustworthy AI agents with guardrails.
-            </span>
-          </li>
-          <li className="flex gap-3">
-            <span className="text-sage shrink-0">—</span>
-          </li>
-        </ul>
+      <div className="impact-strip animate-fade-up [animation-delay:120ms]">
+        <div>
+          <p className="impact-label">Primary Focus</p>
+          <p className="impact-value">Outcomes over activity</p>
+        </div>
+        <div>
+          <p className="impact-label">Core Delivery</p>
+          <p className="impact-value">Lakehouse + AI agents</p>
+        </div>
+        <div>
+          <p className="impact-label">Sample Product</p>
+          <p className="impact-value">
+            <a
+              href="https://moriartyai.co/"
+              target="_blank"
+              rel="noreferrer"
+              className="text-sage hover:text-terracotta transition-colors"
+            >
+              Moriarty AI
+            </a>
+          </p>
+        </div>
       </div>
 
-      <div className="vine-divider" aria-hidden="true" />
+      <div className="grid lg:grid-cols-[1.1fr,0.9fr] gap-10">
+        <article className="card animate-fade-up [animation-delay:150ms]">
+          <p className="eyebrow mb-4">How I Help</p>
+          <h2 className="font-display text-3xl font-semibold text-forest mb-6">Services</h2>
+          <ul className="space-y-4 text-forest/80 text-lg leading-relaxed">
+            <li>
+              Design and implement ETL/ELT pipelines that unify fragmented sources into a clean
+              analytics layer.
+            </li>
+            <li>
+              Build in-house AI agents that reduce manual workflows from weeks to hours with
+              quality controls.
+            </li>
+            <li>
+              Launch decision products with dashboards and automated reporting to support product
+              and operations teams.
+            </li>
+          </ul>
+        </article>
 
-      <div className="grid md:grid-cols-2 gap-12 md:gap-16">
-        <article className="card group animate-fade-up [animation-delay:150ms]">
-          <h2 className="font-display text-xl font-semibold text-forest mb-4">For recruiters</h2>
-          <p className="text-forest/80 mb-4">Download my resume or connect on LinkedIn.</p>
-          <Link
-            href="/about"
-            className="btn-primary inline-flex items-center gap-2 text-sm h-10 px-6"
-          >
-            <Download strokeWidth={1.5} size={18} />
-            Download resume
-          </Link>
-          <div className="mt-4 flex items-center gap-4">
-            {linkedinUrl && (
+        <div className="grid gap-8">
+          <article className="card group animate-fade-up [animation-delay:200ms]">
+            <h2 className="font-display text-xl font-semibold text-forest mb-4">For recruiters</h2>
+            <p className="text-forest/80 mb-4">Download my resume or connect on LinkedIn.</p>
+            <Link
+              href="/about"
+              className="btn-primary inline-flex items-center gap-2 text-sm h-10 px-6"
+            >
+              <Download strokeWidth={1.5} size={18} />
+              Download resume
+            </Link>
+            <div className="mt-4 flex items-center gap-4">
+              {linkedinUrl && (
+                <a
+                  href={linkedinUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label="LinkedIn"
+                  title="LinkedIn"
+                  className="p-2 rounded-full bg-soft-clay/80 text-forest/80 hover:text-sage hover:bg-sage/10 transition-all duration-300"
+                >
+                  <Linkedin strokeWidth={1.5} size={22} />
+                </a>
+              )}
+              <a
+                href={githubUrl}
+                target="_blank"
+                rel="noreferrer"
+                aria-label="GitHub"
+                title="GitHub"
+                className="p-2 rounded-full bg-soft-clay/80 text-forest/80 hover:text-sage hover:bg-sage/10 transition-all duration-300"
+              >
+                <Github strokeWidth={1.5} size={22} />
+              </a>
+              <a
+                href={`mailto:${email}`}
+                aria-label="Email"
+                title="Email"
+                className="p-2 rounded-full bg-soft-clay/80 text-forest/80 hover:text-sage hover:bg-sage/10 transition-all duration-300"
+              >
+                <Mail strokeWidth={1.5} size={22} />
+              </a>
+            </div>
+            <p className="mt-4 text-sm text-forest/70">
               <a
                 href={linkedinUrl}
                 target="_blank"
                 rel="noreferrer"
-                aria-label="LinkedIn"
-                title="LinkedIn"
-                className="p-2 rounded-full bg-soft-clay/80 text-forest/80 hover:text-sage hover:bg-sage/10 transition-all duration-300"
+                className="text-sage hover:text-terracotta transition-colors"
               >
-                <Linkedin strokeWidth={1.5} size={22} />
+                LinkedIn
               </a>
-            )}
-            <a
-              href={githubUrl}
-              target="_blank"
-              rel="noreferrer"
-              aria-label="GitHub"
-              title="GitHub"
-              className="p-2 rounded-full bg-soft-clay/80 text-forest/80 hover:text-sage hover:bg-sage/10 transition-all duration-300"
-            >
-              <Github strokeWidth={1.5} size={22} />
-            </a>
-            <a
-              href={`mailto:${email}`}
-              aria-label="Email"
-              title="Email"
-              className="p-2 rounded-full bg-soft-clay/80 text-forest/80 hover:text-sage hover:bg-sage/10 transition-all duration-300"
-            >
-              <Mail strokeWidth={1.5} size={22} />
-            </a>
-          </div>
-          <p className="mt-4 text-sm text-forest/70">
-            <a href={linkedinUrl} target="_blank" rel="noreferrer" className="text-sage hover:text-terracotta transition-colors">LinkedIn</a>
-            {' · '}
-            <a href={`mailto:${email}`} className="text-sage hover:text-terracotta transition-colors">{email}</a>
-          </p>
-        </article>
+              {' · '}
+              <a href={`mailto:${email}`} className="text-sage hover:text-terracotta transition-colors">
+                {email}
+              </a>
+            </p>
+          </article>
 
-        <article className="card group md:translate-y-12 animate-fade-up [animation-delay:250ms]">
-          <h2 className="font-display text-xl font-semibold text-forest mb-4">Discuss a project</h2>
-          <p className="text-forest/80 mb-4">Have a data platform, pipeline, or AI/agent project? Get in touch.</p>
-          <Link
-            href="/contact"
-            className="btn-primary inline-flex items-center gap-2 text-sm h-10 px-6"
-          >
-            <MessageCircle strokeWidth={1.5} size={18} />
-            Get in touch
-          </Link>
-        </article>
+          <article className="card group animate-fade-up [animation-delay:250ms]">
+            <h2 className="font-display text-xl font-semibold text-forest mb-4">Discuss a project</h2>
+            <p className="text-forest/80 mb-4">
+              Have a data platform, pipeline, or AI/agent project? Let&apos;s scope it.
+            </p>
+            <Link
+              href="/contact"
+              className="btn-primary inline-flex items-center gap-2 text-sm h-10 px-6"
+            >
+              <MessageCircle strokeWidth={1.5} size={18} />
+              Get in touch
+            </Link>
+          </article>
+        </div>
       </div>
     </section>
   )

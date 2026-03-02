@@ -6,6 +6,9 @@
   body {
     @apply bg-alabaster text-forest font-sans antialiased;
     font-feature-settings: 'kern' 1, 'liga' 1;
+    background-image:
+      radial-gradient(circle at 10% -5%, rgba(140, 154, 132, 0.12), transparent 45%),
+      radial-gradient(circle at 90% 15%, rgba(177, 123, 95, 0.08), transparent 40%);
   }
 }
 
@@ -75,6 +78,23 @@
       transition-colors duration-300;
   }
 
+  .eyebrow {
+    @apply text-xs sm:text-sm font-semibold uppercase tracking-[0.2em] text-sage;
+  }
+
+  .impact-strip {
+    @apply rounded-3xl border border-stone/60 bg-white/85 shadow-botanical
+      p-6 sm:p-8 grid sm:grid-cols-3 gap-6;
+  }
+
+  .impact-label {
+    @apply text-[11px] sm:text-xs uppercase tracking-[0.16em] text-forest/55 mb-2;
+  }
+
+  .impact-value {
+    @apply text-base sm:text-lg text-forest font-medium leading-snug;
+  }
+
   .prose-botanical {
     @apply prose prose-lg max-w-none
       prose-headings:font-display prose-headings:text-forest prose-headings:font-semibold
@@ -101,6 +121,27 @@
   height: 1px;
   background: linear-gradient(90deg, transparent, #E6E2DA, rgba(140, 154, 132, 0.3), #E6E2DA, transparent);
   opacity: 0.6;
+}
+
+.hero-orb {
+  position: absolute;
+  width: 220px;
+  height: 220px;
+  right: -28px;
+  top: -26px;
+  border-radius: 999px;
+  background: radial-gradient(circle at 30% 30%, rgba(140, 154, 132, 0.25), rgba(140, 154, 132, 0));
+  filter: blur(1px);
+  pointer-events: none;
+}
+
+@media (max-width: 768px) {
+  .hero-orb {
+    width: 150px;
+    height: 150px;
+    right: -10px;
+    top: -10px;
+  }
 }
 
 /* Shimmer animation for food quote loader */
