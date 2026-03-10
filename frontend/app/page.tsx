@@ -10,7 +10,7 @@ const email = 'libinguo89@gmail.com'
 export const metadata: Metadata = {
   title: 'Home',
   description:
-    'Libin Guo — full-stack data engineer. Data platforms, pipelines, and AI/agent-driven systems. Apple, JPMorgan, healthcare. Open to roles and consulting.',
+    'Libin Guo — Senior Data Engineer. Spark, dbt, Snowflake, data lake, Airflow, and AI data agents. Apple, JPMorgan, healthcare. Open to senior roles and consulting.',
 }
 
 export default function Home() {
@@ -18,14 +18,15 @@ export default function Home() {
     <section className="space-y-16 md:space-y-20">
       <div className="grid lg:grid-cols-[1.15fr,0.85fr] gap-12 lg:gap-16 items-center">
         <div className="space-y-8 animate-fade-up">
-          <p className="eyebrow">Data + AI Systems For High-Leverage Teams</p>
+          <p className="eyebrow">Senior Data Engineer · Spark · dbt · Snowflake · Airflow</p>
           <div className="space-y-5">
             <h1 className="font-display text-5xl sm:text-6xl md:text-7xl font-semibold text-forest tracking-tight leading-[1.05]">
-              Build data and AI products that create measurable business outcomes.
+              Scalable data platforms and AI agents that drive decisions at scale.
             </h1>
             <p className="text-lg md:text-xl text-forest/80 max-w-2xl leading-relaxed">
-              I design and ship production data platforms, lakehouse migrations, and in-house AI
-              agents so small teams can move from manual ops to reliable, decision-ready systems.
+              I build production-grade data lakes, Snowflake lakehouses, dbt transformation layers,
+              and Airflow-orchestrated pipelines — with AI data agents on top to automate analysis
+              and surface insights automatically.
             </p>
           </div>
           <div className="flex flex-wrap gap-3">
@@ -57,8 +58,54 @@ export default function Home() {
               <div className="space-y-2">
                 <h2 className="font-display text-2xl font-semibold text-forest">Libin Guo</h2>
                 <p className="text-forest/75 text-sm sm:text-base">
-                  Senior full-stack data engineer focused on ETL/ELT pipelines, unified lakehouse
-                  architecture, and AI agent systems.
+                  Senior Data Engineer — Spark, dbt, Snowflake, data lake, Airflow, and AI data
+                  agent systems. 10+ years across tech, finance, and healthcare.
+                </p>
+                <div className="pt-2 flex items-center gap-3">
+                  {linkedinUrl && (
+                    <a
+                      href={linkedinUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      aria-label="LinkedIn"
+                      title="LinkedIn"
+                      className="p-2 rounded-full bg-soft-clay/80 text-forest/80 hover:text-sage hover:bg-sage/10 transition-all duration-300"
+                    >
+                      <Linkedin strokeWidth={1.5} size={18} />
+                    </a>
+                  )}
+                  <a
+                    href={githubUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label="GitHub"
+                    title="GitHub"
+                    className="p-2 rounded-full bg-soft-clay/80 text-forest/80 hover:text-sage hover:bg-sage/10 transition-all duration-300"
+                  >
+                    <Github strokeWidth={1.5} size={18} />
+                  </a>
+                  <a
+                    href={`mailto:${email}`}
+                    aria-label="Email"
+                    title="Email"
+                    className="p-2 rounded-full bg-soft-clay/80 text-forest/80 hover:text-sage hover:bg-sage/10 transition-all duration-300"
+                  >
+                    <Mail strokeWidth={1.5} size={18} />
+                  </a>
+                </div>
+                <p className="text-xs text-forest/70">
+                  <a
+                    href={linkedinUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-sage hover:text-terracotta transition-colors"
+                  >
+                    LinkedIn
+                  </a>
+                  {' · '}
+                  <a href={`mailto:${email}`} className="text-sage hover:text-terracotta transition-colors">
+                    {email}
+                  </a>
                 </p>
               </div>
             </div>
@@ -82,15 +129,15 @@ export default function Home() {
 
       <div className="impact-strip animate-fade-up [animation-delay:120ms]">
         <div>
-          <p className="impact-label">Primary Focus</p>
-          <p className="impact-value">Outcomes over activity</p>
+          <p className="impact-label">Core Stack</p>
+          <p className="impact-value">Spark · dbt · Snowflake · Airflow</p>
         </div>
         <div>
-          <p className="impact-label">Core Delivery</p>
-          <p className="impact-value">Lakehouse + AI agents</p>
+          <p className="impact-label">Platform</p>
+          <p className="impact-value">Data Lake / Lakehouse</p>
         </div>
         <div>
-          <p className="impact-label">Sample Product</p>
+          <p className="impact-label">AI Layer</p>
           <p className="impact-value">
             <a
               href="https://moriartyai.co/"
@@ -98,7 +145,7 @@ export default function Home() {
               rel="noreferrer"
               className="text-sage hover:text-terracotta transition-colors"
             >
-              Moriarty AI
+              Data Agents (Moriarty AI)
             </a>
           </p>
         </div>
@@ -110,16 +157,16 @@ export default function Home() {
           <h2 className="font-display text-3xl font-semibold text-forest mb-6">Services</h2>
           <ul className="space-y-4 text-forest/80 text-lg leading-relaxed">
             <li>
-              Design and implement ETL/ELT pipelines that unify fragmented sources into a clean
-              analytics layer.
+              Design and build scalable data lakes and Snowflake lakehouses with dbt transformation
+              layers and Spark-powered processing.
             </li>
             <li>
-              Build in-house AI agents that reduce manual workflows from weeks to hours with
-              quality controls.
+              Orchestrate end-to-end pipelines with Airflow — from ingestion to mart — with SLA
+              monitoring and alerting built in.
             </li>
             <li>
-              Launch decision products with dashboards and automated reporting to support product
-              and operations teams.
+              Deploy AI data agents that automate analysis, surface anomalies, and deliver
+              decision-ready insights without manual intervention.
             </li>
           </ul>
         </article>
@@ -127,7 +174,7 @@ export default function Home() {
         <div className="grid gap-8">
           <article className="card group animate-fade-up [animation-delay:200ms]">
             <h2 className="font-display text-xl font-semibold text-forest mb-4">For recruiters</h2>
-            <p className="text-forest/80 mb-4">Download my resume or connect on LinkedIn.</p>
+            <p className="text-forest/80 mb-4">Download my resume and review my background.</p>
             <Link
               href="/about"
               className="btn-primary inline-flex items-center gap-2 text-sm h-10 px-6"
@@ -135,52 +182,6 @@ export default function Home() {
               <Download strokeWidth={1.5} size={18} />
               Download resume
             </Link>
-            <div className="mt-4 flex items-center gap-4">
-              {linkedinUrl && (
-                <a
-                  href={linkedinUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  aria-label="LinkedIn"
-                  title="LinkedIn"
-                  className="p-2 rounded-full bg-soft-clay/80 text-forest/80 hover:text-sage hover:bg-sage/10 transition-all duration-300"
-                >
-                  <Linkedin strokeWidth={1.5} size={22} />
-                </a>
-              )}
-              <a
-                href={githubUrl}
-                target="_blank"
-                rel="noreferrer"
-                aria-label="GitHub"
-                title="GitHub"
-                className="p-2 rounded-full bg-soft-clay/80 text-forest/80 hover:text-sage hover:bg-sage/10 transition-all duration-300"
-              >
-                <Github strokeWidth={1.5} size={22} />
-              </a>
-              <a
-                href={`mailto:${email}`}
-                aria-label="Email"
-                title="Email"
-                className="p-2 rounded-full bg-soft-clay/80 text-forest/80 hover:text-sage hover:bg-sage/10 transition-all duration-300"
-              >
-                <Mail strokeWidth={1.5} size={22} />
-              </a>
-            </div>
-            <p className="mt-4 text-sm text-forest/70">
-              <a
-                href={linkedinUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="text-sage hover:text-terracotta transition-colors"
-              >
-                LinkedIn
-              </a>
-              {' · '}
-              <a href={`mailto:${email}`} className="text-sage hover:text-terracotta transition-colors">
-                {email}
-              </a>
-            </p>
           </article>
 
           <article className="card group animate-fade-up [animation-delay:250ms]">
