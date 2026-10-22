@@ -43,6 +43,9 @@ class Settings(BaseSettings):
     # Blog
     seed_blog: bool = False
 
+    # Admin (required for blog writes and uploads; writes disabled when unset)
+    admin_token: str | None = None  # env: ADMIN_TOKEN
+
     # Resume
     resume_file: str | None = None
 

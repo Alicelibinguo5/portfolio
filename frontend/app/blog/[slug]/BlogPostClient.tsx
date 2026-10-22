@@ -7,6 +7,7 @@ import { marked } from 'marked'
 import Prism from 'prismjs'
 import { ArrowLeft, Edit, Trash2 } from 'lucide-react'
 import { API_URL } from '@/lib/api'
+import { adminHeaders, useIsAdmin } from '@/lib/admin'
 import 'prismjs/themes/prism.css'
 
 type BlogPost = {
@@ -30,6 +31,7 @@ export function BlogPostClient({ slugParams }: BlogPostClientProps) {
   const [error, setError] = useState<string | null>(null)
   const [deleting, setDeleting] = useState(false)
   const [html, setHtml] = useState<string>('')
+  const isAdmin = useIsAdmin()
 
   const readingTime = useMemo(() => {
     if (!post?.content) return null
@@ -162,6 +164,7 @@ export function BlogPostClient({ slugParams }: BlogPostClientProps) {
 
       <div className="prose-botanical" dangerouslySetInnerHTML={{ __html: html }} />
 
+      {isAdmin && (
       <footer className="flex items-center gap-6 pt-8 border-t border-stone/50">
         <Link
           href={`/blog/${post.slug}/edit`}
@@ -176,7 +179,12 @@ export function BlogPostClient({ slugParams }: BlogPostClientProps) {
           onClick={async () => {
             if (!confirm('Delete this post? This cannot be undone.')) return
             setDeleting(true)
-            await fetch(`${API_URL}/api/blog/${post.slug}`, { method: 'DELETE' })
+            const res = await fetch(`${API_URL}/api/blog/${post.slug}`, { method: 'DELETE', headers: adminHeaders() })
+            setDeleting(false)
+            if (!res.ok) {
+              alert(`Delete failed: ${res.status}`)
+              return
+            }
             router.replace('/blog')
           }}
         >
@@ -184,6 +192,7 @@ export function BlogPostClient({ slugParams }: BlogPostClientProps) {
           Delete
         </button>
       </footer>
+      )}
     </article>
   )
 }

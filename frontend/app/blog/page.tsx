@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { FilePlus, ArrowRight } from 'lucide-react'
 import { API_URL } from '@/lib/api'
+import { useIsAdmin } from '@/lib/admin'
 
 type BlogListItem = {
   slug: string
@@ -19,6 +20,7 @@ export default function Blog() {
   const [page, setPage] = useState(1)
   const [pageSize] = useState(10)
   const [total, setTotal] = useState(0)
+  const isAdmin = useIsAdmin()
 
   useEffect(() => {
     const controller = new AbortController()
@@ -99,10 +101,10 @@ export default function Blog() {
           </div>
         </div>
         <p className="mt-4 text-lg text-forest/70 max-w-xl">
-          Share your thoughts with the world. Write in Markdown, add images, and publish in one click.
+          Notes on data platforms, Spark and Ray at scale, lakehouses, and data infrastructure for AI.
         </p>
-        <div className="mt-8 flex flex-col gap-4">
-          <div className="flex flex-wrap items-center gap-3">
+        {isAdmin && (
+          <div className="mt-8 flex flex-wrap items-center gap-3">
             <Link
               href="/blog/new"
               className="btn-primary inline-flex items-center gap-2 h-14 px-10 text-base"
@@ -111,8 +113,7 @@ export default function Blog() {
               Write a new post
             </Link>
           </div>
-          <p className="text-sm text-forest/50">Posts are public and visible to everyone.</p>
-        </div>
+        )}
       </div>
 
       {loading ? (
@@ -130,11 +131,13 @@ export default function Blog() {
           {isEmpty ? (
             <div className="card-muted text-center py-16 px-8 max-w-xl mx-auto">
               <p className="text-forest/80 text-lg">No posts yet.</p>
-              <p className="mt-2 text-forest/60 text-sm">Publish your first post and it will appear here.</p>
-              <Link href="/blog/new" className="btn-primary inline-flex items-center gap-2 h-12 mt-8">
-                <FilePlus strokeWidth={1.5} size={18} />
-                Write your first post
-              </Link>
+              <p className="mt-2 text-forest/60 text-sm">New writing is on the way — meanwhile, find me on Substack and Medium.</p>
+              {isAdmin && (
+                <Link href="/blog/new" className="btn-primary inline-flex items-center gap-2 h-12 mt-8">
+                  <FilePlus strokeWidth={1.5} size={18} />
+                  Write your first post
+                </Link>
+              )}
             </div>
           ) : (
             <>

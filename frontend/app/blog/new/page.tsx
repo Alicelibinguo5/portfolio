@@ -1,10 +1,12 @@
 'use client'
 
-import { FormEvent, useRef, useState } from 'react'
+import { FormEvent, useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { ArrowLeft, Bold, Italic, Code, Image } from 'lucide-react'
 import { API_URL } from '@/lib/api'
+import { adminHeaders, getAdminToken, setAdminToken } from '@/lib/admin'
+import { AdminTokenField } from '../AdminTokenField'
 import { ImageInsertModal } from '../ImageInsertModal'
 
 export default function NewBlogPost() {
@@ -16,6 +18,11 @@ export default function NewBlogPost() {
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [imageModalOpen, setImageModalOpen] = useState(false)
+  const [adminToken, setAdminTokenState] = useState('')
+
+  useEffect(() => {
+    setAdminTokenState(getAdminToken())
+  }, [])
 
   function insertImageTag(tag: string) {
     const el = contentRef.current
@@ -58,10 +65,12 @@ export default function NewBlogPost() {
     try {
       const res = await fetch(`${API_URL}/api/blog/`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...adminHeaders(adminToken) },
         body: JSON.stringify({ title, summary, content }),
       })
+      if (res.status === 401 || res.status === 403) throw new Error('Admin token rejected')
       if (!res.ok) throw new Error(`Failed: ${res.status}`)
+      setAdminToken(adminToken)
       const data = await res.json()
       router.push(`/blog/${data.slug}`)
     } catch (e: unknown) {
@@ -200,6 +209,7 @@ export default function NewBlogPost() {
           />
         </div>
 
+        <AdminTokenField value={adminToken} onChange={setAdminTokenState} />
         {error && <p className="text-terracotta text-sm">{error}</p>}
 
         <div className="flex flex-col sm:flex-row sm:items-center gap-4">

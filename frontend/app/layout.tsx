@@ -20,37 +20,40 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://libinguo.com'
 
 export const metadata: Metadata = {
   title: {
-    default: 'Libin Guo — Full-Stack Data Engineer',
+    default: 'Libin Guo — Senior Data Engineer',
     template: '%s | Libin Guo',
   },
   description:
-    'Full-stack data engineer building production-grade data platforms, pipelines, and AI/agent-driven systems. Apple, JPMorgan, healthcare. Data infrastructure, analytics, and intelligent decision-making.',
+    'Senior Data Engineer building petabyte-scale lakehouses and AI training-data infrastructure with Spark, Ray, Iceberg, and Kubernetes. Previously Reka AI, Apple, and JPMorgan Chase.',
   keywords: [
-    'data engineer',
-    'data platforms',
-    'data pipelines',
-    'AI agents',
-    'Apple',
-    'JPMorgan',
+    'senior data engineer',
+    'data platform engineer',
+    'AI training data',
+    'ML data infrastructure',
+    'Apache Spark',
+    'Ray',
+    'Apache Iceberg',
+    'lakehouse',
+    'Kubernetes',
+    'Airflow',
     'Python',
-    'FastAPI',
-    'Kafka',
-    'Flink',
+    'Reka AI',
+    'Apple',
   ],
   openGraph: {
     type: 'website',
     locale: 'en_US',
     url: siteUrl,
     siteName: 'Libin Guo',
-    title: 'Libin Guo — Full-Stack Data Engineer',
+    title: 'Libin Guo — Senior Data Engineer',
     description:
-      'Full-stack data engineer building production-grade data platforms, pipelines, and AI/agent-driven systems. Apple, JPMorgan, healthcare.',
+      'Senior Data Engineer: petabyte-scale lakehouses and AI training-data pipelines. Spark, Ray, Iceberg, Kubernetes. Reka AI, Apple, JPMorgan.',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Libin Guo — Full-Stack Data Engineer',
+    title: 'Libin Guo — Senior Data Engineer',
     description:
-      'Full-stack data engineer building data platforms, pipelines, and AI/agent systems. Apple, JPMorgan, healthcare.',
+      'Senior Data Engineer: petabyte-scale lakehouses and AI training-data pipelines. Spark, Ray, Iceberg, Kubernetes. Reka AI, Apple, JPMorgan.',
   },
   metadataBase: new URL(siteUrl),
 }
@@ -59,15 +62,21 @@ const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'Person',
   name: 'Libin Guo',
-  jobTitle: 'Full-Stack Data Engineer',
-  worksFor: { '@type': 'Organization', name: 'Apple' },
+  jobTitle: 'Senior Data Engineer',
+  alumniOf: [
+    { '@type': 'Organization', name: 'Reka AI' },
+    { '@type': 'Organization', name: 'Apple' },
+    { '@type': 'Organization', name: 'JPMorgan Chase' },
+    { '@type': 'CollegeOrUniversity', name: 'The University of Texas at Dallas' },
+  ],
+  knowsAbout: ['Apache Spark', 'Ray', 'Apache Iceberg', 'Kubernetes', 'Airflow', 'AI training data'],
   url: siteUrl,
   sameAs: [
     'https://www.linkedin.com/in/libinguo/',
     'https://github.com/Alicelibinguo5',
   ],
   description:
-    'Full-stack data engineer focused on data platforms, pipelines, and AI/agent-driven systems. Previously at JPMorgan and a healthcare startup.',
+    'Senior Data Engineer building petabyte-scale lakehouses and AI training-data infrastructure with Spark, Ray, Iceberg, and Kubernetes. Previously Reka AI, Apple, and JPMorgan Chase.',
 }
 
 export default function RootLayout({

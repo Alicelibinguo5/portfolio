@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { ExternalLink, Star, GitFork, Globe } from 'lucide-react'
+import { ExternalLink, Star, GitFork, Globe, ArrowRight } from 'lucide-react'
 import { API_URL } from '@/lib/api'
+import { CASE_STUDIES } from '@/lib/caseStudies'
 
 type FeaturedApp = {
   title: string
@@ -134,62 +135,28 @@ export default function Projects() {
   })
   displayRepos = displayRepos.slice(0, 8)
 
-  if (loading) {
-    return (
-      <section className="space-y-12 md:space-y-16">
-        <div className="space-y-4">
-          <p className="eyebrow">Selected Work</p>
-          <h1 className="font-display text-5xl md:text-6xl lg:text-7xl font-semibold text-forest">Projects</h1>
-          <p className="text-lg text-forest/70 max-w-2xl">
-            Live apps and open-source work focused on measurable business outcomes.
-          </p>
-        </div>
-
-        <div className="grid md:grid-cols-2 gap-8">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="card animate-pulse">
-              <div className="h-6 w-2/3 bg-soft-clay rounded" />
-              <div className="mt-3 h-4 w-full bg-soft-clay rounded" />
-              <div className="mt-4 h-16 w-full bg-soft-clay rounded" />
-            </div>
-          ))}
-        </div>
-      </section>
-    )
-  }
-
-  if (error) {
-    return (
-      <section className="space-y-8 md:space-y-10">
-        <p className="eyebrow">Selected Work</p>
-        <h1 className="font-display text-5xl md:text-6xl lg:text-7xl font-semibold text-forest">Projects</h1>
-        <p className="text-terracotta">{error}</p>
-      </section>
-    )
-  }
-
   return (
     <section className="space-y-14 md:space-y-16">
       <div className="animate-fade-up space-y-4">
         <p className="eyebrow">Selected Work</p>
         <h1 className="font-display text-5xl md:text-6xl lg:text-7xl font-semibold text-forest">Projects</h1>
         <p className="text-lg text-forest/70 max-w-2xl">
-          Productized experiments and production-ready systems. Try the live apps or review code
-          and case studies.
+          Case studies from production data platforms at Reka AI and Apple, plus live apps and
+          open-source work I build on the side.
         </p>
       </div>
 
       <div className="impact-strip animate-fade-up [animation-delay:100ms]">
         <div>
           <p className="impact-label">Work Type</p>
-          <p className="impact-value">Live Products + OSS</p>
+          <p className="impact-value">Production Platforms + Side Projects</p>
         </div>
         <div>
           <p className="impact-label">Primary Stack</p>
-          <p className="impact-value">Data + AI + Full Stack</p>
+          <p className="impact-value">Spark · Ray · Iceberg · Kubernetes</p>
         </div>
         <div>
-          <p className="impact-label">Need Similar Build?</p>
+          <p className="impact-label">Want the details?</p>
           <p className="impact-value">
             <Link href="/contact" className="text-sage hover:text-terracotta transition-colors">
               Let&apos;s talk
@@ -200,7 +167,31 @@ export default function Projects() {
 
       <div>
         <div className="mb-6 space-y-2">
-          <p className="eyebrow">Live Products</p>
+          <p className="eyebrow">Production Work</p>
+          <h2 className="font-display text-3xl font-semibold text-forest">Case studies</h2>
+        </div>
+        <div className="grid md:grid-cols-3 gap-8">
+          {CASE_STUDIES.map((c) => (
+            <Link key={c.slug} href={`/work/${c.slug}`} className="card group flex flex-col">
+              <p className="text-sm text-forest/60">{c.company} · {c.period}</p>
+              <h3 className="font-display text-xl font-semibold text-forest mt-2 group-hover:text-terracotta transition-colors duration-300">
+                {c.title}
+              </h3>
+              <p className="text-forest/75 mt-3 leading-relaxed flex-1">{c.tagline}</p>
+              <div className="mt-5 pt-4 border-t border-stone/70 flex items-center justify-between gap-3">
+                <span className="font-display text-lg text-forest">{c.metrics[0].value}</span>
+                <span className="text-sage font-medium text-sm inline-flex items-center gap-1">
+                  Read case study <ArrowRight strokeWidth={1.5} size={14} />
+                </span>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <div className="mb-6 space-y-2">
+          <p className="eyebrow">Side Projects</p>
           <h2 className="font-display text-3xl font-semibold text-forest">Featured apps</h2>
         </div>
         <div className="grid md:grid-cols-2 gap-8 md:gap-10">
@@ -257,8 +248,18 @@ export default function Projects() {
           <h2 className="font-display text-3xl font-semibold text-forest">More on GitHub</h2>
         </div>
         <div className="vine-divider" aria-hidden="true" />
+        {error && (
+          <p className="mt-6 text-sm text-forest/60">Live GitHub stats are unavailable right now; showing highlights.</p>
+        )}
         <div className="grid md:grid-cols-2 gap-10 md:gap-14 mt-10">
-          {displayRepos.map((r, i) => {
+          {loading && Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="card animate-pulse">
+              <div className="h-6 w-2/3 bg-soft-clay rounded" />
+              <div className="mt-3 h-4 w-full bg-soft-clay rounded" />
+              <div className="mt-4 h-16 w-full bg-soft-clay rounded" />
+            </div>
+          ))}
+          {!loading && displayRepos.map((r, i) => {
             const isFeatured = r.full_name === FEATURED_FULL_NAME
             const baseTags = (r.topics?.length ? r.topics : (r.language ? [r.language] : []))
             const tags = isFeatured ? [...new Set([...baseTags, 'multi-agent', 'FastAPI'])] : baseTags

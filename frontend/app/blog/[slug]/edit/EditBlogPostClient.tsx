@@ -5,6 +5,8 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { ArrowLeft, Bold, Italic, Code, Image } from 'lucide-react'
 import { API_URL } from '@/lib/api'
+import { adminHeaders, getAdminToken, setAdminToken } from '@/lib/admin'
+import { AdminTokenField } from '../../AdminTokenField'
 import { ImageInsertModal } from '../../ImageInsertModal'
 
 type BlogPost = {
@@ -26,6 +28,11 @@ export function EditBlogPostClient({ slug }: { slug: string }) {
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [imageModalOpen, setImageModalOpen] = useState(false)
+  const [adminToken, setAdminTokenState] = useState('')
+
+  useEffect(() => {
+    setAdminTokenState(getAdminToken())
+  }, [])
 
   function insertImageTag(tag: string) {
     const el = contentRef.current
@@ -92,13 +99,15 @@ export function EditBlogPostClient({ slug }: { slug: string }) {
     try {
       const res = await fetch(`${API_URL}/api/blog/${slug}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...adminHeaders(adminToken) },
         body: JSON.stringify({ title, summary, content })
       })
+      if (res.status === 401 || res.status === 403) throw new Error('Admin token rejected')
       if (!res.ok) {
         const errorText = await res.text()
         throw new Error(`Failed to save: ${res.status} - ${errorText}`)
       }
+      setAdminToken(adminToken)
       router.push(`/blog/${slug}`)
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : 'Error saving post')
@@ -229,6 +238,7 @@ export function EditBlogPostClient({ slug }: { slug: string }) {
             }}
           />
         </div>
+        <AdminTokenField value={adminToken} onChange={setAdminTokenState} />
         {error && <p className="text-terracotta text-sm">{error}</p>}
         {imageModalOpen && (
           <ImageInsertModal
