@@ -9,7 +9,7 @@ from urllib.parse import urlparse, urljoin
 import feedparser
 import httpx
 from bs4 import BeautifulSoup
-from fastapi import APIRouter, HTTPException, Query, Request
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from fastapi.responses import JSONResponse
 from markdownify import markdownify as md
 from pydantic import BaseModel, HttpUrl
@@ -28,6 +28,7 @@ from sqlalchemy import (
     text,
 )
 
+from app.auth import require_admin
 from app.config import get_settings
 from app.models import BlogPost, BlogPostCreate, BlogPostListItem, BlogPostUpdate
 from app.services import cache as cache_svc
@@ -247,7 +248,7 @@ class RestoreItem(BaseModel):
     created_at: str | None = None
 
 
-@router.post("/restore", response_model=dict)
+@router.post("/restore", response_model=dict, dependencies=[Depends(require_admin)])
 def restore_posts(payload: list[RestoreItem]) -> dict:
     engine = _get_engine()
     table = _get_table()
@@ -520,7 +521,7 @@ def _fetch_and_parse_article(url: str) -> tuple[str, str, str]:
     return (title, summary, content_md)
 
 
-@router.post("/import", response_model=BlogPost)
+@router.post("/import", response_model=BlogPost, dependencies=[Depends(require_admin)])
 def import_post(payload: BlogImportRequest, request: Request) -> BlogPost:
     """Import a single post from a Medium or Substack article URL."""
     url_str = str(payload.url)
@@ -554,7 +555,7 @@ def get_post(slug: str, request: Request) -> BlogPost:
     return post
 
 
-@router.post("/", response_model=BlogPost)
+@router.post("/", response_model=BlogPost, dependencies=[Depends(require_admin)])
 def create_post(payload: BlogPostCreate, request: Request) -> BlogPost:
     engine = _get_engine()
     table = _get_table()
@@ -571,7 +572,10 @@ def create_post(payload: BlogPostCreate, request: Request) -> BlogPost:
         ))
     cache_svc.invalidate_pattern("blog:")
     return get_post(slug, request)
-def update_post(slug: str, payload: BlogPostUpdate, request: Request | None = None) -> BlogPost:
+
+
+@router.put("/{slug}", response_model=BlogPost, dependencies=[Depends(require_admin)])
+def update_post(slug: str, payload: BlogPostUpdate, request: Request) -> BlogPost:
     engine = _get_engine()
     table = _get_table()
     with engine.begin() as conn:
@@ -591,7 +595,7 @@ def update_post(slug: str, payload: BlogPostUpdate, request: Request | None = No
     return get_post(slug, request)
 
 
-@router.delete("/{slug}", response_model=dict)
+@router.delete("/{slug}", response_model=dict, dependencies=[Depends(require_admin)])
 def delete_post(slug: str) -> dict:
     engine = _get_engine()
     table = _get_table()

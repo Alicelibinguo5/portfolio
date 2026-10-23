@@ -46,21 +46,21 @@ export default function Contact() {
         <div className="space-y-8 animate-fade-up">
           <div className="space-y-4">
             <p className="eyebrow">Let&apos;s Build</p>
-            <h1 className="font-display text-5xl md:text-6xl lg:text-7xl font-semibold text-forest">Contact</h1>
-            <p className="text-forest/80 text-lg max-w-md">
+            <h1 className="font-display text-5xl md:text-6xl lg:text-7xl font-semibold text-cobalt">Contact</h1>
+            <p className="text-cobalt/80 text-lg max-w-md">
               Reach out for full-time roles, consulting, or collaboration on data and AI systems.
             </p>
           </div>
 
           <article className="card-muted space-y-4">
-            <p className="text-sm uppercase tracking-[0.16em] text-forest/60">Direct Links</p>
+            <p className="text-sm uppercase tracking-[0.16em] text-cobalt/60">Direct Links</p>
             <div className="flex flex-wrap items-center gap-4">
               <a
                 href="https://www.linkedin.com/in/libinguo/"
                 target="_blank"
                 rel="noreferrer"
                 aria-label="LinkedIn"
-                className="p-3 rounded-full bg-white/80 text-forest/80 hover:text-sage transition-colors duration-300"
+                className="p-3 rounded-full bg-white/80 text-cobalt/80 hover:text-rust transition-colors duration-300"
               >
                 <Linkedin strokeWidth={1.5} size={22} />
               </a>
@@ -69,14 +69,14 @@ export default function Contact() {
                 target="_blank"
                 rel="noreferrer"
                 aria-label="GitHub"
-                className="p-3 rounded-full bg-white/80 text-forest/80 hover:text-sage transition-colors duration-300"
+                className="p-3 rounded-full bg-white/80 text-cobalt/80 hover:text-rust transition-colors duration-300"
               >
                 <Github strokeWidth={1.5} size={22} />
               </a>
               <a
                 href="mailto:libinguo89@gmail.com"
                 aria-label="Email"
-                className="text-forest/80 hover:text-sage font-medium transition-colors"
+                className="text-cobalt/80 hover:text-rust font-medium transition-colors"
               >
                 libinguo89@gmail.com
               </a>
@@ -101,7 +101,7 @@ export default function Contact() {
 
         <form onSubmit={onSubmit} className="card space-y-6 animate-fade-up [animation-delay:120ms]">
           <div>
-            <label htmlFor="name" className="block text-sm font-medium text-forest mb-2">Name</label>
+            <label htmlFor="name" className="block text-sm font-medium text-cobalt mb-2">Name</label>
             <input
               id="name"
               className="input-botanical-underline"
@@ -111,7 +111,7 @@ export default function Contact() {
             />
           </div>
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-forest mb-2">Email</label>
+            <label htmlFor="email" className="block text-sm font-medium text-cobalt mb-2">Email</label>
             <input
               id="email"
               type="email"
@@ -122,7 +122,7 @@ export default function Contact() {
             />
           </div>
           <div>
-            <label htmlFor="intent" className="block text-sm font-medium text-forest mb-2">Reaching out about</label>
+            <label htmlFor="intent" className="block text-sm font-medium text-cobalt mb-2">Reaching out about</label>
             <select
               id="intent"
               className="input-botanical-underline w-full bg-transparent"
@@ -137,7 +137,7 @@ export default function Contact() {
             </select>
           </div>
           <div>
-            <label htmlFor="subject" className="block text-sm font-medium text-forest mb-2">Subject</label>
+            <label htmlFor="subject" className="block text-sm font-medium text-cobalt mb-2">Subject</label>
             <input
               id="subject"
               className="input-botanical-underline"
@@ -147,7 +147,7 @@ export default function Contact() {
             />
           </div>
           <div>
-            <label htmlFor="message" className="block text-sm font-medium text-forest mb-2">Message</label>
+            <label htmlFor="message" className="block text-sm font-medium text-cobalt mb-2">Message</label>
             <textarea
               id="message"
               className="input-botanical-underline min-h-[140px] resize-y"
@@ -170,10 +170,10 @@ export default function Contact() {
             )}
           </button>
           {status === 'success' && (
-            <p className="text-sage font-medium">Message sent!</p>
+            <p className="text-rust font-medium">Message sent!</p>
           )}
           {status === 'error' && (
-            <p className="text-terracotta">{error ?? 'Something went wrong'}</p>
+            <p className="text-rust-deep">{error ?? 'Something went wrong'}</p>
           )}
         </form>
       </div>

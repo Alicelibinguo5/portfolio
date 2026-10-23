@@ -53,36 +53,36 @@ export function ImageInsertModal({ onInsert, onClose }: ImageInsertModalProps) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-forest/20 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-cobalt/20 backdrop-blur-sm"
       onClick={onClose}
       role="dialog"
       aria-modal="true"
       aria-labelledby="image-modal-title"
     >
       <div
-        className="bg-alabaster rounded-2xl shadow-botanical border border-stone/50 w-full max-w-md overflow-hidden"
+        className="bg-paper rounded-2xl shadow-botanical border border-line/50 w-full max-w-md overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between p-4 border-b border-stone/50">
-          <h2 id="image-modal-title" className="font-display text-lg font-semibold text-forest flex items-center gap-2">
+        <div className="flex items-center justify-between p-4 border-b border-line/50">
+          <h2 id="image-modal-title" className="font-display text-lg font-semibold text-cobalt flex items-center gap-2">
             <Image strokeWidth={1.5} size={22} />
             Add image
           </h2>
           <button
             type="button"
             onClick={onClose}
-            className="p-2 rounded-lg text-forest/60 hover:text-forest hover:bg-soft-clay/50 transition-colors"
+            className="p-2 rounded-lg text-cobalt/60 hover:text-cobalt hover:bg-panel/50 transition-colors"
             aria-label="Close"
           >
             <X strokeWidth={1.5} size={20} />
           </button>
         </div>
 
-        <div className="flex border-b border-stone/50">
+        <div className="flex border-b border-line/50">
           <button
             type="button"
             onClick={() => { setTab('url'); setUrlError(null) }}
-            className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-medium transition-colors ${tab === 'url' ? 'text-sage border-b-2 border-sage bg-sage/5' : 'text-forest/70 hover:text-forest'}`}
+            className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-medium transition-colors ${tab === 'url' ? 'text-rust border-b-2 border-rust bg-rust/5' : 'text-cobalt/70 hover:text-cobalt'}`}
           >
             <Link2 strokeWidth={1.5} size={18} />
             From link
@@ -90,7 +90,7 @@ export function ImageInsertModal({ onInsert, onClose }: ImageInsertModalProps) {
           <button
             type="button"
             onClick={() => setTab('upload')}
-            className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-medium transition-colors ${tab === 'upload' ? 'text-sage border-b-2 border-sage bg-sage/5' : 'text-forest/70 hover:text-forest'}`}
+            className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-medium transition-colors ${tab === 'upload' ? 'text-rust border-b-2 border-rust bg-rust/5' : 'text-cobalt/70 hover:text-cobalt'}`}
           >
             <Upload strokeWidth={1.5} size={18} />
             Upload
@@ -101,7 +101,7 @@ export function ImageInsertModal({ onInsert, onClose }: ImageInsertModalProps) {
           {tab === 'url' ? (
             <form onSubmit={handleInsertFromUrl} className="space-y-4">
               <div>
-                <label htmlFor="image-url" className="block text-sm font-medium text-forest mb-1">
+                <label htmlFor="image-url" className="block text-sm font-medium text-cobalt mb-1">
                   Image URL
                 </label>
                 <input
@@ -113,11 +113,11 @@ export function ImageInsertModal({ onInsert, onClose }: ImageInsertModalProps) {
                   className="input-botanical"
                   autoFocus
                 />
-                {urlError && <p className="mt-1 text-sm text-terracotta">{urlError}</p>}
+                {urlError && <p className="mt-1 text-sm text-rust-deep">{urlError}</p>}
               </div>
               <div>
-                <label htmlFor="image-alt" className="block text-sm font-medium text-forest mb-1">
-                  Alt text <span className="text-forest/50 font-normal">(optional, for accessibility)</span>
+                <label htmlFor="image-alt" className="block text-sm font-medium text-cobalt mb-1">
+                  Alt text <span className="text-cobalt/50 font-normal">(optional, for accessibility)</span>
                 </label>
                 <input
                   id="image-alt"
@@ -139,7 +139,7 @@ export function ImageInsertModal({ onInsert, onClose }: ImageInsertModalProps) {
             </form>
           ) : (
             <div className="space-y-4">
-              <p className="text-sm text-forest/70">
+              <p className="text-sm text-cobalt/70">
                 Choose an image from your device. It will be embedded in your post.
               </p>
               <input
@@ -152,7 +152,7 @@ export function ImageInsertModal({ onInsert, onClose }: ImageInsertModalProps) {
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
-                className="w-full py-8 rounded-xl border-2 border-dashed border-sage/50 bg-sage/5 text-sage font-medium hover:bg-sage/10 hover:border-sage/70 transition-colors flex flex-col items-center gap-2"
+                className="w-full py-8 rounded-xl border-2 border-dashed border-rust/50 bg-rust/5 text-rust font-medium hover:bg-rust/10 hover:border-rust/70 transition-colors flex flex-col items-center gap-2"
               >
                 <Upload strokeWidth={1.5} size={32} />
                 Choose image

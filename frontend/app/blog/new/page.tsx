@@ -1,10 +1,12 @@
 'use client'
 
-import { FormEvent, useRef, useState } from 'react'
+import { FormEvent, useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { ArrowLeft, Bold, Italic, Code, Image } from 'lucide-react'
 import { API_URL } from '@/lib/api'
+import { adminHeaders, getAdminToken, setAdminToken } from '@/lib/admin'
+import { AdminTokenField } from '../AdminTokenField'
 import { ImageInsertModal } from '../ImageInsertModal'
 
 export default function NewBlogPost() {
@@ -16,6 +18,11 @@ export default function NewBlogPost() {
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [imageModalOpen, setImageModalOpen] = useState(false)
+  const [adminToken, setAdminTokenState] = useState('')
+
+  useEffect(() => {
+    setAdminTokenState(getAdminToken())
+  }, [])
 
   function insertImageTag(tag: string) {
     const el = contentRef.current
@@ -58,10 +65,12 @@ export default function NewBlogPost() {
     try {
       const res = await fetch(`${API_URL}/api/blog/`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...adminHeaders(adminToken) },
         body: JSON.stringify({ title, summary, content }),
       })
+      if (res.status === 401 || res.status === 403) throw new Error('Admin token rejected')
       if (!res.ok) throw new Error(`Failed: ${res.status}`)
+      setAdminToken(adminToken)
       const data = await res.json()
       router.push(`/blog/${data.slug}`)
     } catch (e: unknown) {
@@ -79,17 +88,17 @@ export default function NewBlogPost() {
       </Link>
 
       <div>
-        <h1 className="font-display text-3xl md:text-4xl font-semibold text-forest">New Post</h1>
-        <p className="mt-2 text-forest/70 text-sm">
+        <h1 className="font-display text-3xl md:text-4xl font-semibold text-cobalt">New Post</h1>
+        <p className="mt-2 text-cobalt/70 text-sm">
           Your post will be public and visible to everyone who visits your blog. You can edit or delete it later.
         </p>
       </div>
 
       <form onSubmit={onSubmit} className="space-y-6">
-        <div className="flex flex-wrap items-center gap-2 p-4 rounded-2xl bg-soft-clay/50" role="toolbar" aria-label="Formatting">
+        <div className="flex flex-wrap items-center gap-2 p-4 rounded-2xl bg-panel/50" role="toolbar" aria-label="Formatting">
           <button
             type="button"
-            className="p-2 rounded-lg text-forest/70 hover:text-sage hover:bg-sage/10 transition-colors"
+            className="p-2 rounded-lg text-cobalt/70 hover:text-rust hover:bg-rust/10 transition-colors"
             onClick={() => wrapSelection('**')}
             title="Bold"
           >
@@ -97,7 +106,7 @@ export default function NewBlogPost() {
           </button>
           <button
             type="button"
-            className="p-2 rounded-lg text-forest/70 hover:text-sage hover:bg-sage/10 transition-colors"
+            className="p-2 rounded-lg text-cobalt/70 hover:text-rust hover:bg-rust/10 transition-colors"
             onClick={() => wrapSelection('_')}
             title="Italic"
           >
@@ -105,7 +114,7 @@ export default function NewBlogPost() {
           </button>
           <button
             type="button"
-            className="p-2 rounded-lg text-forest/70 hover:text-sage hover:bg-sage/10 transition-colors"
+            className="p-2 rounded-lg text-cobalt/70 hover:text-rust hover:bg-rust/10 transition-colors"
             onClick={() => wrapSelection('`')}
             title="Code"
           >
@@ -113,7 +122,7 @@ export default function NewBlogPost() {
           </button>
           <button
             type="button"
-            className="p-2 rounded-lg text-forest/70 hover:text-sage hover:bg-sage/10 transition-colors"
+            className="p-2 rounded-lg text-cobalt/70 hover:text-rust hover:bg-rust/10 transition-colors"
             onClick={() => wrapSelection('\n```\n', '\n```\n')}
             title="Code block"
           >
@@ -121,7 +130,7 @@ export default function NewBlogPost() {
           </button>
           <button
             type="button"
-            className="p-2 rounded-lg text-forest/70 hover:text-sage hover:bg-sage/10 transition-colors inline-flex items-center gap-1"
+            className="p-2 rounded-lg text-cobalt/70 hover:text-rust hover:bg-rust/10 transition-colors inline-flex items-center gap-1"
             onClick={() => setImageModalOpen(true)}
             title="Add image (link or upload)"
           >
@@ -130,7 +139,7 @@ export default function NewBlogPost() {
         </div>
 
         <div>
-          <label htmlFor="title" className="block text-sm font-medium text-forest mb-2">Title</label>
+          <label htmlFor="title" className="block text-sm font-medium text-cobalt mb-2">Title</label>
           <input
             id="title"
             className="input-botanical"
@@ -141,7 +150,7 @@ export default function NewBlogPost() {
           />
         </div>
         <div>
-          <label htmlFor="summary" className="block text-sm font-medium text-forest mb-2">Summary</label>
+          <label htmlFor="summary" className="block text-sm font-medium text-cobalt mb-2">Summary</label>
           <textarea
             id="summary"
             className="input-botanical min-h-[80px] resize-y"
@@ -153,8 +162,8 @@ export default function NewBlogPost() {
           />
         </div>
         <div>
-          <label htmlFor="content" className="block text-sm font-medium text-forest mb-2">Content</label>
-          <p className="text-forest/60 text-xs mb-2">
+          <label htmlFor="content" className="block text-sm font-medium text-cobalt mb-2">Content</label>
+          <p className="text-cobalt/60 text-xs mb-2">
             Markdown: **bold** _italic_ `code` ```block```. Add images with the toolbar button (link or upload) or paste here.
           </p>
           <textarea
@@ -200,13 +209,14 @@ export default function NewBlogPost() {
           />
         </div>
 
-        {error && <p className="text-terracotta text-sm">{error}</p>}
+        <AdminTokenField value={adminToken} onChange={setAdminTokenState} />
+        {error && <p className="text-rust-deep text-sm">{error}</p>}
 
         <div className="flex flex-col sm:flex-row sm:items-center gap-4">
           <button type="submit" disabled={submitting} className="btn-primary h-12 px-10">
             {submitting ? 'Publishing…' : 'Publish to blog'}
           </button>
-          <span className="text-sm text-forest/50">Visible to everyone immediately.</span>
+          <span className="text-sm text-cobalt/50">Visible to everyone immediately.</span>
         </div>
       </form>
 

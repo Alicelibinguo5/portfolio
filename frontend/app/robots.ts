@@ -12,7 +12,7 @@ function fullUrl(path: string): string {
 
 export default function robots(): MetadataRoute.Robots {
   return {
-    rules: { userAgent: '*', allow: '/' },
+    rules: { userAgent: '*', allow: '/', disallow: ['/blog/new', '/blog/*/edit'] },
     sitemap: fullUrl('/sitemap.xml'),
   }
 }

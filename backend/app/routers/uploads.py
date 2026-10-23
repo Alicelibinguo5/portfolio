@@ -3,9 +3,10 @@ import uuid
 
 import boto3
 from botocore.client import Config
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 
+from app.auth import require_admin
 from app.config import get_settings
 
 router = APIRouter()
@@ -35,7 +36,7 @@ def _s3_client() -> tuple:
     return session.client("s3", config=Config(signature_version="s3v4")), region
 
 
-@router.post("/presign", response_model=PresignResponse)
+@router.post("/presign", response_model=PresignResponse, dependencies=[Depends(require_admin)])
 def presign(req: PresignRequest) -> PresignResponse:
     settings = get_settings()
     bucket = settings.s3_bucket

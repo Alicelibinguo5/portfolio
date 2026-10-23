@@ -7,6 +7,7 @@ import { marked } from 'marked'
 import Prism from 'prismjs'
 import { ArrowLeft, Edit, Trash2 } from 'lucide-react'
 import { API_URL } from '@/lib/api'
+import { adminHeaders, useIsAdmin } from '@/lib/admin'
 import 'prismjs/themes/prism.css'
 
 type BlogPost = {
@@ -30,6 +31,7 @@ export function BlogPostClient({ slugParams }: BlogPostClientProps) {
   const [error, setError] = useState<string | null>(null)
   const [deleting, setDeleting] = useState(false)
   const [html, setHtml] = useState<string>('')
+  const isAdmin = useIsAdmin()
 
   const readingTime = useMemo(() => {
     if (!post?.content) return null
@@ -108,8 +110,8 @@ export function BlogPostClient({ slugParams }: BlogPostClientProps) {
   if (loading) {
     return (
       <section className="space-y-8">
-        <div className="h-8 w-48 bg-soft-clay rounded animate-pulse" />
-        <div className="h-64 w-full bg-soft-clay rounded animate-pulse" />
+        <div className="h-8 w-48 bg-panel rounded animate-pulse" />
+        <div className="h-64 w-full bg-panel rounded animate-pulse" />
       </section>
     )
   }
@@ -117,7 +119,7 @@ export function BlogPostClient({ slugParams }: BlogPostClientProps) {
   if (error) {
     return (
       <section className="space-y-6">
-        <p className="text-terracotta">{error}</p>
+        <p className="text-rust-deep">{error}</p>
         <Link href="/blog" className="nav-link inline-flex items-center gap-2">← Back to Blog</Link>
       </section>
     )
@@ -126,7 +128,7 @@ export function BlogPostClient({ slugParams }: BlogPostClientProps) {
   if (!post) {
     return (
       <section className="space-y-6">
-        <p className="text-forest/80">Post not found.</p>
+        <p className="text-cobalt/80">Post not found.</p>
         <Link href="/blog" className="nav-link inline-flex items-center gap-2">← Back to Blog</Link>
       </section>
     )
@@ -140,10 +142,10 @@ export function BlogPostClient({ slugParams }: BlogPostClientProps) {
       </Link>
 
       <header>
-        <h1 className="font-display text-3xl md:text-4xl lg:text-5xl font-semibold text-forest leading-tight">
+        <h1 className="font-display text-3xl md:text-4xl lg:text-5xl font-semibold text-cobalt leading-tight">
           {post.title}
         </h1>
-        <div className="flex flex-wrap items-center gap-3 mt-4 text-sm text-forest/60">
+        <div className="flex flex-wrap items-center gap-3 mt-4 text-sm text-cobalt/60">
           <time dateTime={post.created_at}>
             {new Date(post.created_at).toLocaleDateString()}
           </time>
@@ -152,7 +154,7 @@ export function BlogPostClient({ slugParams }: BlogPostClientProps) {
         {post.tags && post.tags.length > 0 && (
           <div className="flex flex-wrap gap-2 mt-4">
             {post.tags.map(t => (
-              <span key={t} className="px-2.5 py-1 rounded-full bg-soft-clay text-forest/70 text-xs">
+              <span key={t} className="px-2.5 py-1 rounded-full bg-panel text-cobalt/70 text-xs">
                 {t}
               </span>
             ))}
@@ -162,21 +164,27 @@ export function BlogPostClient({ slugParams }: BlogPostClientProps) {
 
       <div className="prose-botanical" dangerouslySetInnerHTML={{ __html: html }} />
 
-      <footer className="flex items-center gap-6 pt-8 border-t border-stone/50">
+      {isAdmin && (
+      <footer className="flex items-center gap-6 pt-8 border-t border-line/50">
         <Link
           href={`/blog/${post.slug}/edit`}
-          className="inline-flex items-center gap-2 text-sage hover:text-terracotta font-medium transition-colors"
+          className="inline-flex items-center gap-2 text-rust hover:text-rust-deep font-medium transition-colors"
         >
           <Edit strokeWidth={1.5} size={18} />
           Edit
         </Link>
         <button
           type="button"
-          className="inline-flex items-center gap-2 text-terracotta hover:underline font-medium"
+          className="inline-flex items-center gap-2 text-rust-deep hover:underline font-medium"
           onClick={async () => {
             if (!confirm('Delete this post? This cannot be undone.')) return
             setDeleting(true)
-            await fetch(`${API_URL}/api/blog/${post.slug}`, { method: 'DELETE' })
+            const res = await fetch(`${API_URL}/api/blog/${post.slug}`, { method: 'DELETE', headers: adminHeaders() })
+            setDeleting(false)
+            if (!res.ok) {
+              alert(`Delete failed: ${res.status}`)
+              return
+            }
             router.replace('/blog')
           }}
         >
@@ -184,6 +192,7 @@ export function BlogPostClient({ slugParams }: BlogPostClientProps) {
           Delete
         </button>
       </footer>
+      )}
     </article>
   )
 }

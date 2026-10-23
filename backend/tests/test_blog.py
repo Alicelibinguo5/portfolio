@@ -20,19 +20,22 @@ from app.config import get_settings  # noqa: E402
 from app.main import create_app  # noqa: E402
 from app.routers import blog as blog_router  # noqa: E402
 
+ADMIN_TOKEN = "test-admin-token"
+
 
 @pytest.fixture()
 def client(tmp_path: Path) -> Iterator[TestClient]:
     db_path = tmp_path / "test.db"
     os.environ["DATABASE_URL"] = f"sqlite:///{db_path}"
     os.environ["SEED_BLOG"] = "false"
+    os.environ["ADMIN_TOKEN"] = ADMIN_TOKEN
     get_settings.cache_clear()
     # Reset module-level engine/table between tests
     blog_router.Db.engine = None
     blog_router.Db.table = None
 
     app = create_app()
-    with TestClient(app) as client:
+    with TestClient(app, headers={"X-Admin-Token": ADMIN_TOKEN}) as client:
         yield client
 
 
@@ -848,3 +851,37 @@ def test_delete_all_posts_empty_list(client: TestClient) -> None:
     final_list = client.get("/api/blog/?page_size=50")
     assert final_list.json() == []
     assert final_list.headers.get("X-Total-Count") == "0"
+
+
+POST_PAYLOAD = {"title": "Guarded", "summary": "s", "content": "c"}
+
+
+def test_writes_require_admin_token(client: TestClient) -> None:
+    no_token = {"X-Admin-Token": ""}
+    wrong_token = {"X-Admin-Token": "nope"}
+    assert client.post("/api/blog/", json=POST_PAYLOAD, headers=no_token).status_code == 401
+    assert client.post("/api/blog/", json=POST_PAYLOAD, headers=wrong_token).status_code == 401
+    assert client.post("/api/blog/", json=POST_PAYLOAD).status_code == 200
+    assert client.put("/api/blog/guarded", json={"title": "x"}, headers=wrong_token).status_code == 401
+    assert client.delete("/api/blog/guarded", headers=wrong_token).status_code == 401
+    assert client.post("/api/blog/restore", json=[], headers=wrong_token).status_code == 401
+    assert client.post("/api/uploads/presign", json={"filename": "a.png", "contentType": "image/png"}, headers=wrong_token).status_code == 401
+    # Post survived the rejected delete
+    assert client.get("/api/blog/guarded").status_code == 200
+
+
+def test_update_post(client: TestClient) -> None:
+    assert client.post("/api/blog/", json=POST_PAYLOAD).status_code == 200
+    res = client.put("/api/blog/guarded", json={"summary": "updated"})
+    assert res.status_code == 200
+    assert res.json()["summary"] == "updated"
+
+
+def test_writes_disabled_without_configured_token(client: TestClient) -> None:
+    os.environ.pop("ADMIN_TOKEN")
+    get_settings.cache_clear()
+    try:
+        assert client.post("/api/blog/", json=POST_PAYLOAD).status_code == 403
+    finally:
+        os.environ["ADMIN_TOKEN"] = ADMIN_TOKEN
+        get_settings.cache_clear()
