@@ -48,8 +48,8 @@ export default function Blog() {
   if (error) {
     return (
       <section className="space-y-8">
-        <h1 className="font-display text-5xl md:text-6xl lg:text-7xl font-semibold text-forest">Blog</h1>
-        <p className="text-terracotta">{error}</p>
+        <h1 className="font-display text-5xl md:text-6xl lg:text-7xl font-semibold text-cobalt">Blog</h1>
+        <p className="text-rust-deep">{error}</p>
       </section>
     )
   }
@@ -58,7 +58,7 @@ export default function Blog() {
     <section className="space-y-12 md:space-y-20">
       <div className="animate-fade-up">
         <div className="flex flex-wrap items-center gap-4">
-          <h1 className="font-display text-5xl md:text-6xl lg:text-7xl font-semibold text-forest">Blog</h1>
+          <h1 className="font-display text-5xl md:text-6xl lg:text-7xl font-semibold text-cobalt">Blog</h1>
           <div className="flex flex-wrap items-center gap-2">
             <a
               href="https://substack.com/@aliceguo/posts"
@@ -66,7 +66,7 @@ export default function Blog() {
               rel="noreferrer"
               aria-label="Substack posts"
               title="Substack"
-              className="inline-flex items-center gap-2 rounded-full bg-soft-clay/80 text-forest/80 hover:text-sage hover:bg-sage/10 transition-all duration-300 px-4 py-2"
+              className="inline-flex items-center gap-2 rounded-full bg-panel/80 text-cobalt/80 hover:text-rust hover:bg-rust/10 transition-all duration-300 px-4 py-2"
             >
               <svg
                 width="20"
@@ -85,7 +85,7 @@ export default function Blog() {
               rel="noreferrer"
               aria-label="Medium post"
               title="Medium"
-              className="inline-flex items-center gap-2 rounded-full bg-soft-clay/80 text-forest/80 hover:text-sage hover:bg-sage/10 transition-all duration-300 px-4 py-2"
+              className="inline-flex items-center gap-2 rounded-full bg-panel/80 text-cobalt/80 hover:text-rust hover:bg-rust/10 transition-all duration-300 px-4 py-2"
             >
               <svg
                 width="20"
@@ -100,7 +100,7 @@ export default function Blog() {
             </a>
           </div>
         </div>
-        <p className="mt-4 text-lg text-forest/70 max-w-xl">
+        <p className="mt-4 text-lg text-cobalt/70 max-w-xl">
           Notes on data platforms, Spark and Ray at scale, lakehouses, and data infrastructure for AI.
         </p>
         {isAdmin && (
@@ -120,9 +120,9 @@ export default function Blog() {
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {Array.from({ length: 6 }).map((_, i) => (
             <div key={i} className="card animate-pulse">
-              <div className="h-5 w-3/4 bg-soft-clay rounded" />
-              <div className="mt-2 h-3 w-1/3 bg-soft-clay rounded" />
-              <div className="mt-4 h-20 w-full bg-soft-clay rounded" />
+              <div className="h-5 w-3/4 bg-panel rounded" />
+              <div className="mt-2 h-3 w-1/3 bg-panel rounded" />
+              <div className="mt-4 h-20 w-full bg-panel rounded" />
             </div>
           ))}
         </div>
@@ -130,8 +130,8 @@ export default function Blog() {
         <>
           {isEmpty ? (
             <div className="card-muted text-center py-16 px-8 max-w-xl mx-auto">
-              <p className="text-forest/80 text-lg">No posts yet.</p>
-              <p className="mt-2 text-forest/60 text-sm">New writing is on the way — meanwhile, find me on Substack and Medium.</p>
+              <p className="text-cobalt/80 text-lg">No posts yet.</p>
+              <p className="mt-2 text-cobalt/60 text-sm">New writing is on the way — meanwhile, find me on Substack and Medium.</p>
               {isAdmin && (
                 <Link href="/blog/new" className="btn-primary inline-flex items-center gap-2 h-12 mt-8">
                   <FilePlus strokeWidth={1.5} size={18} />
@@ -153,14 +153,14 @@ export default function Blog() {
                     fetch(`${API_URL}/api/blog/${p.slug}`, { signal: ctrl.signal }).catch(() => {})
                     setTimeout(() => ctrl.abort(), 6000)
                   }}>
-                    <h2 className="font-display text-xl font-semibold text-forest group-hover:text-terracotta transition-colors duration-300">
+                    <h2 className="font-display text-xl font-semibold text-cobalt group-hover:text-rust-deep transition-colors duration-300">
                       {p.title}
                     </h2>
-                    <p className="text-sm text-forest/60 mt-1">
+                    <p className="text-sm text-cobalt/60 mt-1">
                       {new Date(p.created_at).toLocaleDateString()}
                     </p>
-                    <p className="text-forest/80 mt-3 line-clamp-3">{p.summary}</p>
-                    <span className="inline-flex items-center gap-1 mt-4 text-sage font-medium text-sm group-hover/link:gap-3 transition-all duration-500">
+                    <p className="text-cobalt/80 mt-3 line-clamp-3">{p.summary}</p>
+                    <span className="inline-flex items-center gap-1 mt-4 text-rust font-medium text-sm group-hover/link:gap-3 transition-all duration-500">
                       Read more <ArrowRight strokeWidth={1.5} size={16} className="transition-transform duration-500 group-hover/link:translate-x-1" />
                     </span>
                   </Link>
@@ -171,7 +171,7 @@ export default function Blog() {
           )}
 
           {!isEmpty && (
-          <div className="flex items-center justify-between mt-16 text-sm text-forest/70">
+          <div className="flex items-center justify-between mt-16 text-sm text-cobalt/70">
             <p>Page {page} · {total} total</p>
             <div className="flex gap-4">
               <button

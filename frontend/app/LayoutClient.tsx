@@ -21,10 +21,11 @@ export function LayoutClient({ children }: { children: React.ReactNode }) {
     <div className="min-h-screen flex flex-col relative">
       <div className="paper-grain" aria-hidden="true" />
 
-      <header className="border-b border-stone/60 bg-alabaster/80 backdrop-blur-sm sticky top-0 z-40">
+      <header className="border-b border-line/80 bg-paper/90 backdrop-blur-sm sticky top-0 z-40">
         <div className="container-app flex items-center justify-between h-16 md:h-20">
-          <Link href="/" className="font-display text-xl md:text-2xl font-semibold text-forest hover:text-terracotta transition-colors duration-300">
+          <Link href="/" className="font-display text-xl md:text-2xl font-semibold text-cobalt hover:text-rust transition-colors duration-300">
             Libin Guo
+            <span lang="zh-CN" className="ml-2 font-sans font-normal text-cobalt/60">郭丽彬</span>
           </Link>
 
           <nav className="hidden md:flex items-center gap-8">
@@ -34,7 +35,7 @@ export function LayoutClient({ children }: { children: React.ReactNode }) {
                 <Link
                   key={href}
                   href={href}
-                  className={`nav-link ${isActive ? 'text-forest font-medium' : ''}`}
+                  className={`text-sm font-medium transition-colors duration-300 underline-offset-[6px] decoration-rust decoration-2 ${isActive ? 'text-cobalt underline' : 'text-cobalt/75 hover:text-cobalt'}`}
                 >
                   {label}
                 </Link>
@@ -44,7 +45,7 @@ export function LayoutClient({ children }: { children: React.ReactNode }) {
 
           <button
             type="button"
-            className="md:hidden p-2 -mr-2 text-forest hover:text-terracotta transition-colors"
+            className="md:hidden p-2 -mr-2 text-cobalt hover:text-rust transition-colors"
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-expanded={mobileOpen}
             aria-label="Toggle menu"
@@ -55,7 +56,7 @@ export function LayoutClient({ children }: { children: React.ReactNode }) {
 
         {mobileOpen && (
           <div
-            className="md:hidden fixed inset-0 top-16 bg-alabaster/95 backdrop-blur-md z-30 flex flex-col items-center justify-start pt-12 gap-8"
+            className="md:hidden fixed inset-0 top-16 bg-paper/95 backdrop-blur-md z-30 flex flex-col items-center justify-start pt-12 gap-8"
             role="dialog"
             aria-modal="true"
             aria-label="Mobile navigation"
@@ -66,7 +67,7 @@ export function LayoutClient({ children }: { children: React.ReactNode }) {
                 <Link
                   key={href}
                   href={href}
-                  className={`font-display text-2xl font-medium ${isActive ? 'text-forest' : 'text-forest/80 hover:text-terracotta'} transition-colors`}
+                  className={`font-display text-2xl font-medium ${isActive ? 'text-cobalt' : 'text-cobalt/80 hover:text-rust-deep'} transition-colors`}
                   onClick={() => setMobileOpen(false)}
                 >
                   {label}
@@ -81,14 +82,14 @@ export function LayoutClient({ children }: { children: React.ReactNode }) {
         {children}
       </main>
 
-      <footer className="border-t border-stone/60 py-8 md:py-12">
-        <div className="container-app flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-forest/60 font-medium">
+      <footer className="border-t border-line/60 py-8 md:py-12">
+        <div className="container-app flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-cobalt/60 font-medium">
           <span>© {new Date().getFullYear()} Libin Guo</span>
           <nav className="flex items-center gap-6" aria-label="Footer links">
-            <Link href="/about" className="hover:text-sage transition-colors">Resume</Link>
-            <Link href="/contact" className="hover:text-sage transition-colors">Contact</Link>
-            <a href="https://www.linkedin.com/in/libinguo/" target="_blank" rel="noreferrer" className="hover:text-sage transition-colors">LinkedIn</a>
-            <a href="https://github.com/Alicelibinguo5" target="_blank" rel="noreferrer" className="hover:text-sage transition-colors">GitHub</a>
+            <Link href="/about" className="hover:text-rust transition-colors">Resume</Link>
+            <Link href="/contact" className="hover:text-rust transition-colors">Contact</Link>
+            <a href="https://www.linkedin.com/in/libinguo/" target="_blank" rel="noreferrer" className="hover:text-rust transition-colors">LinkedIn</a>
+            <a href="https://github.com/Alicelibinguo5" target="_blank" rel="noreferrer" className="hover:text-rust transition-colors">GitHub</a>
           </nav>
         </div>
       </footer>

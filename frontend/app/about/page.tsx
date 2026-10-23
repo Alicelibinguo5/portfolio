@@ -24,7 +24,7 @@ export default function About() {
       company: 'Apple',
       role: 'Senior Software Engineer, Data Platform',
       dates: 'Dec 2021 – Jan 2026',
-      summary: 'Scaled the platform orchestrating 2,000+ Spark jobs over a 20 PB Iceberg lakehouse; saved $0.5M/year through Spark tuning; built an MCP-based AI agent for lakehouse migration assessment.',
+      summary: 'Scaled the lakehouse platform behind a 20 PB Iceberg data lake, including the microservice application running 2,000+ Spark jobs daily; modernized large-scale legacy pipelines, moving them from on-prem to the cloud and from pandas to Spark; saved $0.5M/year through Spark tuning; built an MCP-based AI agent for lakehouse migration assessment.',
     },
     {
       company: 'JPMorgan Chase',
@@ -51,14 +51,14 @@ export default function About() {
       <div className="grid lg:grid-cols-[1.1fr,0.9fr] gap-10 items-start">
         <div className="space-y-6 animate-fade-up">
           <p className="eyebrow">Background</p>
-          <h1 className="font-display text-5xl md:text-6xl lg:text-7xl font-semibold text-forest">About</h1>
-          <div className="text-forest/80 space-y-4 text-lg max-w-2xl leading-relaxed">
+          <h1 className="font-display text-5xl md:text-6xl lg:text-7xl font-semibold text-cobalt">About</h1>
+          <div className="text-cobalt/80 space-y-4 text-lg max-w-2xl leading-relaxed">
             <p>
               I&apos;m a senior data engineer who builds the infrastructure underneath analytics and
               AI. Most recently I was at Reka AI, building Ray-on-Kubernetes pipelines that turn raw
               video into training data for world models. Before that I spent four years on
               Apple&apos;s data platform, scaling a 20 PB Iceberg lakehouse that runs 2,000+ Spark
-              jobs.
+              jobs a day.
             </p>
             <p>
               I started as a data analyst detecting Medicare fraud with SQL, then moved into data
@@ -79,21 +79,21 @@ export default function About() {
         <article className="card animate-fade-up [animation-delay:100ms]">
           <p className="eyebrow mb-4">Profile Snapshot</p>
           <div className="grid grid-cols-2 gap-4 text-center">
-            <div className="rounded-2xl bg-soft-clay/60 p-4">
-              <p className="font-display text-2xl text-forest">Reka AI</p>
-              <p className="text-xs tracking-[0.16em] uppercase text-forest/60 mt-1">Most recent</p>
+            <div className="rounded-2xl bg-panel/60 p-4">
+              <p className="font-display text-2xl text-cobalt">Reka AI</p>
+              <p className="text-xs tracking-[0.16em] uppercase text-cobalt/60 mt-1">Most recent</p>
             </div>
-            <div className="rounded-2xl bg-soft-clay/60 p-4">
-              <p className="font-display text-2xl text-forest">Apple</p>
-              <p className="text-xs tracking-[0.16em] uppercase text-forest/60 mt-1">4 years</p>
+            <div className="rounded-2xl bg-panel/60 p-4">
+              <p className="font-display text-2xl text-cobalt">Apple</p>
+              <p className="text-xs tracking-[0.16em] uppercase text-cobalt/60 mt-1">4 years</p>
             </div>
-            <div className="rounded-2xl bg-soft-clay/60 p-4">
-              <p className="font-display text-2xl text-forest">20 PB</p>
-              <p className="text-xs tracking-[0.16em] uppercase text-forest/60 mt-1">Lakehouse</p>
+            <div className="rounded-2xl bg-panel/60 p-4">
+              <p className="font-display text-xl leading-tight text-cobalt">Data Engineering &amp; Platform</p>
+              <p className="text-xs tracking-[0.16em] uppercase text-cobalt/60 mt-1">Focus</p>
             </div>
-            <div className="rounded-2xl bg-soft-clay/60 p-4">
-              <p className="font-display text-2xl text-forest">9+</p>
-              <p className="text-xs tracking-[0.16em] uppercase text-forest/60 mt-1">Years in data</p>
+            <div className="rounded-2xl bg-panel/60 p-4">
+              <p className="font-display text-2xl text-cobalt">9+</p>
+              <p className="text-xs tracking-[0.16em] uppercase text-cobalt/60 mt-1">Years in data</p>
             </div>
           </div>
         </article>
@@ -101,17 +101,17 @@ export default function About() {
 
       <article className="card">
         <p className="eyebrow mb-4">Experience</p>
-        <h2 className="font-display text-2xl font-semibold text-forest mb-6">Where I&apos;ve worked</h2>
-        <ol className="space-y-6 border-l border-stone/70 pl-6">
+        <h2 className="font-display text-2xl font-semibold text-cobalt mb-6">Where I&apos;ve worked</h2>
+        <ol className="space-y-6 border-l border-line/70 pl-6">
           {experience.map((job) => (
             <li key={job.company} className="relative">
-              <span className="absolute -left-[1.85rem] top-2 h-3 w-3 rounded-full bg-sage" aria-hidden="true" />
+              <span className="absolute -left-[1.85rem] top-2 h-3 w-3 rounded-full bg-rust" aria-hidden="true" />
               <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-                <h3 className="font-display text-xl font-semibold text-forest">{job.company}</h3>
-                <p className="text-sm text-forest/60">{job.dates}</p>
+                <h3 className="font-display text-xl font-semibold text-cobalt">{job.company}</h3>
+                <p className="text-sm text-cobalt/60">{job.dates}</p>
               </div>
-              <p className="text-forest/75 font-medium">{job.role}</p>
-              <p className="mt-1 text-forest/70 leading-relaxed">{job.summary}</p>
+              <p className="text-cobalt/75 font-medium">{job.role}</p>
+              <p className="mt-1 text-cobalt/70 leading-relaxed">{job.summary}</p>
             </li>
           ))}
         </ol>
@@ -120,14 +120,14 @@ export default function About() {
       <div className="grid lg:grid-cols-[1fr,0.95fr] gap-8">
         <article className="card">
           <p className="eyebrow mb-4">Technical Range</p>
-          <h2 className="font-display text-2xl font-semibold text-forest mb-4">Technologies</h2>
-          <p className="text-forest/80 mb-5 text-lg">
+          <h2 className="font-display text-2xl font-semibold text-cobalt mb-4">Technologies</h2>
+          <p className="text-cobalt/80 mb-5 text-lg">
             The tools I use most for data platforms and AI data infrastructure:
           </p>
-          <ul className="flex flex-wrap gap-2 text-forest/80">
+          <ul className="flex flex-wrap gap-2 text-cobalt/80">
             {techStack.map((tech) => (
               <li key={tech}>
-                <span className="px-3 py-1.5 rounded-full bg-soft-clay text-forest/80 text-sm">
+                <span className="px-3 py-1.5 rounded-full bg-panel text-cobalt/80 text-sm">
                   {tech}
                 </span>
               </li>
@@ -137,8 +137,8 @@ export default function About() {
 
         <article className="card">
           <p className="eyebrow mb-4">Resume</p>
-          <h2 className="font-display text-2xl font-semibold text-forest">Download Latest CV</h2>
-          <p className="text-forest/80 mt-2 text-lg">
+          <h2 className="font-display text-2xl font-semibold text-cobalt">Download Latest CV</h2>
+          <p className="text-cobalt/80 mt-2 text-lg">
             Open a PDF copy of my latest resume.
           </p>
           <div className="mt-5">
@@ -155,7 +155,7 @@ export default function About() {
         </article>
       </div>
 
-      <div className="hidden md:block rounded-3xl overflow-hidden border border-stone/50 shadow-botanical" style={{ height: '80vh' }}>
+      <div className="hidden md:block rounded-3xl overflow-hidden border border-line/50 shadow-botanical" style={{ height: '80vh' }}>
         <iframe
           src={resumeUrl}
           title="Resume"

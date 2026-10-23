@@ -139,8 +139,8 @@ export default function Projects() {
     <section className="space-y-14 md:space-y-16">
       <div className="animate-fade-up space-y-4">
         <p className="eyebrow">Selected Work</p>
-        <h1 className="font-display text-5xl md:text-6xl lg:text-7xl font-semibold text-forest">Projects</h1>
-        <p className="text-lg text-forest/70 max-w-2xl">
+        <h1 className="font-display text-5xl md:text-6xl lg:text-7xl font-semibold text-cobalt">Projects</h1>
+        <p className="text-lg text-cobalt/70 max-w-2xl">
           Case studies from production data platforms at Reka AI and Apple, plus live apps and
           open-source work I build on the side.
         </p>
@@ -158,7 +158,7 @@ export default function Projects() {
         <div>
           <p className="impact-label">Want the details?</p>
           <p className="impact-value">
-            <Link href="/contact" className="text-sage hover:text-terracotta transition-colors">
+            <Link href="/contact" className="text-rust hover:text-rust-deep transition-colors">
               Let&apos;s talk
             </Link>
           </p>
@@ -168,19 +168,19 @@ export default function Projects() {
       <div>
         <div className="mb-6 space-y-2">
           <p className="eyebrow">Production Work</p>
-          <h2 className="font-display text-3xl font-semibold text-forest">Case studies</h2>
+          <h2 className="font-display text-3xl font-semibold text-cobalt">Case studies</h2>
         </div>
         <div className="grid md:grid-cols-3 gap-8">
           {CASE_STUDIES.map((c) => (
             <Link key={c.slug} href={`/work/${c.slug}`} className="card group flex flex-col">
-              <p className="text-sm text-forest/60">{c.company} · {c.period}</p>
-              <h3 className="font-display text-xl font-semibold text-forest mt-2 group-hover:text-terracotta transition-colors duration-300">
+              <p className="text-sm text-cobalt/60">{c.company} · {c.period}</p>
+              <h3 className="font-display text-xl font-semibold text-cobalt mt-2 group-hover:text-rust-deep transition-colors duration-300">
                 {c.title}
               </h3>
-              <p className="text-forest/75 mt-3 leading-relaxed flex-1">{c.tagline}</p>
-              <div className="mt-5 pt-4 border-t border-stone/70 flex items-center justify-between gap-3">
-                <span className="font-display text-lg text-forest">{c.metrics[0].value}</span>
-                <span className="text-sage font-medium text-sm inline-flex items-center gap-1">
+              <p className="text-cobalt/75 mt-3 leading-relaxed flex-1">{c.tagline}</p>
+              <div className="mt-5 pt-4 border-t border-line/70 flex items-center justify-between gap-3">
+                <span className="font-display text-lg text-cobalt">{c.metrics[0].value}</span>
+                <span className="text-rust font-medium text-sm inline-flex items-center gap-1">
                   Read case study <ArrowRight strokeWidth={1.5} size={14} />
                 </span>
               </div>
@@ -192,7 +192,7 @@ export default function Projects() {
       <div>
         <div className="mb-6 space-y-2">
           <p className="eyebrow">Side Projects</p>
-          <h2 className="font-display text-3xl font-semibold text-forest">Featured apps</h2>
+          <h2 className="font-display text-3xl font-semibold text-cobalt">Featured apps</h2>
         </div>
         <div className="grid md:grid-cols-2 gap-8 md:gap-10">
           {FEATURED_APPS.map((app, i) => (
@@ -201,27 +201,27 @@ export default function Projects() {
               className={`card group overflow-hidden ${i % 2 === 1 ? 'md:translate-y-8' : ''}`}
             >
               <div className="flex items-start justify-between gap-3">
-                <h3 className="font-display text-xl font-semibold text-forest">
+                <h3 className="font-display text-xl font-semibold text-cobalt">
                   <a
                     href={app.liveUrl}
                     target="_blank"
                     rel="noreferrer noopener"
-                    className="hover:text-terracotta transition-colors duration-300 inline-flex items-center gap-2"
+                    className="hover:text-rust-deep transition-colors duration-300 inline-flex items-center gap-2"
                   >
                     {app.title}
                     <ExternalLink strokeWidth={1.5} size={16} className="opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
                   </a>
                 </h3>
-                <span className="shrink-0 p-1.5 rounded-lg bg-sage/10 text-sage" aria-hidden>
+                <span className="shrink-0 p-1.5 rounded-lg bg-rust/10 text-rust" aria-hidden>
                   <Globe strokeWidth={1.5} size={18} />
                 </span>
               </div>
-              <p className="text-forest/80 mt-3 leading-relaxed">
+              <p className="text-cobalt/80 mt-3 leading-relaxed">
                 {app.intro}
               </p>
               <div className="mt-4 flex flex-wrap gap-2">
                 {app.tags.map(t => (
-                  <span key={t} className="px-2.5 py-1 rounded-full bg-soft-clay text-forest/70 text-xs">
+                  <span key={t} className="px-2.5 py-1 rounded-full bg-panel text-cobalt/70 text-xs">
                     {t}
                   </span>
                 ))}
@@ -245,18 +245,18 @@ export default function Projects() {
       <div>
         <div className="mb-6 space-y-2">
           <p className="eyebrow">Open Source</p>
-          <h2 className="font-display text-3xl font-semibold text-forest">More on GitHub</h2>
+          <h2 className="font-display text-3xl font-semibold text-cobalt">More on GitHub</h2>
         </div>
         <div className="vine-divider" aria-hidden="true" />
         {error && (
-          <p className="mt-6 text-sm text-forest/60">Live GitHub stats are unavailable right now; showing highlights.</p>
+          <p className="mt-6 text-sm text-cobalt/60">Live GitHub stats are unavailable right now; showing highlights.</p>
         )}
         <div className="grid md:grid-cols-2 gap-10 md:gap-14 mt-10">
           {loading && Array.from({ length: 4 }).map((_, i) => (
             <div key={i} className="card animate-pulse">
-              <div className="h-6 w-2/3 bg-soft-clay rounded" />
-              <div className="mt-3 h-4 w-full bg-soft-clay rounded" />
-              <div className="mt-4 h-16 w-full bg-soft-clay rounded" />
+              <div className="h-6 w-2/3 bg-panel rounded" />
+              <div className="mt-3 h-4 w-full bg-panel rounded" />
+              <div className="mt-4 h-16 w-full bg-panel rounded" />
             </div>
           ))}
           {!loading && displayRepos.map((r, i) => {
@@ -268,26 +268,26 @@ export default function Projects() {
             return (
               <article key={r.id} className={`card group ${stagger}`}>
                 <div className="flex items-center gap-3">
-                  <h3 className="font-display text-xl font-semibold text-forest">
+                  <h3 className="font-display text-xl font-semibold text-cobalt">
                     <a
                       href={r.html_url}
                       target="_blank"
                       rel="noreferrer noopener"
                       aria-label={`Open ${r.name} on GitHub`}
-                      className="hover:text-terracotta transition-colors duration-300 inline-flex items-center gap-2"
+                      className="hover:text-rust-deep transition-colors duration-300 inline-flex items-center gap-2"
                     >
                       {r.name}
                       <ExternalLink strokeWidth={1.5} size={16} className="opacity-0 group-hover:opacity-100 transition-opacity" />
                     </a>
                   </h3>
                   {isFeatured && (
-                    <span className="text-[10px] px-2.5 py-1 rounded-full bg-sage/20 text-forest font-medium tracking-wide">Featured</span>
+                    <span className="text-[10px] px-2.5 py-1 rounded-full bg-rust/20 text-cobalt font-medium tracking-wide">Featured</span>
                   )}
                 </div>
-                <p className="text-forest/80 mt-2 leading-relaxed">
+                <p className="text-cobalt/80 mt-2 leading-relaxed">
                   {isFeatured ? FEATURED_GOAL : r.full_name === SECOND_FULL_NAME ? SECOND_GOAL : r.full_name === THIRD_FULL_NAME ? THIRD_GOAL : r.description}
                 </p>
-                <div className="mt-4 flex flex-wrap gap-3 text-sm text-forest/60">
+                <div className="mt-4 flex flex-wrap gap-3 text-sm text-cobalt/60">
                   {r.language && <span>{r.language}</span>}
                   {typeof r.stargazers_count === 'number' && (
                     <span className="inline-flex items-center gap-1"><Star strokeWidth={1.5} size={14} /> {r.stargazers_count}</span>
@@ -301,17 +301,17 @@ export default function Projects() {
                     GitHub
                   </a>
                   {isFeatured && (
-                    <Link href="/projects/doj-legal-researcher-agent" className="text-sage hover:text-terracotta font-medium text-sm transition-colors">
+                    <Link href="/projects/doj-legal-researcher-agent" className="text-rust hover:text-rust-deep font-medium text-sm transition-colors">
                       Read Case Study →
                     </Link>
                   )}
                   {r.full_name === SECOND_FULL_NAME && (
-                    <Link href="/projects/ads-compaign-metric" className="text-sage hover:text-terracotta font-medium text-sm transition-colors">
+                    <Link href="/projects/ads-compaign-metric" className="text-rust hover:text-rust-deep font-medium text-sm transition-colors">
                       Read Case Study →
                     </Link>
                   )}
                   {(r.full_name === THIRD_FULL_NAME || r.name === THIRD_REPO_NAME) && (
-                    <Link href="/projects/landing-page-ab-test" className="text-sage hover:text-terracotta font-medium text-sm transition-colors">
+                    <Link href="/projects/landing-page-ab-test" className="text-rust hover:text-rust-deep font-medium text-sm transition-colors">
                       Read Case Study →
                     </Link>
                   )}
@@ -319,7 +319,7 @@ export default function Projects() {
                 {tags.length > 0 && (
                   <div className="mt-4 flex flex-wrap gap-2">
                     {tags.slice(0, 6).map(t => (
-                      <span key={t} className="px-2.5 py-1 rounded-full bg-soft-clay text-forest/70 text-xs">{t}</span>
+                      <span key={t} className="px-2.5 py-1 rounded-full bg-panel text-cobalt/70 text-xs">{t}</span>
                     ))}
                   </div>
                 )}

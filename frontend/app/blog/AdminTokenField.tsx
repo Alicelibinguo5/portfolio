@@ -8,7 +8,7 @@ type AdminTokenFieldProps = {
 export function AdminTokenField({ value, onChange }: AdminTokenFieldProps) {
   return (
     <div>
-      <label htmlFor="admin-token" className="block text-sm font-medium text-forest mb-2">Admin token</label>
+      <label htmlFor="admin-token" className="block text-sm font-medium text-cobalt mb-2">Admin token</label>
       <input
         id="admin-token"
         type="password"

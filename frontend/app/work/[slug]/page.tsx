@@ -38,11 +38,11 @@ export default async function CaseStudyPage({ params }: Params) {
         <p className="eyebrow">
           {study.company} · {study.period}
         </p>
-        <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-semibold text-forest leading-[1.1]">
+        <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-semibold text-cobalt leading-[1.1]">
           {study.title}
         </h1>
-        <p className="text-lg md:text-xl text-forest/80 max-w-3xl leading-relaxed">{study.tagline}</p>
-        <p className="text-sm text-forest/60">{study.role}</p>
+        <p className="text-lg md:text-xl text-cobalt/80 max-w-3xl leading-relaxed">{study.tagline}</p>
+        <p className="text-sm text-cobalt/60">{study.role}</p>
       </div>
 
       <div className="impact-strip animate-fade-up [animation-delay:100ms]">
@@ -58,11 +58,11 @@ export default async function CaseStudyPage({ params }: Params) {
         <div className="space-y-8">
           <article className="card">
             <p className="eyebrow mb-3">Problem</p>
-            <p className="text-forest/80 text-lg leading-relaxed">{study.problem}</p>
+            <p className="text-cobalt/80 text-lg leading-relaxed">{study.problem}</p>
           </article>
           <article className="card">
             <p className="eyebrow mb-3">Approach</p>
-            <ul className="space-y-3 text-forest/80 text-lg leading-relaxed list-disc pl-5">
+            <ul className="space-y-3 text-cobalt/80 text-lg leading-relaxed list-disc pl-5">
               {study.approach.map((item) => (
                 <li key={item}>{item}</li>
               ))}
@@ -72,7 +72,7 @@ export default async function CaseStudyPage({ params }: Params) {
         <div className="space-y-8">
           <article className="card">
             <p className="eyebrow mb-3">Results</p>
-            <ul className="space-y-3 text-forest/80 text-lg leading-relaxed list-disc pl-5">
+            <ul className="space-y-3 text-cobalt/80 text-lg leading-relaxed list-disc pl-5">
               {study.results.map((item) => (
                 <li key={item}>{item}</li>
               ))}
@@ -83,7 +83,7 @@ export default async function CaseStudyPage({ params }: Params) {
             <ul className="flex flex-wrap gap-2">
               {study.stack.map((tech) => (
                 <li key={tech}>
-                  <span className="px-3 py-1.5 rounded-full bg-soft-clay text-forest/80 text-sm">{tech}</span>
+                  <span className="px-3 py-1.5 rounded-full bg-panel text-cobalt/80 text-sm">{tech}</span>
                 </li>
               ))}
             </ul>
@@ -97,8 +97,8 @@ export default async function CaseStudyPage({ params }: Params) {
           <div className="grid md:grid-cols-2 gap-6">
             {others.map((c) => (
               <Link key={c.slug} href={`/work/${c.slug}`} className="card group block">
-                <p className="text-sm text-forest/60">{c.company}</p>
-                <h2 className="font-display text-xl font-semibold text-forest mt-1 group-hover:text-terracotta transition-colors inline-flex items-center gap-2">
+                <p className="text-sm text-cobalt/60">{c.company}</p>
+                <h2 className="font-display text-xl font-semibold text-cobalt mt-1 group-hover:text-rust-deep transition-colors inline-flex items-center gap-2">
                   {c.title}
                   <ArrowRight strokeWidth={1.5} size={16} />
                 </h2>

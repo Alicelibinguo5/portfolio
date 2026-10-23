@@ -52,18 +52,18 @@ export const CASE_STUDIES: CaseStudy[] = [
     company: 'Apple',
     role: 'Senior Software Engineer, Data Platform',
     period: '2021 – 2026',
-    title: 'Running 2,000+ Spark jobs on a 20 PB Iceberg lakehouse',
+    title: 'Scaling a microservice application to run 2,000+ Spark jobs daily on a 20 PB Iceberg lakehouse',
     tagline:
-      'Scaling the orchestration platform behind a petabyte-scale lakehouse, and tuning Spark to make it faster and cheaper.',
+      'Scaling the microservice application that runs 2,000+ Spark jobs a day on a petabyte-scale lakehouse, and tuning Spark to make it faster and cheaper.',
     metrics: [
       { value: '20 PB', label: 'Iceberg data lake' },
       { value: '$0.5M', label: 'Saved per year' },
       { value: '75%', label: 'Faster micro-batches' },
     ],
     problem:
-      'A shared data platform ran thousands of Spark jobs against a 20 PB Iceberg data lake. As usage grew, the orchestration layer had to scale with it, and micro-batch ETL pipelines on AWS were slower and costlier than they needed to be.',
+      'A shared data platform ran thousands of Spark jobs against a 20 PB Iceberg data lake. As usage grew, the microservice application that launched and managed those jobs had to scale with it, and micro-batch ETL pipelines on AWS were slower and costlier than they needed to be.',
     approach: [
-      'Scaled the REST API platform that orchestrates 2,000+ Spark jobs across the lakehouse.',
+      'Scaled the microservice application that runs 2,000+ Spark jobs daily across the lakehouse.',
       'Tuned Spark configurations across 20+ Airflow/Spark/Kubernetes ETL pipelines on AWS.',
       'Drove Snowflake and dbt adoption with Airflow integration, migrating legacy pipelines.',
     ],
@@ -79,9 +79,9 @@ export const CASE_STUDIES: CaseStudy[] = [
     company: 'Apple',
     role: 'Senior Software Engineer, Data Platform',
     period: '2021 – 2026',
-    title: 'An AI agent that assesses lakehouse migrations',
+    title: 'An agentic AI application that assesses and migrates lakehouse jobs through a conversational interface',
     tagline:
-      'MCP servers plus a full-stack app that decide whether Snowflake ingestion jobs can move to the lakehouse — with an evaluation framework to prove it is reliable.',
+      'MCP servers plus a full-stack chat interface that lets teams assess and migrate Snowflake ingestion jobs to the lakehouse by talking to an agent — with an evaluation framework to prove it is reliable.',
     metrics: [
       { value: 'Weeks → min', label: 'Assessment time' },
       { value: 'MCP', label: 'Agent tooling' },
@@ -91,7 +91,7 @@ export const CASE_STUDIES: CaseStudy[] = [
       'Deciding whether an ingestion job could migrate from Snowflake to the lakehouse meant manual investigation per job, and assessments took weeks.',
     approach: [
       'Built MCP servers exposing the data-lake context an agent needs to judge migratability.',
-      'Built a full-stack application around the agent so teams could run assessments themselves.',
+      'Built a full-stack conversational interface so teams could assess and migrate jobs by chatting with the agent.',
       'Built an LLM evaluation framework to validate the agent’s reliability before teams relied on it.',
     ],
     results: [
