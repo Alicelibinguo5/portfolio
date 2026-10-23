@@ -64,9 +64,14 @@ export default function Home() {
       <section className="grid lg:grid-cols-[1.2fr,0.8fr] gap-10 lg:gap-16 items-end">
         <div className="space-y-8 animate-fade-up self-center lg:pb-20">
           <p className="eyebrow">Libin Guo · Senior Data Engineer</p>
-          <h1 className="font-display text-5xl sm:text-6xl xl:text-[4rem] font-semibold text-cobalt tracking-tight leading-[1.05] [text-wrap:balance]">
-            I build the data platforms that power analytics and AI.
-          </h1>
+          <figure className="space-y-4">
+            <blockquote>
+              <h1 className="font-display text-5xl sm:text-6xl xl:text-[4rem] font-semibold text-cobalt tracking-tight leading-[1.05] [text-wrap:balance]">
+                &ldquo;I have no special talent. I am only passionately curious.&rdquo;
+              </h1>
+            </blockquote>
+            <figcaption className="text-base text-cobalt/60">— Albert Einstein</figcaption>
+          </figure>
           <p className="text-lg md:text-xl text-cobalt/80 max-w-2xl leading-relaxed">
             I&apos;m a Senior Data Engineer with 9+ years building large-scale data pipelines and data
             platforms — most recently a 20 PB Iceberg lakehouse at <b className="text-cobalt">Apple</b> and
