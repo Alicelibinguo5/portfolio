@@ -13,8 +13,13 @@ export const API_URL = (() => {
   if (typeof window !== 'undefined') {
     const hostname = window.location.hostname
 
-    // Production Vercel deployment
-    if (hostname === 'libinguo.vercel.app' || hostname.endsWith('.vercel.app')) {
+    // Production deployments (custom domain + Vercel previews)
+    if (
+      hostname === 'libinguo.com' ||
+      hostname === 'www.libinguo.com' ||
+      hostname === 'libinguo.vercel.app' ||
+      hostname.endsWith('.vercel.app')
+    ) {
       return 'https://portfolio-production-ac21.up.railway.app'
     }
 
