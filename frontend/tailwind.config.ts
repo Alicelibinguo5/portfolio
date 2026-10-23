@@ -20,6 +20,7 @@ export default {
       fontFamily: {
         display: ['var(--font-playfair)', 'Georgia', 'serif'],
         sans: ['var(--font-source-sans)', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        'serif-zh': ['var(--font-noto-serif-sc)', 'Songti SC', 'STSong', 'serif'],
       },
       boxShadow: {
         botanical: '0 4px 6px -1px rgba(2, 14, 28, 0.05)',

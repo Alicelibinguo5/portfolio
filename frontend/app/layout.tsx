@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Playfair_Display, Source_Sans_3 } from 'next/font/google'
+import { Noto_Serif_SC, Playfair_Display, Source_Sans_3 } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/react'
 import './globals.css'
 import { LayoutClient } from './LayoutClient'
@@ -13,6 +13,15 @@ const playfair = Playfair_Display({
 const sourceSans = Source_Sans_3({
   subsets: ['latin'],
   variable: '--font-source-sans',
+  display: 'swap',
+})
+
+// Chinese name in the header; Google serves only the glyphs the page uses
+const notoSerifSC = Noto_Serif_SC({
+  weight: '700',
+  subsets: ['latin'],
+  preload: false,
+  variable: '--font-noto-serif-sc',
   display: 'swap',
 })
 
@@ -85,7 +94,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={`${playfair.variable} ${sourceSans.variable}`}>
+    <html lang="en" className={`${playfair.variable} ${sourceSans.variable} ${notoSerifSC.variable}`}>
       <head>
         <script
           type="application/ld+json"

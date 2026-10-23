@@ -25,7 +25,7 @@ export function LayoutClient({ children }: { children: React.ReactNode }) {
         <div className="container-app flex items-center justify-between h-16 md:h-20">
           <Link href="/" className="font-display text-xl md:text-2xl font-semibold text-cobalt hover:text-rust transition-colors duration-300">
             Libin Guo
-            <span lang="zh-CN" className="ml-2 font-sans font-normal text-cobalt/60">郭丽彬</span>
+            <span lang="zh-CN" className="ml-2 font-serif-zh font-bold text-cobalt/70">郭丽彬</span>
           </Link>
 
           <nav className="hidden md:flex items-center gap-8">
