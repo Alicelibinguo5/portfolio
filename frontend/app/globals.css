@@ -351,7 +351,7 @@ body {
   opacity: 0;
   animation:
     hero-rise 1s cubic-bezier(0.22, 1, 0.36, 1) 0.25s forwards,
-    hero-float 6s ease-in-out 1.25s infinite;
+    hero-float 8s ease-in-out 1.25s infinite;
 }
 
 @keyframes hero-rise {
@@ -359,60 +359,18 @@ body {
   to { opacity: 1; transform: translate(-50%, 0); }
 }
 
+/* a barely-there float after the rise-in */
 @keyframes hero-float {
-  0%, 100% { transform: translate(-50%, 0) rotate(0deg); }
-  25% { transform: translate(-50%, -6px) rotate(-1.2deg); }
-  50% { transform: translate(-50%, -10px) rotate(0deg); }
-  75% { transform: translate(-50%, -6px) rotate(1.2deg); }
+  0%, 100% { transform: translate(-50%, 0); }
+  50% { transform: translate(-50%, -4px); }
 }
-
-/* Greeting bubble that pops in beside the portrait, with a waving hand */
-.hero-hello {
-  position: absolute;
-  left: 4%;
-  top: 12%;
-  z-index: 1;
-  padding: 0.55rem 1rem;
-  border-radius: 999px 999px 999px 0.35rem;
-  background: #FFFFFF;
-  color: #0048AC;
-  font-weight: 600;
-  font-size: 0.95rem;
-  white-space: nowrap;
-  box-shadow: 0 10px 24px rgba(2, 14, 28, 0.16);
-  opacity: 0;
-  transform-origin: bottom left;
-  animation: hero-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 1.2s forwards;
-}
-
-.hero-wave {
-  display: inline-block;
-  transform-origin: 70% 80%;
-  animation: hero-wave 2.4s ease-in-out 1.7s infinite;
-}
-
-@keyframes hero-pop {
-  from { opacity: 0; transform: scale(0.6) translateY(8px); }
-  to { opacity: 1; transform: scale(1) translateY(0); }
-}
-
-@keyframes hero-wave {
-  0%, 60%, 100% { transform: rotate(0deg); }
-  10%, 30% { transform: rotate(16deg); }
-  20%, 40% { transform: rotate(-8deg); }
-  50% { transform: rotate(10deg); }
-}
-
-
 
 @media (prefers-reduced-motion: reduce) {
   .path-list::after {
     display: none;
   }
 
-  .hero-portrait,
-  .hero-hello,
-  .hero-wave {
+  .hero-portrait {
     animation: none;
     opacity: 1;
   }

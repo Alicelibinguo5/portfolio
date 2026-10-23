@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Linkedin, Github, Mail, Newspaper, ArrowRight, FileText, MessageCircle } from 'lucide-react'
+import { Linkedin, Github, Mail, Newspaper, ArrowRight, FileText, MessageCircle, MapPin } from 'lucide-react'
 import { CASE_STUDIES } from '@/lib/caseStudies'
 
 const linkedinUrl = process.env.NEXT_PUBLIC_LINKEDIN_URL || 'https://www.linkedin.com/in/libinguo/'
@@ -64,8 +64,8 @@ export default function Home() {
       <section className="grid lg:grid-cols-[1.2fr,0.8fr] gap-10 lg:gap-16 items-end">
         <div className="space-y-8 animate-fade-up self-center lg:pb-20">
           <p className="eyebrow">Libin Guo · Senior Data Engineer</p>
-          <h1 className="font-display text-5xl sm:text-6xl md:text-7xl font-semibold text-cobalt tracking-tight leading-[1.05]">
-            Data infrastructure for unified lakehouse and AI training.
+          <h1 className="font-display text-5xl sm:text-6xl xl:text-[4rem] font-semibold text-cobalt tracking-tight leading-[1.05] [text-wrap:balance]">
+            I build the data platforms that power analytics and AI.
           </h1>
           <p className="text-lg md:text-xl text-cobalt/80 max-w-2xl leading-relaxed">
             I&apos;m a Senior Data Engineer with 9+ years building large-scale data pipelines and data
@@ -82,6 +82,19 @@ export default function Home() {
               <ArrowRight strokeWidth={1.5} size={18} />
             </Link>
           </div>
+          <p className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-cobalt/75">
+            <span className="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 font-medium text-emerald-800">
+              <span className="relative flex h-2 w-2" aria-hidden="true">
+                <span className="absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-60 motion-safe:animate-ping" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+              </span>
+              Open to work
+            </span>
+            <span className="inline-flex items-center gap-1">
+              <MapPin strokeWidth={1.5} size={16} aria-hidden="true" />
+              Austin, TX
+            </span>
+          </p>
           <div className="flex flex-wrap items-center gap-3">
             <span className="text-xs uppercase tracking-[0.16em] text-cobalt/55 mr-1">Follow</span>
             {SOCIALS.map(({ href, label, Icon }) => (
@@ -105,13 +118,10 @@ export default function Home() {
             src="/portrait-cutout.webp"
             alt="Libin Guo"
             width={760}
-            height={1059}
+            height={879}
             priority
             className="hero-portrait"
           />
-          <p className="hero-hello" aria-hidden="true">
-            Hi, I&apos;m Libin <span className="hero-wave">👋</span>
-          </p>
         </div>
       </section>
 
