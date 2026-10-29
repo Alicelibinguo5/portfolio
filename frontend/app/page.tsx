@@ -1,7 +1,8 @@
 import type { Metadata } from 'next'
+import React from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Linkedin, Github, Mail, Newspaper, ArrowRight, FileText, MessageCircle, MapPin } from 'lucide-react'
+import { Linkedin, Github, Mail, ArrowRight, FileText, MessageCircle, MapPin } from 'lucide-react'
 import { CASE_STUDIES } from '@/lib/caseStudies'
 
 const linkedinUrl = process.env.NEXT_PUBLIC_LINKEDIN_URL || 'https://www.linkedin.com/in/libinguo/'
@@ -49,11 +50,30 @@ const FOCUS = [
   },
 ]
 
-const SOCIALS = [
-  { href: linkedinUrl, label: 'LinkedIn', Icon: Linkedin },
-  { href: githubUrl, label: 'GitHub', Icon: Github },
-  { href: substackUrl, label: 'Substack', Icon: Newspaper },
-  { href: `mailto:${email}`, label: 'Email', Icon: Mail },
+const mediumUrl = 'https://medium.com/@glbviolin'
+
+const SOCIALS: { href: string; label: string; icon: React.ReactNode }[] = [
+  { href: linkedinUrl, label: 'LinkedIn', icon: <Linkedin strokeWidth={1.5} size={18} /> },
+  { href: githubUrl, label: 'GitHub', icon: <Github strokeWidth={1.5} size={18} /> },
+  {
+    href: substackUrl,
+    label: 'Substack',
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M3 4.5h18v2.8H3V4.5zM3 9.7h18v2.8H3V9.7zM3 14.9h18v4.6l-9 0-9-4.6z" />
+      </svg>
+    ),
+  },
+  {
+    href: mediumUrl,
+    label: 'Medium',
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M13.5 12c0 3.6-2.7 6.5-6 6.5S1.5 15.6 1.5 12 4.2 5.5 7.5 5.5s6 2.9 6 6.5zm6.7 0c0 3.4-1.3 6.1-3 6.1s-3-2.7-3-6.1 1.3-6.1 3-6.1 3 2.7 3 6.1zm2.3 0c0 3-0.5 5.5-1 5.5s-1-2.5-1-5.5.5-5.5 1-5.5 1 2.5 1 5.5z" />
+      </svg>
+    ),
+  },
+  { href: `mailto:${email}`, label: 'Email', icon: <Mail strokeWidth={1.5} size={18} /> },
 ]
 
 export default function Home() {
@@ -102,7 +122,7 @@ export default function Home() {
           </p>
           <div className="flex flex-wrap items-center gap-3">
             <span className="text-xs uppercase tracking-[0.16em] text-cobalt/55 mr-1">Follow</span>
-            {SOCIALS.map(({ href, label, Icon }) => (
+            {SOCIALS.map(({ href, label, icon }) => (
               <a
                 key={label}
                 href={href}
@@ -112,7 +132,7 @@ export default function Home() {
                 title={label}
                 className="p-2 rounded-full bg-panel/80 text-cobalt/80 hover:text-rust hover:bg-rust/10 transition-all duration-300"
               >
-                <Icon strokeWidth={1.5} size={18} />
+                {icon}
               </a>
             ))}
           </div>
