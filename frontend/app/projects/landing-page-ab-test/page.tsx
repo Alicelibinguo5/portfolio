@@ -5,7 +5,7 @@ import { ArrowLeft, ExternalLink } from 'lucide-react'
 export const metadata: Metadata = {
   title: 'Landing Page A/B Test Analysis',
   description:
-    'A/B testing analysis for landing page conversion: pandas, matplotlib, statsmodels, regression. Case study by Libin Guo.',
+    'A/B testing analysis for landing page conversion: pandas, matplotlib, statsmodels, regression. Project by Libin Guo.',
 }
 
 export default function ProjectLandingPageAbTest() {

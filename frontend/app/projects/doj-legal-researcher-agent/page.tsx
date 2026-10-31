@@ -5,7 +5,7 @@ import { ArrowLeft, ExternalLink } from 'lucide-react'
 export const metadata: Metadata = {
   title: 'DOJ Legal Researcher Agent',
   description:
-    'Multi-agent system to analyze DOJ press releases and categorize fraud and money-laundering cases. LangGraph, FastAPI, Langfuse, React. Case study by Libin Guo.',
+    'Multi-agent system to analyze DOJ press releases and categorize fraud and money-laundering cases. LangGraph, FastAPI, Langfuse, React. Project by Libin Guo.',
 }
 
 export default function ProjectDojLegalResearcherAgent() {

@@ -7,7 +7,7 @@ const basePath = process.env.NEXT_PUBLIC_BASE_PATH || ''
 export const metadata: Metadata = {
   title: 'About & Resume',
   description:
-    'Libin Guo — Senior Data Engineer. Previously Reka AI, Apple, and JPMorgan Chase. Resume, experience, and background.',
+    'Libin Guo — Senior Software Engineer (Data Platform). Previously Reka AI, Apple, and JPMorgan Chase. Resume, experience, and background.',
 }
 
 export default function About() {

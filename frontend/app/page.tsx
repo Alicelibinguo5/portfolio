@@ -12,9 +12,9 @@ const email = 'libinguo89@gmail.com'
 const resumeUrl = `${process.env.NEXT_PUBLIC_BASE_PATH || ''}/resume.pdf`
 
 export const metadata: Metadata = {
-  title: { absolute: 'Libin Guo — Senior Data Engineer' },
+  title: { absolute: 'Libin Guo — Senior Software Engineer (Data Platform)' },
   description:
-    'Libin Guo — Senior Data Engineer. Petabyte-scale lakehouses and AI training-data pipelines with Spark, Ray, Iceberg, and Kubernetes. Previously Reka AI, Apple, JPMorgan Chase.',
+    'Libin Guo — Senior Software Engineer (Data Platform). Petabyte-scale lakehouses and AI training-data pipelines with Spark, Ray, Iceberg, and Kubernetes. Previously Reka AI, Apple, JPMorgan Chase.',
 }
 
 const PATH = [
@@ -83,7 +83,7 @@ export default function Home() {
       <div>
       <section className="grid lg:grid-cols-[1.2fr,0.8fr] gap-10 lg:gap-16 items-end">
         <div className="space-y-8 animate-fade-up self-center lg:pb-20">
-          <p className="eyebrow">Libin Guo · Senior Data Engineer</p>
+          <p className="eyebrow">Libin Guo · Senior Software Engineer (Data Platform)</p>
           <figure className="space-y-4">
             <blockquote>
               <h1 className="font-display text-5xl sm:text-6xl xl:text-[4rem] font-semibold text-cobalt tracking-tight leading-[1.05] [text-wrap:balance]">
@@ -93,7 +93,7 @@ export default function Home() {
             <figcaption className="text-base text-cobalt/60">— Albert Einstein</figcaption>
           </figure>
           <p className="text-lg md:text-xl text-cobalt/80 max-w-2xl leading-relaxed">
-            I&apos;m a Senior Data Engineer with 9+ years building large-scale data pipelines and data
+            I&apos;m a Senior Software Engineer (Data Platform) with 9+ years building large-scale data pipelines and data
             platforms — most recently a 20 PB Iceberg lakehouse at <b className="text-cobalt">Apple</b> and
             video training-data pipelines for world models at <b className="text-cobalt">Reka AI</b>.
           </p>
@@ -103,7 +103,7 @@ export default function Home() {
               <FileText strokeWidth={1.5} size={18} />
             </Link>
             <Link href="/projects" className="btn-secondary inline-flex items-center gap-2">
-              Read case studies
+              See projects
               <ArrowRight strokeWidth={1.5} size={18} />
             </Link>
           </div>
@@ -216,7 +216,7 @@ export default function Home() {
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div className="space-y-2">
             <p className="eyebrow">Selected Work</p>
-            <h2 className="font-display text-3xl md:text-4xl font-semibold text-cobalt">Case studies</h2>
+            <h2 className="font-display text-3xl md:text-4xl font-semibold text-cobalt">Production projects</h2>
           </div>
           <Link href="/projects" className="text-rust hover:text-rust-deep font-medium inline-flex items-center gap-1 transition-colors">
             All projects <ArrowRight strokeWidth={1.5} size={16} />

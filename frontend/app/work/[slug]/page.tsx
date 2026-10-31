@@ -17,7 +17,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   if (!study) return {}
   return {
     title: study.title,
-    description: `${study.tagline} Case study by Libin Guo (${study.company}).`,
+    description: `${study.tagline} Project by Libin Guo (${study.company}).`,
   }
 }
 
@@ -93,7 +93,7 @@ export default async function CaseStudyPage({ params }: Params) {
 
       {others.length > 0 && (
         <div className="space-y-4">
-          <p className="eyebrow">More case studies</p>
+          <p className="eyebrow">More projects</p>
           <div className="grid md:grid-cols-2 gap-6">
             {others.map((c) => (
               <Link key={c.slug} href={`/work/${c.slug}`} className="card group block">

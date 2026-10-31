@@ -5,7 +5,7 @@ import { ArrowLeft, ExternalLink } from 'lucide-react'
 export const metadata: Metadata = {
   title: 'Ads Campaign Metric Pipeline',
   description:
-    'Real-time streaming pipeline for ad campaign metrics: Kafka, Flink, Iceberg, Superset. Case study by Libin Guo.',
+    'Real-time streaming pipeline for ad campaign metrics: Kafka, Flink, Iceberg, Superset. Project by Libin Guo.',
 }
 
 export default function ProjectAdsCampaignMetric() {

@@ -141,7 +141,7 @@ export default function Projects() {
         <p className="eyebrow">Selected Work</p>
         <h1 className="font-display text-5xl md:text-6xl lg:text-7xl font-semibold text-cobalt">Projects</h1>
         <p className="text-lg text-cobalt/70 max-w-2xl">
-          Case studies from production data platforms at Reka AI and Apple, plus live apps and
+          Projects from production data platforms at Reka AI and Apple, plus live apps and
           open-source work I build on the side.
         </p>
       </div>
@@ -168,7 +168,7 @@ export default function Projects() {
       <div>
         <div className="mb-6 space-y-2">
           <p className="eyebrow">Production Work</p>
-          <h2 className="font-display text-3xl font-semibold text-cobalt">Case studies</h2>
+          <h2 className="font-display text-3xl font-semibold text-cobalt">Production projects</h2>
         </div>
         <div className="grid md:grid-cols-3 gap-8">
           {CASE_STUDIES.map((c) => (
@@ -181,7 +181,7 @@ export default function Projects() {
               <div className="mt-5 pt-4 border-t border-line/70 flex items-center justify-between gap-3">
                 <span className="font-display text-lg text-cobalt">{c.metrics[0].value}</span>
                 <span className="text-rust font-medium text-sm inline-flex items-center gap-1">
-                  Read case study <ArrowRight strokeWidth={1.5} size={14} />
+                  Read project <ArrowRight strokeWidth={1.5} size={14} />
                 </span>
               </div>
             </Link>
@@ -302,17 +302,17 @@ export default function Projects() {
                   </a>
                   {isFeatured && (
                     <Link href="/projects/doj-legal-researcher-agent" className="text-rust hover:text-rust-deep font-medium text-sm transition-colors">
-                      Read Case Study →
+                      Read project →
                     </Link>
                   )}
                   {r.full_name === SECOND_FULL_NAME && (
                     <Link href="/projects/ads-compaign-metric" className="text-rust hover:text-rust-deep font-medium text-sm transition-colors">
-                      Read Case Study →
+                      Read project →
                     </Link>
                   )}
                   {(r.full_name === THIRD_FULL_NAME || r.name === THIRD_REPO_NAME) && (
                     <Link href="/projects/landing-page-ab-test" className="text-rust hover:text-rust-deep font-medium text-sm transition-colors">
-                      Read Case Study →
+                      Read project →
                     </Link>
                   )}
                 </div>

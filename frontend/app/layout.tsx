@@ -29,11 +29,11 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://libinguo.com'
 
 export const metadata: Metadata = {
   title: {
-    default: 'Libin Guo — Senior Data Engineer',
+    default: 'Libin Guo — Senior Software Engineer (Data Platform)',
     template: '%s | Libin Guo',
   },
   description:
-    'Senior Data Engineer building petabyte-scale lakehouses and AI training-data infrastructure with Spark, Ray, Iceberg, and Kubernetes. Previously Reka AI, Apple, and JPMorgan Chase.',
+    'Senior Software Engineer (Data Platform) building petabyte-scale lakehouses and AI training-data infrastructure with Spark, Ray, Iceberg, and Kubernetes. Previously Reka AI, Apple, and JPMorgan Chase.',
   keywords: [
     'senior data engineer',
     'data platform engineer',
@@ -54,15 +54,15 @@ export const metadata: Metadata = {
     locale: 'en_US',
     url: siteUrl,
     siteName: 'Libin Guo',
-    title: 'Libin Guo — Senior Data Engineer',
+    title: 'Libin Guo — Senior Software Engineer (Data Platform)',
     description:
-      'Senior Data Engineer: petabyte-scale lakehouses and AI training-data pipelines. Spark, Ray, Iceberg, Kubernetes. Reka AI, Apple, JPMorgan.',
+      'Senior Software Engineer (Data Platform): petabyte-scale lakehouses and AI training-data pipelines. Spark, Ray, Iceberg, Kubernetes. Reka AI, Apple, JPMorgan.',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Libin Guo — Senior Data Engineer',
+    title: 'Libin Guo — Senior Software Engineer (Data Platform)',
     description:
-      'Senior Data Engineer: petabyte-scale lakehouses and AI training-data pipelines. Spark, Ray, Iceberg, Kubernetes. Reka AI, Apple, JPMorgan.',
+      'Senior Software Engineer (Data Platform): petabyte-scale lakehouses and AI training-data pipelines. Spark, Ray, Iceberg, Kubernetes. Reka AI, Apple, JPMorgan.',
   },
   metadataBase: new URL(siteUrl),
 }
@@ -71,7 +71,7 @@ const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'Person',
   name: 'Libin Guo',
-  jobTitle: 'Senior Data Engineer',
+  jobTitle: 'Senior Software Engineer (Data Platform)',
   alumniOf: [
     { '@type': 'Organization', name: 'Reka AI' },
     { '@type': 'Organization', name: 'Apple' },
@@ -85,7 +85,7 @@ const jsonLd = {
     'https://github.com/Alicelibinguo5',
   ],
   description:
-    'Senior Data Engineer building petabyte-scale lakehouses and AI training-data infrastructure with Spark, Ray, Iceberg, and Kubernetes. Previously Reka AI, Apple, and JPMorgan Chase.',
+    'Senior Software Engineer (Data Platform) building petabyte-scale lakehouses and AI training-data infrastructure with Spark, Ray, Iceberg, and Kubernetes. Previously Reka AI, Apple, and JPMorgan Chase.',
 }
 
 export default function RootLayout({
