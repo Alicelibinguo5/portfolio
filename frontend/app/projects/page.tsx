@@ -22,7 +22,7 @@ const FEATURED_APPS: FeaturedApp[] = [
   },
   {
     title: 'Moriarty AI: Fraudster Interview Trainer',
-    intro: 'AI-powered simulation platform for developing fraud examination and investigative interview skills. Practice with realistic fraudster personas and receive structured feedback.',
+    intro: 'I built Moriarty AI (moriartyai.co), an AI-powered training platform for fraud examiners. Real fraudsters are skilled at deflecting questions and giving away as little as possible, so getting the information needed to build a case is a skill that takes practice. Moriarty AI simulates those interviews with AI agents that play evasive, hard-to-crack suspects, and gives examiners real-time feedback on their questioning. Examiners can sharpen their skills before facing the real thing.',
     liveUrl: 'https://moriartyai.co/',
     tags: ['AI', 'Interview Training', 'Fraud Examination'],
   },
